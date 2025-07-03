@@ -1,14 +1,10 @@
 import { KeyOfTypo } from "@/styles/theme";
 import { ButtonHTMLAttributes } from "react";
 
-export type DefaultButtonVariantType =
-  | "addTile"
-  | "editTile"
-  | "edit"
-  | "report";
+export type ButtonsVariantType = "addTile" | "editTile" | "edit" | "report";
 
-export type DefaultButtonShapeType = {
-  [key in DefaultButtonVariantType]: {
+export type ButtonsShapeType = {
+  [key in ButtonsVariantType]: {
     typo: KeyOfTypo;
     height: number;
     padding: [number, number];
@@ -16,9 +12,9 @@ export type DefaultButtonShapeType = {
   };
 };
 
-export interface DefaultButtonPropsType<T extends DefaultButtonVariantType>
+export interface ButtonsPropsType<T extends ButtonsVariantType>
   extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant: DefaultButtonVariantType;
+  variant: ButtonsVariantType;
   typo?: KeyOfTypo;
   description?: T extends "edit" | "report" ? string | undefined : undefined;
   leftChildren?: T extends "edit" | "report"

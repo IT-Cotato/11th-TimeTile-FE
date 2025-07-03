@@ -1,7 +1,7 @@
-import { DefaultButtonShapeType } from "@/model/components/Button";
+import { ButtonsShapeType } from "@/model/components/Button";
 import { theme } from "@/styles/theme";
 
-export const DEFAULT_BUTTON_COLOR_TYPE = {
+export const BUTTONS_COLOR_TYPE = {
   default: {
     addTile: `${theme.palette.primary_500}`,
     editTile: `${theme.palette.gray_50}`,
@@ -10,7 +10,7 @@ export const DEFAULT_BUTTON_COLOR_TYPE = {
   },
 };
 
-export const DEFAULT_TEXT_COLOR_TYPE = {
+export const BUTTONS_TEXT_COLOR_TYPE = {
   default: {
     addTile: `${theme.palette.gray_0}`,
     editTile: `${theme.palette.gray_1000}`,
@@ -19,7 +19,7 @@ export const DEFAULT_TEXT_COLOR_TYPE = {
   },
 };
 
-export const DEFAULT_BUTTON_SHAPE_TYPE: DefaultButtonShapeType = {
+export const BUTTONS_SHAPE_TYPE: ButtonsShapeType = {
   addTile: {
     typo: "Body_1",
     height: 40,
