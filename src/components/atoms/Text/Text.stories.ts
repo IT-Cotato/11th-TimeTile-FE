@@ -34,7 +34,7 @@ const meta = {
       options: [
         "primary_300",
         "primary_600",
-        "sub_300",
+        "sub_400",
         "sub_600",
         "gray_300",
         "gray_1000",
