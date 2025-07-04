@@ -10,7 +10,7 @@ import {
   FOLLOW_BUTTON_COLOR_TYPE,
   FOLLOW_BUTTON_SHAPE_TYPE,
   FOLLOW_BUTTON_TEXT_COLOR_TYPE,
-} from "@/constants/atoms/FollowButton";
+} from "@/constants/atoms/followbutton";
 
 /**
  * @param variant 팔로우 상태별 버튼의 종류: 'follow' | 'following' | 'unfollow'
