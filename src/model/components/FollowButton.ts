@@ -1,5 +1,4 @@
 import { KeyOfTypo } from "@/styles/theme";
-import { UndefinedInitialDataInfiniteOptions } from "@tanstack/react-query";
 import { ButtonHTMLAttributes } from "react";
 
 export type FollowButtonVariantType = "follow" | "following" | "unfollow";
