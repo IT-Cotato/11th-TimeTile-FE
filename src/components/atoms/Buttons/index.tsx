@@ -19,7 +19,7 @@ import { Text } from "../Text";
  * @param onClick 버튼을 클릭할 때 발생하는 event 명시 (optional)
  * @param description 버튼의 설명 (optional, edit, report에만 적용)
  * @param leftChildren 버튼의 왼쪽 아이콘 (optional, edit, report에만 적용)
- */
+ **/
 
 type PropsType = Partial<ButtonsPropsType<ButtonsVariantType>>;
 
