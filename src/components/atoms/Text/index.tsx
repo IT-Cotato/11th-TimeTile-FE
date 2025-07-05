@@ -5,7 +5,7 @@ import { TextPropsType } from "@/model/components/Text";
 /**
  * @param typo Typo theme 선택
  * @param color Palette theme 선택
- */
+ **/
 
 export const Text = ({ typo, color, children, ...props }: TextPropsType) => {
   return (
