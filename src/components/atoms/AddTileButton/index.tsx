@@ -5,15 +5,23 @@ import { Text } from "../Text";
 interface PropsType {
   variant: "able" | "disable";
   children?: string;
+  onClick?: () => void;
 }
-export const AddTileButton = ({ variant, children = "에스파" }: PropsType) => {
+export const AddTileButton = ({
+  variant,
+  children = "에스파",
+  onClick,
+  ...props
+}: PropsType) => {
   if (variant === "able") {
     return (
       <FlexBox align="center" justify="center" gap={24}>
         <Text typo="Caption_2">
           {children} 데크에 새로운 타일을 추가해보세요.
         </Text>
-        <Buttons variant="addTile">타일 추가</Buttons>
+        <Buttons variant="addTile" onClick={onClick}>
+          타일 추가
+        </Buttons>
       </FlexBox>
     );
   }

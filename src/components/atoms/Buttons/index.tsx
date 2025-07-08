@@ -85,7 +85,7 @@ const StyledButton = styled.button<{
   border-radius: 10px;
   box-shadow: ${({ variant }) => BUTTONS_SHAPE_TYPE[variant].boxShadow};
   color: ${({ variant }) => BUTTONS_TEXT_COLOR_TYPE.default[variant]};
-
+  cursor: pointer;
   &:disabled {
     color: ${({ variant }) =>
       variant === "addTile"
