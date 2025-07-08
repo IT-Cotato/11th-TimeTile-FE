@@ -34,3 +34,14 @@ export interface RoundButtonPropsType<RoundButtonVariantType>
   width?: number;
   onClick?: () => void;
 }
+
+export type ReportTileButtonVariantType = "default" | "count";
+
+export interface ReportTileButtonPropsType<
+  T extends ReportTileButtonVariantType
+> extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant: ReportTileButtonVariantType;
+  width?: number;
+  rightChildren?: T extends "count" ? number : undefined;
+  onClick?: () => void;
+}
