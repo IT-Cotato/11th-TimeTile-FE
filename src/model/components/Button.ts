@@ -25,3 +25,12 @@ export interface ButtonsPropsType<T extends ButtonsVariantType>
   isLoading?: boolean;
   onClick?: () => void;
 }
+
+export type RoundButtonVariantType = "edit" | "viewmode" | "waiting";
+
+export interface RoundButtonPropsType<RoundButtonVariantType>
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant: RoundButtonVariantType;
+  width?: number;
+  onClick?: () => void;
+}
