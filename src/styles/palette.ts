@@ -37,4 +37,5 @@ export const palette = {
   gray_1000: "#000000",
   warning: "#FF5652",
   warning_2: "#FFF3F3",
+  notify: "#FE2760",
 } as const;
