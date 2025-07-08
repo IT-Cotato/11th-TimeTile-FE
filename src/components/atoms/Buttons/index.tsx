@@ -11,6 +11,7 @@ import {
 } from "@/constants/atoms/button";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { Text } from "../Text";
+import { theme } from "./../../../styles/theme";
 
 /**
  * @param variant 버튼의 종류: 'addTile' | 'editTile' | 'edit | 'report'
@@ -84,4 +85,15 @@ const StyledButton = styled.button<{
   border-radius: 10px;
   box-shadow: ${({ variant }) => BUTTONS_SHAPE_TYPE[variant].boxShadow};
   color: ${({ variant }) => BUTTONS_TEXT_COLOR_TYPE.default[variant]};
+
+  &:disabled {
+    color: ${({ variant }) =>
+      variant === "addTile"
+        ? `${theme.palette.primary_200}`
+        : BUTTONS_TEXT_COLOR_TYPE.default[variant]};
+    background-color: ${({ variant }) =>
+      variant === "addTile"
+        ? `${theme.palette.primary_300}`
+        : BUTTONS_COLOR_TYPE.default[variant]};
+  }
 `;
