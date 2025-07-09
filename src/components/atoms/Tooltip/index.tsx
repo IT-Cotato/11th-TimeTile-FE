@@ -5,6 +5,7 @@ import { FlexBox } from "@/components/layouts/FlexBox";
 import { ArrowIcon } from "@/assets/icons/ArrowIcon";
 import { AlertIcon } from "@/assets/icons/AlertIcon";
 import { ReactNode, useState } from "react";
+import { DateText } from "../DateText";
 
 interface PropsType {
   variant: "default" | "date";
@@ -12,6 +13,7 @@ interface PropsType {
   icon?: ReactNode; // 아이콘 컴포넌트
   startDate?: string;
   endDate?: string;
+  isWaiting?: boolean; //업로드 대기 상태이면 true
 }
 
 export const Tooltip = ({
@@ -20,6 +22,7 @@ export const Tooltip = ({
   icon,
   startDate = "2025-07-09",
   endDate = "2025-07-09",
+  isWaiting = false,
   ...props
 }: PropsType) => {
   const [visible, setVisible] = useState(false);
@@ -35,48 +38,59 @@ export const Tooltip = ({
     }월 ${date.getDate()}일`;
   };
 
-  const renderTooltip = () => {
-    if (variant === "date") {
-      return (
-        <FlexBox>
-          <StyledTooltip variant={variant}>
-            <Text typo="Caption_1" color="gray_1000">
-              {formatDate(startDate)} ~ {formatDate(endDate)}
-            </Text>
-          </StyledTooltip>
-        </FlexBox>
-      );
-    }
+  if (variant === "date") {
     return (
       <Container>
         {visible && (
           <Fixing>
             <StyledTooltip variant={variant}>
-              <Text typo="Caption_2" color="gray_1000">
-                {children}
+              <Text typo="Caption_1" color="gray_1000">
+                {formatDate(startDate)} ~ {formatDate(endDate)}
               </Text>
             </StyledTooltip>
-            <StyledArrowIcon />
           </Fixing>
         )}
         <FlexBox>
-          <div
-            style={{ cursor: "pointer" }}
-            onMouseEnter={showTooltip}
-            onMouseLeave={hideTooltip}
-          >
-            {icon ?? <AlertIcon />}
+          <div onMouseEnter={showTooltip} onMouseLeave={hideTooltip}>
+            <DateText
+              startDate={startDate}
+              endDate={endDate}
+              isWaiting={isWaiting}
+            />
           </div>
         </FlexBox>
       </Container>
     );
-  };
-  return <>{renderTooltip()}</>;
+  }
+
+  return (
+    <Container>
+      {visible && (
+        <Fixing>
+          <StyledTooltip variant={variant}>
+            <Text typo="Caption_2" color="gray_1000">
+              {children}
+            </Text>
+          </StyledTooltip>
+          <StyledArrowIcon />
+        </Fixing>
+      )}
+      <FlexBox>
+        <div
+          style={{ cursor: "pointer" }}
+          onMouseEnter={showTooltip}
+          onMouseLeave={hideTooltip}
+        >
+          {icon ?? <AlertIcon />}
+        </div>
+      </FlexBox>
+    </Container>
+  );
 };
 
 const Container = styled.div`
   position: relative;
-  margin-top: 80px;
+  margin-top: 80px; //실사용 시 이 마진 지우고 작업하기
 `;
 
 const Fixing = styled.div`
@@ -88,6 +102,7 @@ const Fixing = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 8px;
 `;
 
 const StyledTooltip = styled.div<{ variant: "default" | "date" }>`
