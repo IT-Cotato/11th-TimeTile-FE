@@ -13,7 +13,7 @@ export const AlertIcon = () => {
           stroke="black"
           strokeWidth="2"
           strokeLinecap="round"
-          stroke-Linejoin="round"
+          strokeLinejoin="round"
         />
       </svg>
     </>
