@@ -54,10 +54,11 @@ export const GroupCategory = () => {
 
   return (
     <Container>
-      <Line>{FIRST_LINE.map(renderTag)}</Line>
-      <Line>{SECOND_LINE.map(renderTag)}</Line>
-      <Line>{THIRD_LINE.map(renderTag)}</Line>
-      <Padding />
+      <LineContainer>
+        <Line>{FIRST_LINE.map(renderTag)}</Line>
+        <Line>{SECOND_LINE.map(renderTag)}</Line>
+        <Line>{THIRD_LINE.map(renderTag)}</Line>
+      </LineContainer>
       {selectedCategories.size === 0 && (
         <Text typo="Caption_4" color="warning">
           활동 종류를 선택해주세요.
@@ -69,20 +70,24 @@ export const GroupCategory = () => {
 
 const Container = styled.div`
   display: flex;
+  width: 553px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+`;
+
+const LineContainer = styled.div`
+  display: flex;
+  height: 94px;
   align-items: flex-start;
   align-content: flex-start;
+  gap: 8px;
   align-self: stretch;
   flex-wrap: wrap;
-  gap: 8px;
 `;
 
 const Line = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-`;
-
-const Padding = styled.div`
-  height: 16px;
-  width: 100%;
 `;
