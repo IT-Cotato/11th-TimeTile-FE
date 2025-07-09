@@ -4,7 +4,7 @@ import { theme } from "@/styles/theme";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { ArrowIcon } from "@/assets/icons/ArrowIcon";
 import { AlertIcon } from "@/assets/icons/AlertIcon";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 interface PropsType {
   variant: "default" | "date";
@@ -22,6 +22,11 @@ export const Tooltip = ({
   endDate = "2025-07-09",
   ...props
 }: PropsType) => {
+  const [visible, setVisible] = useState(false);
+
+  const showTooltip = () => setVisible(true);
+  const hideTooltip = () => setVisible(false);
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -43,31 +48,57 @@ export const Tooltip = ({
       );
     }
     return (
-      <FlexBox justify="center" align="center" direction="column">
-        <StyledTooltip variant={variant}>
-          <Text typo="Caption_2" color="gray_1000">
-            {children}
-          </Text>
-        </StyledTooltip>
-        <StyledArrowIcon />
-        <div style={{ cursor: "pointer" }}>{icon ?? <AlertIcon />}</div>
-      </FlexBox>
+      <Container>
+        {visible && (
+          <Fixing>
+            <StyledTooltip variant={variant}>
+              <Text typo="Caption_2" color="gray_1000">
+                {children}
+              </Text>
+            </StyledTooltip>
+            <StyledArrowIcon />
+          </Fixing>
+        )}
+        <FlexBox>
+          <div
+            style={{ cursor: "pointer" }}
+            onMouseEnter={showTooltip}
+            onMouseLeave={hideTooltip}
+          >
+            {icon ?? <AlertIcon />}
+          </div>
+        </FlexBox>
+      </Container>
     );
   };
   return <>{renderTooltip()}</>;
 };
 
-const StyledTooltip = styled.div<{
-  variant: "default" | "date";
-}>`
-  display: inline-flex;
-  padding: ${({ variant }) => (variant === "date" ? "10px 13px" : "16px")};
+const Container = styled.div`
+  position: relative;
+  margin-top: 80px;
+`;
+
+const Fixing = styled.div`
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const StyledTooltip = styled.div<{ variant: "default" | "date" }>`
+  white-space: nowrap;
   text-align: center;
-  gap: 10px;
+  padding: ${({ variant }) => (variant === "date" ? "10px 13px" : "16px")};
   background-color: ${theme.palette.gray_50};
   box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.05);
   border-radius: 10px;
 `;
+
 const StyledArrowIcon = styled(ArrowIcon)`
   filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.05));
 `;
