@@ -4,6 +4,7 @@ import { theme } from '@/styles/theme'
 import { Text } from '@/components/atoms/Text'
 import { MoveLeftIcon } from '@/assets/icons/MoveLeftIcon'
 import { MoveRightIcon } from '@/assets/icons/MoveRightIcon'
+import { Tooltip } from '@/components/atoms/Tooltip'
 
 interface ArtistProfileCardProps {
   artistName: string;
@@ -22,6 +23,8 @@ export const ArtistProfileCard = ({
     <CardWrapper>
         <ImageWrapper imageUrl={imageUrl} />
         <ArtistInfoWrapper>
+          <TopContentWrapper>
+          <TopWrapper>
         <TopSection>
           <TopRow>
             <Text typo="H1" color="gray_1000">{artistName}</Text>
@@ -31,6 +34,11 @@ export const ArtistProfileCard = ({
             팔로워 {followerCount.toLocaleString()}명
           </Text>
         </TopSection>
+        </TopWrapper>
+      <Tooltip variant="default">
+        아티스트에 대한 간단한 설명 텍스트
+      </Tooltip>
+        </TopContentWrapper>
         <BottomSection>
           <YearLinks>
             <IconButton>
@@ -85,12 +93,36 @@ const ArtistInfoWrapper = styled.div`
   gap: 64px;
   flex-shrink: 0;
 `
+const TopWrapper = styled.div`
+display: flex;
+width: 622px;
+justify-content: space-between;
+align-items: flex-start;
+`
+const TopContentWrapper = styled.div`
+  display: flex;
+  height: 112px;
+  align-items: flex-start;
+  flex-shrink: 0;
+  align-self: stretch;
+`
 const TopSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  width: 100%;
+`
+const TooltipWrapper = styled.div`
+  display: flex;
+height: 32px;
+padding: 6px;
+justify-content: center;
+align-items: center;
+align-self: stretch;
+aspect-ratio: 1/1;
+border-radius: 16px;
+border: 1.5px solid var(--Gray-300, #D1D3D4);
+background: var(--Gray-0, #FFF);
 `
 const TopRow = styled.div`
   display: flex;
