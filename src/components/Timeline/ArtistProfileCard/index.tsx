@@ -31,6 +31,22 @@ export const ArtistProfileCard = ({
   const isAtFirst = selectedYear === years[0];
   const isAtLast = selectedYear === years[years.length - 1];
 
+  // 왼쪽 이동
+const movePrev = () => {
+  const currentIndex = years.indexOf(selectedYear);
+  if (currentIndex > 0) {
+    setSelectedYear(years[currentIndex - 1]);
+  }
+};
+
+// 오른쪽 이동
+const moveNext = () => {
+  const currentIndex = years.indexOf(selectedYear);
+  if (currentIndex < years.length - 1) {
+    setSelectedYear(years[currentIndex + 1]);
+  }
+};
+
   return (
     <CardWrapper>
         <ImageWrapper imageUrl={imageUrl} />
@@ -55,7 +71,7 @@ export const ArtistProfileCard = ({
       </TopContentWrapper>
         <BottomSection>
           <YearLinks>
-             <IconButton color={isAtFirst ? theme.palette.gray_300 : theme.palette.gray_1000}>
+             <IconButton onClick={movePrev} color={isAtFirst ? theme.palette.gray_300 : theme.palette.gray_1000}>
       <MoveLeftIcon />
     </IconButton>
             <YearSection>
@@ -74,7 +90,7 @@ export const ArtistProfileCard = ({
   );
 })}
       </YearSection>
-       <IconButton color={isAtLast ? theme.palette.gray_300 : theme.palette.gray_1000}>
+       <IconButton onClick={moveNext} color={isAtLast ? theme.palette.gray_300 : theme.palette.gray_1000}>
       <MoveRightIcon />
     </IconButton>
           </YearLinks>
