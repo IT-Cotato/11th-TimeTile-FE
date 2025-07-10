@@ -21,6 +21,13 @@ export const ArtistProfileCard = ({
   years = [],
 }: ArtistProfileCardProps) => {
   const [selectedYear, setSelectedYear] = useState<number>(years[0] ?? null);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const handleFollowClick = () => {
+    setIsFollowing(!isFollowing);
+  };
+  const handleUnfollowClick = () => {
+    setIsFollowing(false);
+  }
   const isAtFirst = selectedYear === years[0];
   const isAtLast = selectedYear === years[years.length - 1];
 
@@ -33,17 +40,19 @@ export const ArtistProfileCard = ({
         <TopSection>
           <TopRow>
             <Text typo="H1" color="gray_1000">{artistName}</Text>
-            <FollowButton variant="follow" />
+            <FollowButton variant={isFollowing? "unfollow" : "follow" } onClick={handleFollowClick} onUnfollowClick={handleUnfollowClick}/>
           </TopRow>
           <Text typo="Caption_1" color="gray_1000">
             팔로워 {followerCount.toLocaleString()}명
           </Text>
         </TopSection>
         </TopWrapper>
-      <Tooltip variant="default">
-        아티스트에 대한 간단한 설명 텍스트
-      </Tooltip>
-        </TopContentWrapper>
+        <TooltipWrapper>
+          <Tooltip variant="default">
+            아티스트에 대한 간단한 설명 텍스트
+          </Tooltip>
+        </TooltipWrapper>
+      </TopContentWrapper>
         <BottomSection>
           <YearLinks>
              <IconButton color={isAtFirst ? theme.palette.gray_300 : theme.palette.gray_1000}>
