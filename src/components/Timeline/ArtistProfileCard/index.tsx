@@ -20,7 +20,10 @@ export const ArtistProfileCard = ({
   imageUrl,
   years = [],
 }: ArtistProfileCardProps) => {
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedYear, setSelectedYear] = useState<number>(years[0] ?? null);
+  const isAtFirst = selectedYear === years[0];
+  const isAtLast = selectedYear === years[years.length - 1];
+
   return (
     <CardWrapper>
         <ImageWrapper imageUrl={imageUrl} />
@@ -43,7 +46,7 @@ export const ArtistProfileCard = ({
         </TopContentWrapper>
         <BottomSection>
           <YearLinks>
-            <IconButton>
+             <IconButton color={isAtFirst ? theme.palette.gray_300 : theme.palette.gray_1000}>
       <MoveLeftIcon />
     </IconButton>
             <YearSection>
@@ -62,7 +65,7 @@ export const ArtistProfileCard = ({
   );
 })}
       </YearSection>
-      <IconButton>
+       <IconButton color={isAtLast ? theme.palette.gray_300 : theme.palette.gray_1000}>
       <MoveRightIcon />
     </IconButton>
           </YearLinks>
@@ -153,7 +156,7 @@ const YearLinks = styled.div`
   align-items: center;
   gap: 24px;
 `
-const IconButton = styled.button`
+const IconButton = styled.button<{ color?: string }>`
   width: 24px;
   height: 24px;
   padding: 0;
@@ -164,7 +167,7 @@ const IconButton = styled.button`
   justify-content: center;
   cursor: pointer;
 
-  color: ${theme.palette.gray_300}; /* currentColor용 */
+  color: ${({ color }) => color ?? theme.palette.gray_1000}; /* currentColor용 */
 `
 
 const YearSection = styled.div`
