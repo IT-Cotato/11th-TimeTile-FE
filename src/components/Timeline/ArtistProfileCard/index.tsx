@@ -5,6 +5,7 @@ import { Text } from '@/components/atoms/Text'
 import { MoveLeftIcon } from '@/assets/icons/MoveLeftIcon'
 import { MoveRightIcon } from '@/assets/icons/MoveRightIcon'
 import { Tooltip } from '@/components/atoms/Tooltip'
+import { useState } from "react";
 
 interface ArtistProfileCardProps {
   artistName: string;
@@ -19,6 +20,7 @@ export const ArtistProfileCard = ({
   imageUrl,
   years = [],
 }: ArtistProfileCardProps) => {
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
   return (
     <CardWrapper>
         <ImageWrapper imageUrl={imageUrl} />
@@ -45,13 +47,20 @@ export const ArtistProfileCard = ({
       <MoveLeftIcon />
     </IconButton>
             <YearSection>
-            {years.map((year) => (
-              <YearButton key={year}>
-                <Text typo="Body_3" color="gray_1000">
-                  {year}
-              </Text>
-            </YearButton>
-      ))}
+            {years.map((year) => {
+  const isSelected = selectedYear === year;
+  return (
+    <YearButton
+      key={year}
+      selected={isSelected}
+      onClick={() => setSelectedYear(year)}
+    >
+      <Text typo={isSelected ? "Body_1" : "Body_3"} color="gray_1000">
+        {year}
+      </Text>
+    </YearButton>
+  );
+})}
       </YearSection>
       <IconButton>
       <MoveRightIcon />
@@ -165,11 +174,16 @@ const YearSection = styled.div`
   gap: 32px;
 `
 
-const YearButton = styled.button`
+const YearButton = styled.button<{ selected?: boolean }>`
   display: flex;
-  width: 47.5px;
-  height: 20px;
-  flex-direction: column;
-  justify-content: center;
-  flex-shrink: 0;
+width: 47.5px;
+height: 20px;
+justify-content: center;
+align-items: center;
+flex-shrink: 0;
+aspect-ratio: 47.50/20.00;
+
+background: none;
+  border: none;
+  cursor: pointer;
 `
