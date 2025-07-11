@@ -1,8 +1,6 @@
 name: Build & Deploy Storybook
 
 on:
-  push:
-    branches: [develop]
   pull_request:
     branches: [develop]
     paths: ["src/components/atoms/**"]
