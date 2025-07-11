@@ -6,14 +6,16 @@ import { ArrowIcon } from "@/assets/icons/ArrowIcon";
 import { AlertIcon } from "@/assets/icons/AlertIcon";
 import { ReactNode, useState } from "react";
 import { DateText } from "../DateText";
+import { EditIcon } from "@/assets/icons/EditIcon";
 
 interface PropsType {
-  variant: "default" | "date";
+  variant: "default" | "date" | "edit";
   children?: string;
   icon?: ReactNode; // 아이콘 컴포넌트
   startDate?: string;
   endDate?: string;
   isWaiting?: boolean; //업로드 대기 상태이면 true
+  noMargin?: boolean; // 툴팁 상위 컨테이너에 margin-top을 적용하지 않으려면 true
 }
 
 export const Tooltip = ({
@@ -23,6 +25,7 @@ export const Tooltip = ({
   startDate = "2025-07-09",
   endDate = "2025-07-09",
   isWaiting = false,
+  noMargin = false,
   ...props
 }: PropsType) => {
   const [visible, setVisible] = useState(false);
@@ -40,7 +43,7 @@ export const Tooltip = ({
 
   if (variant === "date") {
     return (
-      <Container>
+      <Container noMargin={noMargin}>
         {visible && (
           <Fixing>
             <StyledTooltip variant={variant}>
@@ -64,7 +67,7 @@ export const Tooltip = ({
   }
 
   return (
-    <Container>
+    <Container noMargin={noMargin}>
       {visible && (
         <Fixing>
           <StyledTooltip variant={variant}>
@@ -81,16 +84,16 @@ export const Tooltip = ({
           onMouseEnter={showTooltip}
           onMouseLeave={hideTooltip}
         >
-          {icon ?? <AlertIcon />}
+          {icon ?? (variant === "edit" ? <EditIcon /> : <AlertIcon />)}
         </div>
       </FlexBox>
     </Container>
   );
 };
 
-const Container = styled.div`
+const Container = styled.div<{ noMargin: boolean }>`
   position: relative;
-  margin-top: 80px; //실사용 시 이 마진 지우고 작업하기
+  margin-top: ${({ noMargin }) => (noMargin ? '0' : '80px')};
 `;
 
 const Fixing = styled.div`
@@ -105,7 +108,7 @@ const Fixing = styled.div`
   margin-bottom: 8px;
 `;
 
-const StyledTooltip = styled.div<{ variant: "default" | "date" }>`
+const StyledTooltip = styled.div<{ variant: "default" | "date" | "edit"}>`
   white-space: nowrap;
   text-align: center;
   padding: ${({ variant }) => (variant === "date" ? "10px 13px" : "16px")};

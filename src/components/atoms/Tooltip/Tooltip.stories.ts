@@ -21,7 +21,7 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "date"],
+      options: ["default", "date", "edit"],
     },
   },
 } satisfies Meta<typeof Tooltip>;
@@ -54,5 +54,19 @@ export const TooltipEx2: Story = {
   args: {
     variant: "default",
     children: "편집모드로 전환하기",
+  },
+};
+
+export const TooltipEx3: Story = {
+  args: {
+    variant: "edit",
+    children: "편집모드로 전환하기",
+  },
+};
+
+export const TooltipEx4: Story = {
+  args: {
+    variant: "edit",
+    children: "Linker 등급부터 문서를 편집할 수 있어요.",
   },
 };

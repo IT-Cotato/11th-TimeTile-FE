@@ -64,8 +64,7 @@ const moveNext = () => {
         </TopSection>
         </TopWrapper>
         <TooltipWrapper>
-          <Tooltip variant="default">
-            아티스트에 대한 간단한 설명 텍스트
+          <Tooltip variant="edit" children="편집모드로 전환하기" noMargin={true}>
           </Tooltip>
         </TooltipWrapper>
       </TopContentWrapper>
