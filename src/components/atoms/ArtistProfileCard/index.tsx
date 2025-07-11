@@ -68,7 +68,7 @@ const moveNext = () => {
         </TopSection>
         </TopWrapper>
         {isFollowing && (
-    <TooltipWrapper>
+    <TooltipWrapper role={role}>
       <Tooltip
         variant="edit"
         role={role}
