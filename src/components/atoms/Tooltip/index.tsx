@@ -10,24 +10,28 @@ import { EditIcon } from "@/assets/icons/EditIcon";
 
 interface PropsType {
   variant: "default" | "date" | "edit";
+  role?: 'watcher' | 'linker' | 'editor';
   children?: string;
   icon?: ReactNode; // 아이콘 컴포넌트
   startDate?: string;
   endDate?: string;
+  isEditMode?: boolean; // 편집모드인지 여부
   isWaiting?: boolean; //업로드 대기 상태이면 true
   noMargin?: boolean; // 툴팁 상위 컨테이너에 margin-top을 적용하지 않으려면 true
 }
 
 export const Tooltip = ({
   variant,
+  role,
   children,
   icon,
   startDate = "2025-07-09",
   endDate = "2025-07-09",
+  isEditMode = false,
   isWaiting = false,
   noMargin = false,
   ...props
-}: PropsType) => {
+}: PropsType & { role?: 'watcher' | 'linker' | 'editor'; selected?: boolean }) => {
   const [visible, setVisible] = useState(false);
 
   const showTooltip = () => setVisible(true);
@@ -39,6 +43,18 @@ export const Tooltip = ({
     return `${date.getFullYear()}년 ${
       date.getMonth() + 1
     }월 ${date.getDate()}일`;
+  };
+
+   const getEditTooltipText = () => {
+    if (isEditMode) return '타일 편집하기';
+    if (role === 'watcher') return 'Linker 등급부터 문서를 편집할 수 있어요';
+    return '편집모드로 전환하기';
+  };
+
+  const getEditIconColor = () => {
+    if (isEditMode) return theme.palette.gray_1000;
+    if (role === 'watcher') return theme.palette.gray_300;
+    return theme.palette.sub_600;
   };
 
   if (variant === "date") {
@@ -72,7 +88,7 @@ export const Tooltip = ({
         <Fixing>
           <StyledTooltip variant={variant}>
             <Text typo="Caption_2" color="gray_1000">
-              {children}
+              {variant === "edit" ? getEditTooltipText() : children}
             </Text>
           </StyledTooltip>
           <StyledArrowIcon />
@@ -80,7 +96,7 @@ export const Tooltip = ({
       )}
       <FlexBox>
         <div
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", color: variant === "edit" ? getEditIconColor() : undefined }}
           onMouseEnter={showTooltip}
           onMouseLeave={hideTooltip}
         >
@@ -109,6 +125,7 @@ const Fixing = styled.div`
 `;
 
 const StyledTooltip = styled.div<{ variant: "default" | "date" | "edit"}>`
+  width:max-content
   white-space: nowrap;
   text-align: center;
   padding: ${({ variant }) => (variant === "date" ? "10px 13px" : "16px")};
