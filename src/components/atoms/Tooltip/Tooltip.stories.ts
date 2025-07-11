@@ -21,7 +21,7 @@ const meta = {
   argTypes: {
     variant: {
       control: "select",
-      options: ["default", "date", "edit"],
+      options: ["default", "date", "edit", "watch"],
     },
   },
 } satisfies Meta<typeof Tooltip>;

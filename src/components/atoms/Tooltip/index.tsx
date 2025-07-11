@@ -7,9 +7,10 @@ import { AlertIcon } from "@/assets/icons/AlertIcon";
 import { ReactNode, useState } from "react";
 import { DateText } from "../DateText";
 import { EditIcon } from "@/assets/icons/EditIcon";
+import { EyeTrueIcon } from "@/assets/icons/EyeTrueIcon";
 
 interface PropsType {
-  variant: "default" | "date" | "edit";
+  variant: "default" | "date" | "edit" |"watch";
   role?: 'watcher' | 'linker' | 'editor';
   children?: string;
   icon?: ReactNode; // 아이콘 컴포넌트
@@ -88,7 +89,8 @@ export const Tooltip = ({
         <Fixing>
           <StyledTooltip variant={variant}>
             <Text typo="Caption_2" color="gray_1000">
-              {variant === "edit" ? getEditTooltipText() : children}
+              {variant === "edit" ? getEditTooltipText() : variant === "watch"
+        ? "보기모드로 전환하기" : children}
             </Text>
           </StyledTooltip>
           <StyledArrowIcon />
@@ -96,11 +98,12 @@ export const Tooltip = ({
       )}
       <FlexBox>
         <div
-          style={{ cursor: "pointer", color: variant === "edit" ? getEditIconColor() : undefined }}
+          style={{ cursor: "pointer", color: variant === "edit" ? getEditIconColor() : variant === "watch"
+            ? theme.palette.sub_600 : undefined }}
           onMouseEnter={showTooltip}
           onMouseLeave={hideTooltip}
         >
-          {icon ?? (variant === "edit" ? <EditIcon /> : <AlertIcon />)}
+          {icon ?? (variant === "edit" ? <EditIcon /> : variant === "watch" ? <EyeTrueIcon /> : <AlertIcon />)}
         </div>
       </FlexBox>
     </Container>
@@ -124,7 +127,7 @@ const Fixing = styled.div`
   margin-bottom: 8px;
 `;
 
-const StyledTooltip = styled.div<{ variant: "default" | "date" | "edit"}>`
+const StyledTooltip = styled.div<{ variant: "default" | "date" | "edit" | "watch" }>`
   width:max-content;
   white-space: nowrap;
   text-align: center;
