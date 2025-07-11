@@ -12,6 +12,8 @@ interface ArtistProfileCardProps {
   followerCount: number;
   imageUrl: string;
   years?: number[];
+  role?: 'watcher' | 'linker' | 'editor' 
+  isEditMode?: boolean 
 }
 
 export const ArtistProfileCard = ({
@@ -19,6 +21,8 @@ export const ArtistProfileCard = ({
   followerCount,
   imageUrl,
   years = [],
+  role = 'watcher',
+  isEditMode = false,
 }: ArtistProfileCardProps) => {
   const [selectedYear, setSelectedYear] = useState<number>(years[0] ?? null);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
@@ -63,10 +67,16 @@ const moveNext = () => {
           </Text>
         </TopSection>
         </TopWrapper>
-        <TooltipWrapper>
-          <Tooltip variant="edit" children="편집모드로 전환하기" noMargin={true}>
-          </Tooltip>
-        </TooltipWrapper>
+        {isFollowing && (
+    <TooltipWrapper>
+      <Tooltip
+        variant="edit"
+        role={role}
+        isEditMode={isEditMode}
+        noMargin
+      />
+    </TooltipWrapper>
+  )}
       </TopContentWrapper>
         <BottomSection>
           <YearLinks>
@@ -148,7 +158,7 @@ const TopSection = styled.div`
   align-items: flex-start;
   gap: 12px;
 `
-const TooltipWrapper = styled.div`
+const TooltipWrapper = styled.div<{ role?: 'watcher' | 'linker' | 'editor' }>`
   display: flex;
 height: 32px;
 padding: 6px;
@@ -157,7 +167,11 @@ align-items: center;
 align-self: stretch;
 aspect-ratio: 1/1;
 border-radius: 16px;
-border: 1.5px solid var(--Gray-300, #D1D3D4);
+border: 1.5px solid
+    ${({ role }) =>
+      role === 'linker' || role === 'editor'
+        ? theme.palette.sub_600
+        : theme.palette.gray_300};
 background: var(--Gray-0, #FFF);
 `
 const TopRow = styled.div`
@@ -217,5 +231,4 @@ background: none;
   &:hover > span {
   ${theme.typo.H5};
 }
-
 `
