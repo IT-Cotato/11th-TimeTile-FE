@@ -214,7 +214,7 @@ aspect-ratio: 47.50/20.00;
 background: none;
   border: none;
   cursor: pointer;
-  
+
   &:hover > span {
   ${theme.typo.H5};
 }

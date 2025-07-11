@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ArtistProfileCard } from './index'
 
 const meta: Meta<typeof ArtistProfileCard> = {
-  title: 'Components/ArtistProfileCard',
+  title: 'Atom/TimeLine/ArtistProfileCard',
   component: ArtistProfileCard,
   tags: ['autodocs'],
   parameters: {
