@@ -4,16 +4,17 @@ import { theme } from '@/styles/theme'
 import { Text } from '@/components/atoms/Text'
 import { MoveLeftIcon } from '@/assets/icons/MoveLeftIcon'
 import { MoveRightIcon } from '@/assets/icons/MoveRightIcon'
-import { Tooltip } from '@/components/atoms/Tooltip'
+import { TimeLineTooltip } from '@/components/atoms/TimeLineTooltip/index'
 import { useState } from "react";
+import { Role, Mode, TooltipProps } from '@/components/atoms/TimeLineTooltip/index'
 
 interface ArtistProfileCardProps {
   artistName: string;
   followerCount: number;
   imageUrl: string;
   years?: number[];
-  role?: 'watcher' | 'linker' | 'editor' 
-  isEditMode?: boolean 
+  role?: 'watcher' | 'linker' | 'editor',
+  mode?: "view" | "edit" | "waiting";
 }
 
 export const ArtistProfileCard = ({
@@ -22,7 +23,7 @@ export const ArtistProfileCard = ({
   imageUrl,
   years = [],
   role = 'watcher',
-  isEditMode = false,
+  mode = 'view',
 }: ArtistProfileCardProps) => {
   const [selectedYear, setSelectedYear] = useState<number>(years[0] ?? null);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
@@ -51,6 +52,23 @@ const moveNext = () => {
   }
 };
 
+const getVariantProps = (role: Role, mode: Mode): TooltipProps => {
+  if ((mode === 'edit' || mode === 'waiting') && role !== 'watcher') {
+    return {
+      variant: 'watch',
+      role,
+      mode,
+    };
+  }
+
+  // 기본값
+  return {
+    variant: 'edit',
+    role,
+    mode: 'view',
+  };
+};
+
   return (
     <CardWrapper>
         <ImageWrapper imageUrl={imageUrl} />
@@ -69,10 +87,8 @@ const moveNext = () => {
         </TopWrapper>
         {isFollowing && (
     <TooltipWrapper role={role}>
-      <Tooltip
-        variant="edit"
-        role={role}
-        isEditMode={isEditMode}
+      <TimeLineTooltip
+        {...getVariantProps(role, mode)}
         noMargin
       />
     </TooltipWrapper>

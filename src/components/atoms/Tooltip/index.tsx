@@ -6,33 +6,25 @@ import { ArrowIcon } from "@/assets/icons/ArrowIcon";
 import { AlertIcon } from "@/assets/icons/AlertIcon";
 import { ReactNode, useState } from "react";
 import { DateText } from "../DateText";
-import { EditIcon } from "@/assets/icons/EditIcon";
-import { EyeTrueIcon } from "@/assets/icons/EyeTrueIcon";
 
 interface PropsType {
-  variant: "default" | "date" | "edit" |"watch";
-  role?: 'watcher' | 'linker' | 'editor';
+  variant: "default" | "date";
   children?: string;
   icon?: ReactNode; // 아이콘 컴포넌트
   startDate?: string;
   endDate?: string;
-  isEditMode?: boolean; // 편집모드인지 여부
   isWaiting?: boolean; //업로드 대기 상태이면 true
-  noMargin?: boolean; // 툴팁 상위 컨테이너에 margin-top을 적용하지 않으려면 true
 }
 
 export const Tooltip = ({
   variant,
-  role,
   children,
   icon,
   startDate = "2025-07-09",
   endDate = "2025-07-09",
-  isEditMode = false,
   isWaiting = false,
-  noMargin = false,
   ...props
-}: PropsType & { role?: 'watcher' | 'linker' | 'editor'; selected?: boolean }) => {
+}: PropsType) => {
   const [visible, setVisible] = useState(false);
 
   const showTooltip = () => setVisible(true);
@@ -46,21 +38,9 @@ export const Tooltip = ({
     }월 ${date.getDate()}일`;
   };
 
-   const getEditTooltipText = () => {
-    if (isEditMode) return '타일 편집하기';
-    if (role === 'watcher') return 'Linker 등급부터 문서를 편집할 수 있어요';
-    return '편집모드로 전환하기';
-  };
-
-  const getEditIconColor = () => {
-    if (isEditMode) return theme.palette.gray_1000;
-    if (role === 'watcher') return theme.palette.gray_300;
-    return theme.palette.sub_600;
-  };
-
   if (variant === "date") {
     return (
-      <Container noMargin={noMargin}>
+      <Container>
         {visible && (
           <Fixing>
             <StyledTooltip variant={variant}>
@@ -84,13 +64,12 @@ export const Tooltip = ({
   }
 
   return (
-    <Container noMargin={noMargin}>
+    <Container>
       {visible && (
         <Fixing>
           <StyledTooltip variant={variant}>
             <Text typo="Caption_2" color="gray_1000">
-              {variant === "edit" ? getEditTooltipText() : variant === "watch"
-        ? "보기모드로 전환하기" : children}
+              {children}
             </Text>
           </StyledTooltip>
           <StyledArrowIcon />
@@ -98,21 +77,20 @@ export const Tooltip = ({
       )}
       <FlexBox>
         <div
-          style={{ cursor: "pointer", color: variant === "edit" ? getEditIconColor() : variant === "watch"
-            ? theme.palette.sub_600 : undefined }}
+          style={{ cursor: "pointer" }}
           onMouseEnter={showTooltip}
           onMouseLeave={hideTooltip}
         >
-          {icon ?? (variant === "edit" ? <EditIcon /> : variant === "watch" ? <EyeTrueIcon /> : <AlertIcon />)}
+          {icon ?? <AlertIcon />}
         </div>
       </FlexBox>
     </Container>
   );
 };
 
-const Container = styled.div<{ noMargin: boolean }>`
+const Container = styled.div`
   position: relative;
-  margin-top: ${({ noMargin }) => (noMargin ? '0' : '80px')};
+  margin-top: 80px; //실사용 시 이 마진 지우고 작업하기
 `;
 
 const Fixing = styled.div`
@@ -127,8 +105,7 @@ const Fixing = styled.div`
   margin-bottom: 8px;
 `;
 
-const StyledTooltip = styled.div<{ variant: "default" | "date" | "edit" | "watch" }>`
-  width:max-content;
+const StyledTooltip = styled.div<{ variant: "default" | "date" }>`
   white-space: nowrap;
   text-align: center;
   padding: ${({ variant }) => (variant === "date" ? "10px 13px" : "16px")};
