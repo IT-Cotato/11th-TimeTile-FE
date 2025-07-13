@@ -6,34 +6,51 @@ const meta: Meta<typeof TimeLineTooltip> = {
   component: TimeLineTooltip,
   tags: ['autodocs'],
   argTypes: {
-  icon: { control: false },
-  children: { control: 'text' },
-  variant: {
-    control: 'radio',
-    options: ['edit', 'watch', 'clock'],
+    variant: {
+      control: 'select',
+      options: ['edit', 'watch', 'clock'],
+    },
+    role: {
+      control: 'select',
+      options: ['watcher', 'linker', 'editor'],
+    },
+    mode: {
+      control: 'select',
+      options: ['view', 'edit', 'waiting'],
+    },
+    noMargin: {
+        control: false,
+    }
   },
-  role: {
-    control: 'radio',
-    options: ['watcher', 'linker', 'editor'],
-  },
-  mode: {
-    control: 'radio',
-    options: ['view', 'edit', 'waiting'],
-  },
-  noMargin: {
-    control: 'boolean',
-  },
-},
 };
 
 export default meta;
 type Story = StoryObj<typeof TimeLineTooltip>;
 
-export const EditVariant: Story = {
+export const EditVariant_Watcher: Story = {
   args: {
     variant: 'edit',
     role: 'watcher',
     mode: 'view',
+    noMargin: false,
+  },
+};
+
+export const EditVariant_View: Story = {
+  args: {
+    variant: 'edit',
+    role: 'linker',
+    mode: 'view',
+    noMargin: false,
+  },
+};
+
+export const EditVariant_Waiting: Story = {
+  args: {
+    variant: 'edit',
+    role: 'linker',
+    mode: 'view',
+    noMargin: false,
   },
 };
 
