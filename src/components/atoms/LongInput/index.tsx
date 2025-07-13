@@ -59,38 +59,39 @@ const Outer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 480px;
 `;
 
 const Wrapper = styled.div<{ variant: VariantType }>`
   display: flex;
   flex-direction: column;
   border-radius: 10px;
+  height: 166px;
+  width: 480px;
   background: ${theme.palette.gray_0};
 
   ${({ variant }) => {
     switch (variant) {
       case 'active':
         return css`
-          padding: 11px 208px 45px 16px;
+          padding: 11px 16px;
           border: 1.5px solid ${theme.palette.primary_500};
           box-shadow: 0px 4px 4px rgba(159, 198, 255, 0.25);
         `;
       case 'notified':
         return css`
-          padding: 11px 208px 45px 16px;
+          padding: 11px 16px;
           border: 1.5px solid ${theme.palette.warning};
           box-shadow: 0px 4px 4px rgba(255, 86, 82, 0.25);
         `;
       case 'error':
         return css`
-          padding: 11px 208px 45px 16px;
+          padding: 11px 16px;
           border: 1px solid ${theme.palette.primary_400};
         `;
       case 'default':
       default:
         return css`
-          padding: 11px 208px 45px 16px;
+          padding: 11px 16px;
           border: 1px solid ${theme.palette.primary_400};
         `;
     }
@@ -99,6 +100,7 @@ const Wrapper = styled.div<{ variant: VariantType }>`
 
 const Textarea = styled.textarea`
   width: 100%;
+  height: 100%;
   resize: none;
   border: none;
   background: transparent;
