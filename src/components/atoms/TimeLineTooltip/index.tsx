@@ -56,8 +56,8 @@ export const TimeLineTooltip = ({
   const hideTooltip = () => setVisible(false);
 
    const getEditTooltipText = () => {
-    if (mode === 'view') return '타일 편집하기';
     if (role === 'watcher') return 'Linker 등급부터 문서를 편집할 수 있어요';
+    if (mode === 'view') return '타일 편집하기';
     return '편집모드로 전환하기';
   };
 

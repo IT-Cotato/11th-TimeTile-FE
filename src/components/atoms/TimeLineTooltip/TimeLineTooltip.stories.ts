@@ -6,9 +6,24 @@ const meta: Meta<typeof TimeLineTooltip> = {
   component: TimeLineTooltip,
   tags: ['autodocs'],
   argTypes: {
-    icon: { control: false },
-    children: { control: 'text' },
+  icon: { control: false },
+  children: { control: 'text' },
+  variant: {
+    control: 'radio',
+    options: ['edit', 'watch', 'clock'],
   },
+  role: {
+    control: 'radio',
+    options: ['watcher', 'linker', 'editor'],
+  },
+  mode: {
+    control: 'radio',
+    options: ['view', 'edit', 'waiting'],
+  },
+  noMargin: {
+    control: 'boolean',
+  },
+},
 };
 
 export default meta;
@@ -20,12 +35,6 @@ export const EditVariant: Story = {
     role: 'watcher',
     mode: 'view',
   },
-  parameters: {
-    controls: {
-      include: ['role', 'noMargin'],
-      exclude: ['mode', 'variant'],
-    },
-  },
 };
 
 export const WatchVariant_Edit: Story = {
@@ -33,12 +42,6 @@ export const WatchVariant_Edit: Story = {
     variant: 'watch',
     role: 'linker',
     mode: 'edit',
-  },
-  parameters: {
-    controls: {
-      include: ['role', 'mode', 'noMargin'],
-      exclude: ['variant'],
-    },
   },
 };
 
@@ -48,12 +51,6 @@ export const WatchVariant_Waiting: Story = {
     role: 'editor',
     mode: 'waiting',
   },
-  parameters: {
-    controls: {
-      include: ['role', 'mode', 'noMargin'],
-      exclude: ['variant'],
-    },
-  },
 };
 
 export const ClockVariant: Story = {
@@ -61,11 +58,5 @@ export const ClockVariant: Story = {
     variant: 'clock',
     role: 'linker',
     mode: 'edit',
-  },
-  parameters: {
-    controls: {
-      include: ['role', 'mode', 'noMargin'],
-      exclude: ['variant'],
-    },
   },
 };
