@@ -106,6 +106,7 @@ const Fixing = styled.div`
 `;
 
 const StyledTooltip = styled.div<{ variant: "default" | "date" }>`
+  width:max-content
   white-space: nowrap;
   text-align: center;
   padding: ${({ variant }) => (variant === "date" ? "10px 13px" : "16px")};

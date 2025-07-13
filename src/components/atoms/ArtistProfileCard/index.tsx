@@ -13,6 +13,7 @@ interface ArtistProfileCardProps {
   followerCount: number;
   imageUrl: string;
   years?: number[];
+  yearSchedules?: Record<number, string[]>;
   role?: 'watcher' | 'linker' | 'editor',
   mode?: "view" | "edit" | "waiting";
 }
@@ -22,6 +23,7 @@ export const ArtistProfileCard = ({
   followerCount,
   imageUrl,
   years = [],
+  yearSchedules = {},
   role = 'watcher',
   mode = 'view',
 }: ArtistProfileCardProps) => {
@@ -133,7 +135,9 @@ const getBottomTooltipProps = (role: Role, mode: Mode): TooltipProps => {
             <YearSection>
             {years.map((year) => {
   const isSelected = selectedYear === year;
+  const schedules = yearSchedules[year] ?? [];
   return (
+     <YearItem key={year}>
     <YearButton
       key={year}
       selected={isSelected}
@@ -143,6 +147,12 @@ const getBottomTooltipProps = (role: Role, mode: Mode): TooltipProps => {
         {year}
       </Text>
     </YearButton>
+    <ScheduleTooltip>
+                      {schedules.map((s, i) => (
+                        <Text key={i} typo="Caption_4" color="gray_900">{s}</Text>
+                      ))}
+                    </ScheduleTooltip>
+    </YearItem>
   );
 })}
       </YearSection>
@@ -270,6 +280,38 @@ const YearSection = styled.div`
   align-items: center;
   gap: 32px;
 `
+
+const YearItem = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &:hover > div {
+    display: inline-flex;
+  }
+`;
+
+const ScheduleTooltip = styled.div`
+  position: absolute;
+  width:max-content;
+  bottom: 100%;
+  margin-bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+
+  padding: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+
+  border-radius: 12px;
+  border: 1px solid ${theme.palette.gray_100};
+  background: ${theme.palette.gray_0};
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+`;
 
 const YearButton = styled.button<{ selected?: boolean }>`
   display: flex;
