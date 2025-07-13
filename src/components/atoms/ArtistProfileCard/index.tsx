@@ -52,8 +52,8 @@ const moveNext = () => {
   }
 };
 
-const getVariantProps = (role: Role, mode: Mode): TooltipProps => {
-  if ((mode === 'edit' || mode === 'waiting') && role !== 'watcher') {
+const getTopTooltipProps = (role: Role, mode: Mode): TooltipProps => {
+  if ((mode === 'edit') && role !== 'watcher') {
     return {
       variant: 'watch',
       role,
@@ -67,6 +67,25 @@ const getVariantProps = (role: Role, mode: Mode): TooltipProps => {
     role,
     mode: 'view',
   };
+};
+
+const getBottomTooltipProps = (role: Role, mode: Mode): TooltipProps => {
+  if (mode === 'edit' && role !== 'watcher') {
+    return {
+      variant: 'clock',
+      role,
+      mode,
+    };
+  }
+  if (mode === 'waiting' && role !== 'watcher') {
+    return {
+      variant: 'watch',
+      role,
+      mode,
+    };
+  }
+
+  throw new Error("Bottom tooltip should not render in view mode");
 };
 
   return (
@@ -86,13 +105,25 @@ const getVariantProps = (role: Role, mode: Mode): TooltipProps => {
         </TopSection>
         </TopWrapper>
         {isFollowing && (
-    <TooltipWrapper role={role}>
-      <TimeLineTooltip
-        {...getVariantProps(role, mode)}
-        noMargin
-      />
-    </TooltipWrapper>
-  )}
+  <TimeLineTooltipWrapper>
+  {/* Top Tooltip은 항상 렌더링 */}
+  <TooltipWrapper role={role}>
+    <TimeLineTooltip {...getTopTooltipProps(role, mode)} noMargin />
+  </TooltipWrapper>
+
+  {/* Bottom Tooltip은 mode에 따라 삼항 연산자로 처리 */}
+  {
+    mode === 'view'
+      ? null
+      : (
+          <TooltipWrapper role={role}>
+            <TimeLineTooltip {...getBottomTooltipProps(role, mode)} noMargin />
+          </TooltipWrapper>
+        )
+  }
+</TimeLineTooltipWrapper>
+)}
+
       </TopContentWrapper>
         <BottomSection>
           <YearLinks>
@@ -174,6 +205,15 @@ const TopSection = styled.div`
   align-items: flex-start;
   gap: 12px;
 `
+
+const TimeLineTooltipWrapper = styled.div`
+  display: flex;
+  width: 32px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+`;
+
 const TooltipWrapper = styled.div<{ role?: 'watcher' | 'linker' | 'editor' }>`
   display: flex;
 height: 32px;
