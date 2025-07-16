@@ -1,126 +1,170 @@
 "use client";
 
-import { useState, useEffect, ChangeEvent } from "react";
 import { SymbolTextLogo } from "@/assets/images/SymbolTextLogo";
+import { LargeButton } from "@/components/atoms/LargeButton";
 import { OnboardingInput } from "@/components/atoms/OnboardingInput";
-import { FlexBox } from "@/components/layouts/FlexBox";
-import styled from "styled-components";
-import { CheckButton } from "@/components/atoms/CheckButton";
 import Svg from "@/components/atoms/Svg";
+import { Text } from "@/components/atoms/Text";
+import { FlexBox } from "@/components/layouts/FlexBox";
+import { theme } from "@/styles/theme";
+import { useState } from "react";
+import styled from "styled-components";
 
-export default function OnboardingPage() {
-  const [emailValue, setEmailValue] = useState("");
-  const [timerSeconds, setTimerSeconds] = useState(0);
-  const [isCounting, setIsCounting] = useState(false);
-  const [codeValue, setCodeValue] = useState("");
-  const [value, setValue] = useState("");
-  const [pwValue, setPwValue] = useState("");
-  const [isValueError, setIsValueError] = useState(false);
+export default function Onboarding() {
+  const [info, setInfo] = useState({
+    //이메일, 비번 저장 객체
+    email: "",
+    password: "",
+  });
+  const [isError, setIsError] = useState(false); //에러 여부
+  const [errorMsg, setErrorMsg] = useState(""); //에러 메시지
 
-  const handleValueChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    if (input.length > 30) {
-      setIsValueError(true);
-      return;
-    }
-    setIsValueError(false);
-    setValue(input);
-  }; //30자 제한을 위해
-
-  // 타이머 초기화 (추후 인증코드 보내는 기능도 추가)
-  const handleSendCode = () => {
-    setTimerSeconds(180); // 3분
-    setIsCounting(true);
+  const handleChange = (key: "email" | "password", value: string) => {
+    setInfo((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+    setIsError(false);
+    setErrorMsg("");
   };
 
-  useEffect(() => {
-    if (!isCounting) return;
-
-    if (timerSeconds <= 0) {
-      setIsCounting(false);
+  const handleLogin = () => {
+    if (!info.email) {
+      setIsError(true);
+      setErrorMsg("이메일을 입력해주세요.");
+      return;
+    }
+    if (!info.password) {
+      setIsError(true);
+      setErrorMsg("비밀번호를 입력해주세요.");
       return;
     }
 
-    const timerId = setInterval(() => {
-      setTimerSeconds((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timerId);
-  }, [timerSeconds, isCounting]);
+    //실제 로그인 로직 추후 연결 예정
+    const isLoginValid = mockLogin(info.email, info.password);
+    if (!isLoginValid) {
+      setIsError(true);
+      setErrorMsg("이메일 혹은 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+  };
 
   return (
-    <FlexBox
-      style={{ height: "100vh" }}
-      justify="center"
-      align="center"
-      direction="column"
-      gap={20}
-    >
-      <StyledLogo>
-        <Svg children={<SymbolTextLogo />} />
-      </StyledLogo>
-      <Container>
-        <Row>
-          <OnboardingInput
+    <Wrapper>
+      <ContentWrapper>
+        <FlexBox direction="column" gap={24} style={{ height: "100%" }}>
+          <Svg children={<SymbolTextLogo />} />
+          <LoginArea>
+            <OnboardingInput
+              variant="default"
+              value={info.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+              label="이메일"
+              placeholder="이메일을 입력해주세요"
+            />
+            <OnboardingInput
+              variant="password"
+              value={info.password}
+              onChange={(e) => handleChange("password", e.target.value)}
+              label="비밀번호"
+              placeholder="비밀번호를 입력해주세요"
+              isError={isError}
+              errormsg={errorMsg}
+            />
+          </LoginArea>
+          {!isError && <MarginBox />}
+          <LargeButton
             variant="default"
-            value={emailValue}
-            onChange={(e) => setEmailValue(e.target.value)}
-            label="이메일"
-            width={350}
+            width={424}
+            onClick={handleLogin}
+            disabled={!info.email || !info.password}
+            children="로그인"
           />
-          <CheckButton onClick={handleSendCode} isDisabled={isCounting}>
-            {isCounting ? "다시 보내기" : "이메일 인증"}
-          </CheckButton>
-        </Row>
-        <Row>
-          <OnboardingInput
-            variant="checkcode"
-            value={codeValue}
-            onChange={(e) => setCodeValue(e.target.value)}
-            timerSeconds={timerSeconds}
-            label="인증번호"
-            width={350}
-          />
-          <CheckButton children="인증 하기" />
-        </Row>
-
-        <OnboardingInput
-          variant="password"
-          value={pwValue}
-          onChange={(e) => setPwValue(e.target.value)}
-          label="비밀번호"
-          isCheck={true}
-        />
-        <OnboardingInput
-          variant="count"
-          value={value}
-          onChange={handleValueChange}
-          label="한 줄 소개"
-          required={true}
-          isError={isValueError}
-          errormsg="30자를 넘길 수 없습니다."
-        />
-      </Container>
-    </FlexBox>
+          <FlexBox gap={16}>
+            <Line />
+            <Text
+              children="SNS로 로그인하기"
+              typo="Caption_1"
+              color="gray_600"
+            />
+            <Line />
+          </FlexBox>
+          <SocialLoginContainer>
+            <LargeButton
+              variant="google"
+              width={424}
+              children="Google로 로그인"
+            />
+            <LargeButton
+              variant="kakao"
+              width={424}
+              children="Kakao로 로그인"
+            />
+          </SocialLoginContainer>
+          <FlexBox gap={16}>
+            <Line />
+            <Text
+              children="아직 계정이 없으신가요?"
+              typo="Caption_1"
+              color="gray_600"
+            />
+            <Line />
+          </FlexBox>
+          <RegistButton>
+            {/* 추후 회원가입 페이지로 onClick 연결 예정 */}
+            <Text typo="Body_2" color="gray_1000" children="회원가입" />
+          </RegistButton>
+        </FlexBox>
+      </ContentWrapper>
+    </Wrapper>
   );
 }
 
-const Container = styled.div`
+// 임시로 테스트 위해 만들어둔 로그인 함수
+const mockLogin = (email: string, password: string) => {
+  return email === "cho1428hee@naver.com" && password === "1234";
+};
+
+const Wrapper = styled.div`
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ContentWrapper = styled.div`
+  //화면비율 위해 임의로 패딩설정
+  width: 100%;
+  padding: 40px 0;
+`;
+
+const LoginArea = styled.div`
+  margin-top: 68px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin: 78px;
-  justify-content: center;
-  align-items: center;
 `;
 
-const StyledLogo = styled.div`
-  cursor: pointer;
+const MarginBox = styled.div`
+  height: 4px;
 `;
 
-const Row = styled.div`
+const Line = styled.div`
+  width: 144px;
+  height: 0;
+  border: 1px solid ${theme.palette.gray_100};
+`;
+
+const SocialLoginContainer = styled.div`
   display: flex;
-  gap: 8px;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  gap: 17px;
+`;
+
+const RegistButton = styled.button`
+  width: 100px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 `;
