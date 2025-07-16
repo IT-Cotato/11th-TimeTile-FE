@@ -73,4 +73,10 @@ export const typo = {
     line-height: 18px;
     font-weight: 400;
   `,
+  H4_2: css`
+    font-family: "Pretendard-SemiBold";
+    font-size: 20px;
+    line-height: 20.8px;
+    font-weight: 600;
+  `,
 };
