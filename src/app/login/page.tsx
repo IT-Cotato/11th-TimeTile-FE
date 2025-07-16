@@ -7,10 +7,17 @@ import Svg from "@/components/atoms/Svg";
 import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { theme } from "@/styles/theme";
+import { useRouter } from "next/Navigation";
 import { useState } from "react";
 import styled from "styled-components";
 
 export default function Login() {
+  const router = useRouter();
+
+  const gotoRegister = () => {
+    router.push("/register");
+  };
+
   const [info, setInfo] = useState({
     //이메일, 비번 저장 객체
     email: "",
@@ -110,8 +117,7 @@ export default function Login() {
             />
             <Line />
           </FlexBox>
-          <RegistButton>
-            {/* 추후 회원가입 페이지로 onClick 연결 예정 */}
+          <RegistButton onClick={gotoRegister}>
             <Text typo="Body_2" color="gray_1000" children="회원가입" />
           </RegistButton>
         </FlexBox>
