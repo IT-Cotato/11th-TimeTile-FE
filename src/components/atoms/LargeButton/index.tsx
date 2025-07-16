@@ -2,8 +2,9 @@ import { FlexBox } from "@/components/layouts/FlexBox";
 import { theme } from "@/styles/theme";
 import styled from "styled-components";
 import { Text } from "../Text";
+import { ButtonHTMLAttributes } from "react";
 
-interface LargeButtonProps {
+interface LargeButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   width?: number;
   children: string;
   disabled?: boolean;
