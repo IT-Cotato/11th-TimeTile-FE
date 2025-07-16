@@ -10,7 +10,7 @@ import { theme } from "@/styles/theme";
 import { useState } from "react";
 import styled from "styled-components";
 
-export default function Onboarding() {
+export default function Login() {
   const [info, setInfo] = useState({
     //이메일, 비번 저장 객체
     email: "",
