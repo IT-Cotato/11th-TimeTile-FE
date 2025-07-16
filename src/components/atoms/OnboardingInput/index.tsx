@@ -153,7 +153,7 @@ const Input = styled.input<{
   padding-bottom: ${({ isNarrow }) => (isNarrow ? "8px" : "10px")};
   padding-left: 16px;
   padding-right: ${({ variant, hasRightIcon }) =>
-    variant === "count" ? "16px" : hasRightIcon ? "88px" : "16px"};
+    variant === "count" ? "16px" : hasRightIcon ? "66px" : "16px"};
   border-radius: 10px;
   border: 1px solid ${theme.palette.primary_400};
   ${({ typo }) => theme.typo[typo]};
