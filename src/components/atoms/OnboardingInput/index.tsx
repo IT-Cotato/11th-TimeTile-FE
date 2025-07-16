@@ -186,6 +186,6 @@ const EyeButton = styled.button`
 const Error = styled.div`
   display: flex;
   margin-top: 8px;
-  padding: 3px 105px 2px 17px;
+  padding: 1px 17px;
   align-items: center;
 `;

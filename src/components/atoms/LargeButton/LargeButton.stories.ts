@@ -18,6 +18,7 @@ type Story = StoryObj<typeof LargeButton>;
 
 export const Default: Story = {
   args: {
+    variant: "default",
     disabled: false,
     children: "로그인",
     width: 424,
@@ -28,6 +29,22 @@ export const Disabled: Story = {
   args: {
     disabled: true,
     children: "로그인",
+    width: 424,
+  },
+};
+
+export const Kakao: Story = {
+  args: {
+    variant: "kakao",
+    children: "Kakao로 로그인",
+    width: 424,
+  },
+};
+
+export const Google: Story = {
+  args: {
+    variant: "google",
+    children: "Google로 로그인",
     width: 424,
   },
 };
