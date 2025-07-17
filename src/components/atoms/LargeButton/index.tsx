@@ -60,6 +60,7 @@ export const LargeButton = ({
 
 const StyledButton = styled.button<{ width?: number }>`
   width: ${({ width }) => (width ? `${width}px` : "100%")};
+  height: 62px;
   border: none;
   border-radius: 10px;
   background-color: ${({ disabled }) =>
