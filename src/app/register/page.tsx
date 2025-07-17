@@ -10,6 +10,7 @@ import { FlexBox } from "@/components/layouts/FlexBox";
 import { theme } from "@/styles/theme";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { ProgressBar } from "./../../components/atoms/ProgressBar/index";
 
 export default function Register() {
   const [info, setInfo] = useState({
@@ -23,7 +24,6 @@ export default function Register() {
   const [errorMsg, setErrorMsg] = useState(""); //에러 메시지
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [isCounting, setIsCounting] = useState(false);
-  const [codeValue, setCodeValue] = useState("");
 
   const [isPasswordCheck, setIsPasswordCheck] = useState(false);
 
@@ -81,6 +81,8 @@ export default function Register() {
     <Wrapper>
       <ContentWrapper>
         <FlexBox direction="column" gap={24}>
+          <ProgressBar currentStep={1} totalStep={3} />
+          <MarginBox height={30} />
           <Svg children={<SymbolTextLogo />} />
           <RegisterArea>
             <Row>
@@ -126,7 +128,7 @@ export default function Register() {
               isCheck={isPasswordCheck}
             />
           </RegisterArea>
-          {!isError && <MarginBox />}
+          {!isError && <MarginBox height={4} />}
           <LargeButton children="다음" variant="default" width={424} />
           <FlexBox gap={16}>
             <Line />
@@ -179,8 +181,8 @@ const Row = styled.div`
   align-items: center;
   gap: 10px;
 `;
-const MarginBox = styled.div`
-  height: 4px;
+const MarginBox = styled.div<{ height: number }>`
+  height: ${({ height }) => height}px;
 `;
 
 const Line = styled.div`
