@@ -11,6 +11,7 @@ import { theme } from "@/styles/theme";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ProgressBar } from "./../../components/atoms/ProgressBar/index";
+import { CloseIcon } from "@/assets/icons/CloseIcon";
 
 export default function Register() {
   const [info, setInfo] = useState({
@@ -79,6 +80,13 @@ export default function Register() {
 
   return (
     <Wrapper>
+      <CloseIconWrapper
+        onClick={() => {
+          /* 사용자가 이전에 보던 페이지로 라우팅 예정 */
+        }}
+      >
+        <Svg children={<CloseIcon />} />
+      </CloseIconWrapper>
       <ContentWrapper>
         <FlexBox direction="column" gap={24}>
           <ProgressBar currentStep={1} totalStep={3} />
@@ -160,10 +168,17 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
+const CloseIconWrapper = styled.div`
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  cursor: pointer;
+`;
+
 const ContentWrapper = styled.div`
   //화면비율 위해 임의로 패딩설정
   width: 100%;
-  padding: 40px 0;
+  padding: 46px 0;
 `;
 
 const RegisterArea = styled.div`

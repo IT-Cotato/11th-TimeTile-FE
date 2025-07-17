@@ -1,5 +1,6 @@
 "use client";
 
+import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { SymbolTextLogo } from "@/assets/images/SymbolTextLogo";
 import { LargeButton } from "@/components/atoms/LargeButton";
 import { OnboardingInput } from "@/components/atoms/OnboardingInput";
@@ -58,6 +59,13 @@ export default function Login() {
 
   return (
     <Wrapper>
+      <CloseIconWrapper
+        onClick={() => {
+          /* 사용자가 이전에 보던 페이지로 라우팅 예정 */
+        }}
+      >
+        <Svg children={<CloseIcon />} />
+      </CloseIconWrapper>
       <ContentWrapper>
         <FlexBox direction="column" gap={24} style={{ height: "100%" }}>
           <Svg children={<SymbolTextLogo />} />
@@ -138,10 +146,16 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
+const CloseIconWrapper = styled.div`
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  cursor: pointer;
+`;
+
 const ContentWrapper = styled.div`
-  //화면비율 위해 임의로 패딩설정
   width: 100%;
-  padding: 40px 0;
+  padding: 128px 0;
 `;
 
 const LoginArea = styled.div`
