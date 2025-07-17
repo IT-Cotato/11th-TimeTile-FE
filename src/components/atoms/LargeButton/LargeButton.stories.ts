@@ -27,6 +27,7 @@ export const Default: Story = {
 
 export const Disabled: Story = {
   args: {
+    variant: "default",
     disabled: true,
     children: "로그인",
     width: 424,
