@@ -76,9 +76,9 @@ export default function Profile({
     }
   };
 
-  useEffect(() => {
-    console.log(info);
-  }, [info]);
+  // useEffect(() => {
+  //   console.log(info);
+  // }, [info]);
 
   return (
     <Wrapper>

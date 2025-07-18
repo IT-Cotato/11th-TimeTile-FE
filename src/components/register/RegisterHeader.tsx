@@ -19,7 +19,7 @@ export default function RegisterHeader({
         <Svg children={<CloseIcon />} />
       </CloseIconWrapper>
       <ProgressBar currentStep={currentStep} totalStep={3} />
-      <MarginBox height={30} />
+      <MarginBox />
       <Svg children={<SymbolTextLogo />} />
     </>
   );
@@ -32,6 +32,6 @@ const CloseIconWrapper = styled.div`
   cursor: pointer;
 `;
 
-const MarginBox = styled.div<{ height: number }>`
-  height: ${({ height }) => height}px;
+const MarginBox = styled.div`
+  height: 54px;
 `;
