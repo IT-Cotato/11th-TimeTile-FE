@@ -8,8 +8,8 @@ import { FlexBox } from "@/components/layouts/FlexBox";
 
 interface CheckBoxProps {
   title: string;
-  body: string;
-  required: boolean;
+  body?: string;
+  required?: boolean;
   checked: boolean;
   onClick?: () => void;
 }
@@ -36,9 +36,11 @@ export const CheckBox = ({
           )}
         </div>
       </CheckArea>
-      <Body>
-        <Text typo="Caption_2" color="gray_1000" children={body} />
-      </Body>
+      {body ? (
+        <Body>
+          <Text typo="Caption_2" color="gray_1000" children={body} />
+        </Body>
+      ) : null}
     </FlexBox>
   );
 };

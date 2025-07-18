@@ -5,10 +5,11 @@ import styled from "styled-components";
 import { LargeButton } from "@/components/atoms/LargeButton";
 import { OnboardingInput } from "@/components/atoms/OnboardingInput";
 import { CheckButton } from "../atoms/CheckButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BASE_URL } from "@/apis/axios";
 import RegisterHeader from "./RegisterHeader";
 import axios from "axios";
+import { ProfileImageUploader } from "./ProfileImageUploader";
 
 export default function Profile({
   onNext,
@@ -75,18 +76,19 @@ export default function Profile({
     }
   };
 
+  useEffect(() => {
+    console.log(info);
+  }, [info]);
+
   return (
     <Wrapper>
       <ContentWrapper>
         <FlexBox direction="column" gap={24}>
           <RegisterHeader currentStep={2} />
           <RegisterArea>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) =>
-                handleChange("profileImage", e.target.files?.[0] || null)
-              }
+            <ProfileImageUploader
+              imageFile={info.profileImage}
+              onChange={(file) => handleChange("profileImage", file)}
             />
             <Row>
               <OnboardingInput
@@ -142,7 +144,7 @@ const RegisterArea = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 23px;
   margin-top: 54px;
 `;
 
@@ -151,4 +153,5 @@ const Row = styled.div`
   justify-content: center;
   align-items: flex-start;
   gap: 10px;
+  margin-top: 34px;
 `;

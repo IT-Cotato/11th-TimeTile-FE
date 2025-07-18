@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Terms() {
-  const router = useRouter(); // 라우터 훅
+  const router = useRouter();
   const [agreement, setAgreement] = useState({
     service: false,
     community: false,
