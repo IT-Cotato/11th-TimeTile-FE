@@ -21,6 +21,21 @@ export default function Terms() {
     setAgreement((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const checkAll = Object.values(agreement).every(Boolean);
+
+  const handleAllAgree = () => {
+    const isCheckAll = !checkAll;
+    setAgreement({
+      service: isCheckAll,
+      community: isCheckAll,
+      privacy: isCheckAll,
+      marketing: isCheckAll,
+    });
+  };
+
+  const isRequiredCheckedAll =
+    agreement.service && agreement.community && agreement.privacy;
+
   return (
     <Wrapper>
       <ContentWrapper>
@@ -55,14 +70,25 @@ export default function Terms() {
               checked={agreement.marketing}
               onClick={() => handleCheckBox("marketing")}
             />
-            <>위 약관에 모두 동의합니다.</>
+            <AllCheckWrapper>
+              <CheckBox
+                title="위 약관에 모두 동의합니다."
+                allAgree={true}
+                checked={checkAll}
+                onClick={handleAllAgree}
+              />
+            </AllCheckWrapper>
             <ButtonWrapper>
               <Buttons
                 children="시작하기"
                 variant="addTile"
                 onClick={() => {
                   router.push("/");
+                  {
+                    /* 추후 다시 router 연결할 예정! */
+                  }
                 }}
+                disabled={!isRequiredCheckedAll}
               />
             </ButtonWrapper>
           </RegisterArea>
@@ -95,5 +121,9 @@ const RegisterArea = styled.div`
 
 const ButtonWrapper = styled.div`
   align-self: flex-end;
-  margin-top: 12px;
+  margin-top: -12px;
+`;
+
+const AllCheckWrapper = styled.div`
+  align-self: flex-start;
 `;

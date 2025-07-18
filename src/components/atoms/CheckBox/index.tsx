@@ -12,6 +12,7 @@ interface CheckBoxProps {
   required?: boolean;
   checked: boolean;
   onClick?: () => void;
+  allAgree?: boolean;
 }
 
 export const CheckBox = ({
@@ -20,6 +21,7 @@ export const CheckBox = ({
   required,
   checked,
   onClick,
+  allAgree = false,
 }: CheckBoxProps) => {
   return (
     <FlexBox direction="column" align="flex-start" gap={8}>
@@ -29,18 +31,19 @@ export const CheckBox = ({
         </CheckBoxIcon>
         <div>
           <Text typo="Body_3" color="gray_1000" children={title} />
-          {required ? (
-            <Text typo="Body_3" color="warning" children="(필수)" />
-          ) : (
-            <Text typo="Body_3" color="gray_500" children="(선택)" />
-          )}
+          {!allAgree &&
+            (required ? (
+              <Text typo="Body_3" color="warning" children="(필수)" />
+            ) : (
+              <Text typo="Body_3" color="gray_500" children="(선택)" />
+            ))}
         </div>
       </CheckArea>
-      {body ? (
+      {!allAgree && body && (
         <Body>
           <Text typo="Caption_2" color="gray_1000" children={body} />
         </Body>
-      ) : null}
+      )}
     </FlexBox>
   );
 };

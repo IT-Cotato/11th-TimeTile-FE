@@ -95,5 +95,6 @@ const StyledButton = styled.button<{
       variant === "addTile"
         ? `${theme.palette.primary_300}`
         : BUTTONS_COLOR_TYPE.default[variant]};
+    cursor: default;
   }
 `;

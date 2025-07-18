@@ -38,9 +38,10 @@ export const Checked: Story = {
   },
 };
 
-// export const AllChecked: Story = {
-//   args: {
-//     title: "위 약관에 모두 동의합니다.",
-//     checked: false,
-//   },
-// };
+export const AllChecked: Story = {
+  args: {
+    title: "위 약관에 모두 동의합니다.",
+    checked: false,
+    allAgree: true,
+  },
+};
