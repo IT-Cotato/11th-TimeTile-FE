@@ -8,7 +8,8 @@ import { CheckIcon } from "@/assets/icons/CheckIcon";
 
 type InputVariant = "default" | "password" | "checkcode" | "count";
 
-interface OnboardingInputProps {
+interface OnboardingInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   width?: number;
   variant: InputVariant;
   value: string;
@@ -20,6 +21,7 @@ interface OnboardingInputProps {
   placeholder?: string;
   isCheck?: boolean;
   required?: boolean;
+  successMsg?: string;
 }
 
 const formatTime = (sec: number) => {
@@ -40,8 +42,11 @@ export const OnboardingInput = ({
   placeholder,
   isCheck,
   required = false,
+  successMsg,
+  ...props
 }: OnboardingInputProps) => {
   const [showPassword, setShowPassword] = useState(false);
+
   const toggleShowPassword = () => setShowPassword((prev) => !prev);
 
   const renderRightContent = () => {
@@ -104,16 +109,23 @@ export const OnboardingInput = ({
           }
           isNarrow={width === 350}
           variant={variant}
+          {...props}
         />
         <RightWrapper>{renderRightContent()}</RightWrapper>
       </InputWrapper>
-      {isError && (
+      {isError ? (
         <Error>
           <Text color="warning" typo="Caption_4">
             {errormsg}
           </Text>
         </Error>
-      )}
+      ) : successMsg ? (
+        <Error>
+          <Text color="primary_600" typo="Caption_4">
+            {successMsg}
+          </Text>
+        </Error>
+      ) : null}
     </Wrapper>
   );
 };
@@ -149,7 +161,7 @@ const Input = styled.input<{
   variant?: InputVariant;
 }>`
   width: 100%;
-  padding-top: 30px;
+  padding-top: 28px;
   padding-bottom: ${({ isNarrow }) => (isNarrow ? "8px" : "10px")};
   padding-left: 16px;
   padding-right: ${({ variant, hasRightIcon }) =>

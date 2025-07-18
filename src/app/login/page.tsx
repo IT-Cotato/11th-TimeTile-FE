@@ -1,5 +1,7 @@
 "use client";
 
+import { AuthApi } from "@/apis/authApi";
+import { axiosApi, BASE_URL } from "@/apis/axios";
 import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { SymbolTextLogo } from "@/assets/images/SymbolTextLogo";
 import { LargeButton } from "@/components/atoms/LargeButton";
@@ -57,13 +59,13 @@ export default function Login() {
     }
   };
 
+  const kakaoLogin = () => {
+    window.location.href = `${BASE_URL}/oauth2/authorization/kakao`;
+  };
+
   return (
     <Wrapper>
-      <CloseIconWrapper
-        onClick={() => {
-          /* 사용자가 이전에 보던 페이지로 라우팅 예정 */
-        }}
-      >
+      <CloseIconWrapper onClick={() => router.back()}>
         <Svg children={<CloseIcon />} />
       </CloseIconWrapper>
       <ContentWrapper>
@@ -114,6 +116,7 @@ export default function Login() {
               variant="kakao"
               width={424}
               children="Kakao로 로그인"
+              onClick={kakaoLogin}
             />
           </SocialLoginContainer>
           <FlexBox gap={16}>
