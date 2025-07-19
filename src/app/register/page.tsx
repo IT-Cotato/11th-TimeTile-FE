@@ -4,6 +4,9 @@ import { useFunnel } from "@/hooks/useFunnel";
 import Account from "@/components/register/Account";
 import Profile from "@/components/register/Profile";
 import Terms from "@/components/register/Terms";
+import { useState } from "react";
+import axios from "axios";
+import { BASE_URL } from "@/apis/axios";
 
 export default function Register() {
   const { Funnel, Step, toNext, toPrev } = useFunnel([

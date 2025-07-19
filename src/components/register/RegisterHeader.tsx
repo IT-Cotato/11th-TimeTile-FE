@@ -26,7 +26,7 @@ export default function RegisterHeader({
       </CloseIconWrapper>
       <ProgressBar currentStep={currentStep} totalStep={3} />
       <MarginBox />
-      <Svg children={<SymbolTextLogo />} />
+      <Svg children={<SymbolTextLogo />} onClick={() => router.push("/")} />
     </>
   );
 }

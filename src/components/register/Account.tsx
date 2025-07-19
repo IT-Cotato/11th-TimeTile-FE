@@ -3,7 +3,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/Navigation";
-
 import { BASE_URL } from "@/apis/axios";
 import { CheckButton } from "@/components/atoms/CheckButton";
 import { LargeButton } from "@/components/atoms/LargeButton";
