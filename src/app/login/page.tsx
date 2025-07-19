@@ -90,19 +90,22 @@ export default function Login() {
             />
           </LoginArea>
           {!isError && <MarginBox />}
-          <LargeButton
-            variant="default"
-            width={424}
-            onClick={handleLogin}
-            disabled={!info.email || !info.password}
-            children="로그인"
-          />
-          <FlexBox gap={16}>
+          <ButtonWrapper>
+            <LargeButton
+              variant="default"
+              width={424}
+              onClick={handleLogin}
+              disabled={!info.email || !info.password}
+              children="로그인"
+            />
+          </ButtonWrapper>
+          <FlexBox gap={16} style={{ width: "100%" }}>
             <Line />
             <Text
               children="SNS로 로그인하기"
               typo="Caption_1"
               color="gray_600"
+              style={{ whiteSpace: "nowrap" }}
             />
             <Line />
           </FlexBox>
@@ -119,12 +122,13 @@ export default function Login() {
               onClick={kakaoLogin}
             />
           </SocialLoginContainer>
-          <FlexBox gap={16}>
+          <FlexBox gap={16} style={{ width: "100%" }}>
             <Line />
             <Text
               children="아직 계정이 없으신가요?"
               typo="Caption_1"
               color="gray_600"
+              style={{ whiteSpace: "nowrap" }}
             />
             <Line />
           </FlexBox>
@@ -147,6 +151,10 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 480px) {
+    padding: 0px 10px;
+  }
 `;
 
 const CloseIconWrapper = styled.div`
@@ -158,16 +166,21 @@ const CloseIconWrapper = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100%;
+  max-width: 424px;
   padding: 128px 0;
 `;
 
 const LoginArea = styled.div`
   margin-top: 68px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 16px;
 `;
 
+const ButtonWrapper = styled.div`
+  width: 100%;
+`;
 const MarginBox = styled.div`
   height: 4px;
 `;
@@ -182,6 +195,7 @@ const SocialLoginContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 17px;
+  width: 100%;
 `;
 
 const RegistButton = styled.button`
