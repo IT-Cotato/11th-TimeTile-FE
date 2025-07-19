@@ -7,21 +7,21 @@ import Terms from "@/components/register/Terms";
 
 export default function Register() {
   const { Funnel, Step, toNext, toPrev } = useFunnel([
+    "terms",
     "account",
     "profile",
-    "terms",
   ]);
 
   return (
     <Funnel>
+      <Step name="terms">
+        <Terms onNext={toNext} />
+      </Step>
       <Step name="account">
-        <Account onNext={toNext} />
+        <Account onNext={toNext} onPrev={toPrev} />
       </Step>
       <Step name="profile">
-        <Profile onNext={toNext} onPrev={toPrev} />
-      </Step>
-      <Step name="terms">
-        <Terms />
+        <Profile onPrev={toPrev} />
       </Step>
     </Funnel>
   );

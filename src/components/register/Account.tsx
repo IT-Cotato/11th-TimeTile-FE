@@ -14,7 +14,13 @@ import { theme } from "@/styles/theme";
 
 import RegisterHeader from "@/components/register/RegisterHeader";
 
-export default function Account({ onNext }: { onNext: () => void }) {
+export default function Account({
+  onNext,
+  onPrev,
+}: {
+  onNext: () => void;
+  onPrev: () => void;
+}) {
   const router = useRouter();
 
   const [info, setInfo] = useState({
@@ -145,7 +151,7 @@ export default function Account({ onNext }: { onNext: () => void }) {
     <Wrapper>
       <ContentWrapper>
         <FlexBox direction="column" gap={24}>
-          <RegisterHeader currentStep={1} />
+          <RegisterHeader currentStep={2} onPrev={onPrev} />
           <RegisterArea>
             <Row>
               <OnboardingInput

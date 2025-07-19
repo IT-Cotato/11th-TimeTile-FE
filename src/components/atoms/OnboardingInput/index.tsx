@@ -121,7 +121,7 @@ export const OnboardingInput = ({
         </Error>
       ) : successMsg ? (
         <Error>
-          <Text color="primary_600" typo="Caption_4">
+          <Text color="gray_800" typo="Caption_4">
             {successMsg}
           </Text>
         </Error>

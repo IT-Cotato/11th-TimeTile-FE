@@ -10,14 +10,10 @@ import { BASE_URL } from "@/apis/axios";
 import RegisterHeader from "./RegisterHeader";
 import axios from "axios";
 import { ProfileImageUploader } from "./ProfileImageUploader";
+import { useRouter } from "next/navigation";
 
-export default function Profile({
-  onNext,
-  onPrev,
-}: {
-  onNext: () => void;
-  onPrev: () => void;
-}) {
+export default function Profile({ onPrev }: { onPrev: () => void }) {
+  const router = useRouter();
   const [info, setInfo] = useState({
     nickname: "",
     intro: "",
@@ -84,7 +80,7 @@ export default function Profile({
     <Wrapper>
       <ContentWrapper>
         <FlexBox direction="column" gap={24}>
-          <RegisterHeader currentStep={2} />
+          <RegisterHeader currentStep={3} onPrev={onPrev} />
           <RegisterArea>
             <ProfileImageUploader
               imageFile={info.profileImage}
@@ -118,7 +114,9 @@ export default function Profile({
             children="회원가입"
             variant="default"
             width={424}
-            onClick={onNext}
+            onClick={() => {
+              router.push("/");
+            }}
             disabled={!isNicknameAvailable}
           />
         </FlexBox>

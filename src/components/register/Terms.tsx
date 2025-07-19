@@ -8,7 +8,7 @@ import { CheckBox } from "../atoms/CheckBox";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function Terms() {
+export default function Terms({ onNext }: { onNext: () => void }) {
   const router = useRouter();
   const [agreement, setAgreement] = useState({
     service: false,
@@ -40,7 +40,10 @@ export default function Terms() {
     <Wrapper>
       <ContentWrapper>
         <FlexBox direction="column" gap={24}>
-          <RegisterHeader currentStep={3} />
+          <RegisterHeader
+            currentStep={1}
+            onPrev={() => router.push("/login")}
+          />
           <RegisterArea>
             <CheckBox
               title="서비스 이용약관 동의"
@@ -80,14 +83,9 @@ export default function Terms() {
             </AllCheckWrapper>
             <ButtonWrapper>
               <Buttons
-                children="시작하기"
+                children="다음"
                 variant="addTile"
-                onClick={() => {
-                  router.push("/");
-                  {
-                    /* 추후 다시 router 연결할 예정! */
-                  }
-                }}
+                onClick={onNext}
                 disabled={!isRequiredCheckedAll}
               />
             </ButtonWrapper>
