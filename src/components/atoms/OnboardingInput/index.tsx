@@ -31,7 +31,7 @@ const formatTime = (sec: number) => {
 };
 
 export const OnboardingInput = ({
-  width = 424,
+  width,
   variant,
   value,
   onChange,

@@ -203,29 +203,28 @@ export default function Account({
             />
           </RegisterArea>
           <MarginBox height={4} />
-          <LargeButton
-            children="다음"
-            variant="default"
-            width={424}
-            disabled={!isNextEnabled}
-            onClick={onNext}
-          />
-          <FlexBox gap={16}>
+          <ButtonWrapper>
+            <LargeButton
+              children="다음"
+              variant="default"
+              disabled={!isNextEnabled}
+              onClick={onNext}
+            />
+          </ButtonWrapper>
+
+          <FlexBox gap={16} style={{ width: "100%" }}>
             <Line />
-            <Text children="SNS로 가입하기" typo="Caption_1" color="gray_600" />
+            <Text
+              children="SNS로 가입하기"
+              typo="Caption_1"
+              color="gray_600"
+              style={{ whiteSpace: "nowrap" }}
+            />
             <Line />
           </FlexBox>
           <SocialLoginContainer>
-            <LargeButton
-              variant="google"
-              width={424}
-              children="Google로 시작하기"
-            />
-            <LargeButton
-              variant="kakao"
-              width={424}
-              children="Kakao로 시작하기"
-            />
+            <LargeButton variant="google" children="Google로 시작하기" />
+            <LargeButton variant="kakao" children="Kakao로 시작하기" />
           </SocialLoginContainer>
         </FlexBox>
       </ContentWrapper>
@@ -242,11 +241,17 @@ const Wrapper = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100%;
-  padding: 46px 0;
+  max-width: 424px;
+  padding: 46px 0px;
+
+  @media (max-width: 480px) {
+    padding: 46px 10px;
+  }
 `;
 
 const RegisterArea = styled.div`
   display: flex;
+  width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -255,6 +260,7 @@ const RegisterArea = styled.div`
 `;
 
 const Row = styled.div`
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -265,6 +271,10 @@ const MarginBox = styled.div<{ height: number }>`
   height: ${({ height }) => height}px;
 `;
 
+const ButtonWrapper = styled.div`
+  width: 100%;
+`;
+
 const Line = styled.div`
   width: 144px;
   height: 0;
@@ -273,6 +283,7 @@ const Line = styled.div`
 
 const SocialLoginContainer = styled.div`
   display: flex;
+  width: 100%;
   flex-direction: column;
   gap: 17px;
 `;

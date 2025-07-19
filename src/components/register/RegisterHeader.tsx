@@ -17,7 +17,7 @@ export default function RegisterHeader({
   const router = useRouter();
 
   return (
-    <>
+    <Container>
       <BackIconWrapper onClick={onPrev}>
         <Svg children={<LeftIcon />} />
       </BackIconWrapper>
@@ -27,9 +27,17 @@ export default function RegisterHeader({
       <ProgressBar currentStep={currentStep} totalStep={3} />
       <MarginBox />
       <Svg children={<SymbolTextLogo />} onClick={() => router.push("/")} />
-    </>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  width: 100%;
+  max-width: 424px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const BackIconWrapper = styled.div`
   position: absolute;
@@ -46,5 +54,5 @@ const CloseIconWrapper = styled.div`
 `;
 
 const MarginBox = styled.div`
-  height: 54px;
+  height: 78px;
 `;

@@ -110,15 +110,16 @@ export default function Profile({ onPrev }: { onPrev: () => void }) {
               placeholder="자기소개를 입력해주세요."
             />
           </RegisterArea>
-          <LargeButton
-            children="회원가입"
-            variant="default"
-            width={424}
-            onClick={() => {
-              router.push("/");
-            }}
-            disabled={!isNicknameAvailable}
-          />
+          <ButtonWrapper>
+            <LargeButton
+              children="회원가입"
+              variant="default"
+              onClick={() => {
+                router.push("/");
+              }}
+              disabled={!isNicknameAvailable}
+            />
+          </ButtonWrapper>
         </FlexBox>
       </ContentWrapper>
     </Wrapper>
@@ -134,11 +135,16 @@ const Wrapper = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100%;
+  max-width: 424px;
   padding: 46px 0;
+  @media (max-width: 480px) {
+    padding: 46px 10px;
+  }
 `;
 
 const RegisterArea = styled.div`
   display: flex;
+  width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -148,8 +154,13 @@ const RegisterArea = styled.div`
 
 const Row = styled.div`
   display: flex;
+  width: 100%;
   justify-content: center;
   align-items: flex-start;
   gap: 10px;
   margin-top: 34px;
+`;
+
+const ButtonWrapper = styled.div`
+  width: 100%;
 `;

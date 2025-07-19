@@ -105,6 +105,7 @@ const Wrapper = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100%;
+  max-width: 424px;
   padding: 46px 0;
 `;
 

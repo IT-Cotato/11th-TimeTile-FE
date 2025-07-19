@@ -68,6 +68,10 @@ const StyledButton = styled.button<{ width?: number }>`
   box-shadow: 0px 4px 4px 0px rgba(159, 198, 255, 0.25);
   padding: 21px;
   cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
+
+  @media (max-width: 480px) {
+    width: ${({ width }) => (width ? `${width - 20}px` : "100%")};
+  }
 `;
 
 const KakaoButton = styled(StyledButton)`
