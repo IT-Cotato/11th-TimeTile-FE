@@ -1,6 +1,5 @@
 "use client";
 
-import { AuthApi } from "@/apis/authApi";
 import { axiosApi, BASE_URL } from "@/apis/axios";
 import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { SymbolTextLogo } from "@/assets/images/SymbolTextLogo";
@@ -60,9 +59,14 @@ export default function Login() {
   };
 
   const kakaoLogin = () => {
-    window.location.href = `${BASE_URL}/oauth2/authorization/kakao`;
+    window.location.href =
+      "https://timetile-api.click/oauth2/authorization/kakao";
   };
 
+  const googleLogin = () => {
+    window.location.href =
+      "https://timetile-api.click/oauth2/authorization/google";
+  };
   return (
     <Wrapper>
       <CloseIconWrapper onClick={() => router.back()}>
@@ -114,6 +118,7 @@ export default function Login() {
               variant="google"
               width={424}
               children="Google로 로그인"
+              onClick={googleLogin}
             />
             <LargeButton
               variant="kakao"

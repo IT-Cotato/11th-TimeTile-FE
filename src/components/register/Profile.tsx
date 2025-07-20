@@ -5,12 +5,11 @@ import styled from "styled-components";
 import { LargeButton } from "@/components/atoms/LargeButton";
 import { OnboardingInput } from "@/components/atoms/OnboardingInput";
 import { CheckButton } from "../atoms/CheckButton";
-import { useEffect, useState } from "react";
-import { BASE_URL } from "@/apis/axios";
+import { useState } from "react";
 import RegisterHeader from "./RegisterHeader";
-import axios from "axios";
 import { ProfileImageUploader } from "./ProfileImageUploader";
 import { useRouter } from "next/navigation";
+import { authApi } from "@/apis/authApi";
 
 export default function Profile({ onPrev }: { onPrev: () => void }) {
   const router = useRouter();
@@ -36,26 +35,28 @@ export default function Profile({ onPrev }: { onPrev: () => void }) {
     }
   };
 
+  const validateNickname = (nickname: string) => {
+    const regex = /^[가-힣a-z0-9]{2,15}$/;
+    return regex.test(nickname);
+  };
+
   const handleCheckNickname = async () => {
     if (!info.nickname.trim()) {
       setIsNicknameAvailable(false);
       setErrorMessage("닉네임을 입력해주세요.");
+      setSuccessMessages("");
       return;
     }
 
-    if (info.nickname === "초연") {
-      setIsNicknameAvailable(true);
-      setErrorMessage("");
-      setSuccessMessages("사용 가능한 닉네임입니다.");
+    if (!validateNickname(info.nickname)) {
+      setIsNicknameAvailable(false);
+      setErrorMessage("닉네임은 2~15자, 한글/소문자/숫자만 가능합니다.");
+      setSuccessMessages("");
       return;
     }
 
     try {
-      const { data } = await axios.get(
-        `${BASE_URL}/users/profile/nickname/check`,
-        { params: { nickname: info.nickname } }
-      );
-
+      const { data } = await authApi.checkNickname(info.nickname);
       if (data.isSuccess && data.data?.isAvailable) {
         setIsNicknameAvailable(true);
         setErrorMessage("");
@@ -71,10 +72,6 @@ export default function Profile({ onPrev }: { onPrev: () => void }) {
       setSuccessMessages("");
     }
   };
-
-  // useEffect(() => {
-  //   console.log(info);
-  // }, [info]);
 
   return (
     <Wrapper>
