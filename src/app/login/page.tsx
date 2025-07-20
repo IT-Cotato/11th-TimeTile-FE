@@ -1,6 +1,6 @@
 "use client";
 
-import { axiosApi, BASE_URL } from "@/apis/axios";
+import { axiosApi } from "@/apis/axios";
 import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { SymbolTextLogo } from "@/assets/images/SymbolTextLogo";
 import { LargeButton } from "@/components/atoms/LargeButton";
@@ -21,12 +21,11 @@ export default function Login() {
   };
 
   const [info, setInfo] = useState({
-    //이메일, 비번 저장 객체
     email: "",
     password: "",
   });
-  const [isError, setIsError] = useState(false); //에러 여부
-  const [errorMsg, setErrorMsg] = useState(""); //에러 메시지
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (key: "email" | "password", value: string) => {
     setInfo((prev) => ({
@@ -37,7 +36,7 @@ export default function Login() {
     setErrorMsg("");
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!info.email) {
       setIsError(true);
       setErrorMsg("이메일을 입력해주세요.");
@@ -49,12 +48,27 @@ export default function Login() {
       return;
     }
 
-    //실제 로그인 로직 추후 연결 예정
-    const isLoginValid = mockLogin(info.email, info.password);
-    if (!isLoginValid) {
+    try {
+      const response = await axiosApi.post("/auth/login", {
+        email: info.email,
+        password: info.password,
+      });
+
+      const data = response.data;
+      if (data.isSuccess) {
+        // 토큰 저장
+        localStorage.setItem("accessToken", data.data.accessToken);
+        localStorage.setItem("refreshToken", data.data.refreshToken);
+
+        // 로그인 성공 후, 메인 페이지 이동
+        router.push("/");
+      } else {
+        setIsError(true);
+        setErrorMsg(data.message || "로그인에 실패했습니다.");
+      }
+    } catch (error) {
       setIsError(true);
-      setErrorMsg("이메일 혹은 비밀번호가 일치하지 않습니다.");
-      return;
+      setErrorMsg("로그인 요청 중 오류가 발생했습니다.");
     }
   };
 
@@ -67,6 +81,7 @@ export default function Login() {
     window.location.href =
       "https://timetile-api.click/oauth2/authorization/google";
   };
+
   return (
     <Wrapper>
       <CloseIconWrapper onClick={() => router.back()}>
@@ -145,11 +160,6 @@ export default function Login() {
     </Wrapper>
   );
 }
-
-// 임시로 테스트 위해 만들어둔 로그인 함수
-const mockLogin = (email: string, password: string) => {
-  return email === "cho1428hee@naver.com" && password === "1234";
-};
 
 const Wrapper = styled.div`
   min-height: 100vh;
