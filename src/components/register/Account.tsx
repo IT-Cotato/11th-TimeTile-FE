@@ -1,9 +1,9 @@
 "use client";
-import axios from "axios";
+
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/Navigation";
-import { BASE_URL } from "@/apis/axios";
+import { axiosApi } from "@/apis/axios";
 import { CheckButton } from "@/components/atoms/CheckButton";
 import { LargeButton } from "@/components/atoms/LargeButton";
 import { OnboardingInput } from "@/components/atoms/OnboardingInput";
@@ -20,8 +20,6 @@ export default function Account({
   onNext: () => void;
   onPrev: () => void;
 }) {
-  const router = useRouter();
-
   const [info, setInfo] = useState({
     email: "",
     checkcode: "",
@@ -44,6 +42,14 @@ export default function Account({
   const handleChange = (key: keyof typeof info, value: string) => {
     setInfo((prev) => ({ ...prev, [key]: value }));
     setFieldError(key as keyof typeof errorState, false);
+
+    if (key === "email") {
+      // 이메일이 바뀌면 타이머, 인증상태 초기화
+      setIsCounting(false);
+      setTimerSeconds(0);
+      setIsCheckCodeSuccess(false);
+      setSuccessMessages("");
+    }
   };
 
   const setFieldError = (
@@ -63,45 +69,71 @@ export default function Account({
       return;
     }
 
+    setFieldError("email", false);
+    setFieldError("checkcode", false);
     setIsCheckCodeSuccess(false);
     setSuccessMessages("");
-    setFieldError("checkcode", false);
-
-    if (info.email === "test1@naver.com") {
-      setTimerSeconds(180);
-      setIsCounting(true);
-      return;
-    }
 
     try {
-      const { data } = await axios.get(`${BASE_URL}/auth/email/check`, {
+      const { data: checkData } = await axiosApi.get("/auth/email/check", {
         params: { email: info.email },
       });
 
-      if (data.isSuccess && data.data?.isAvailable) {
-        setTimerSeconds(180);
-        setIsCounting(true);
+      if (checkData.isSuccess && checkData.data?.isAvailable) {
+        const { data: sendCodeData } = await axiosApi.post(
+          "/auth/email/send-code",
+          {
+            email: info.email,
+          }
+        );
+
+        if (sendCodeData.isSuccess && sendCodeData.code === "COMMON002") {
+          setTimerSeconds(180);
+          setIsCounting(true);
+        } else {
+          setFieldError("email", true, "인증코드 전송에 실패했습니다.");
+        }
       } else {
         setFieldError("email", true, "이미 등록된 이메일입니다.");
         setIsCounting(false);
       }
     } catch {
-      setFieldError("email", true, "이메일 중복 체크에 실패했습니다.");
+      setFieldError("email", true, "이메일 인증 요청에 실패했습니다.");
       setIsCounting(false);
     }
   };
 
-  const handleCheckCode = () => {
-    if (info.checkcode !== "123456") {
-      setFieldError("checkcode", true, "올바르지 않은 인증번호입니다.");
+  const handleCheckCode = async () => {
+    if (!info.checkcode) {
+      setFieldError("checkcode", true, "인증번호를 입력해주세요.");
+      return;
+    }
+
+    setFieldError("checkcode", false);
+    setIsCheckCodeSuccess(false);
+    setSuccessMessages("");
+
+    try {
+      const { data } = await axiosApi.post("/auth/email/verify", {
+        email: info.email,
+        verificationCode: info.checkcode,
+      });
+
+      if (data.isSuccess && data.code === "COMMON001") {
+        setFieldError("checkcode", false);
+        setSuccessMessages("인증이 완료되었습니다.");
+        setIsCheckCodeSuccess(true);
+        setTimerSeconds(0);
+        setIsCounting(false);
+      } else {
+        setFieldError("checkcode", true, "올바르지 않은 인증번호입니다.");
+        setIsCheckCodeSuccess(false);
+        setSuccessMessages("");
+      }
+    } catch {
+      setFieldError("checkcode", true, "인증번호 확인에 실패했습니다.");
       setIsCheckCodeSuccess(false);
       setSuccessMessages("");
-    } else {
-      setFieldError("checkcode", false);
-      setSuccessMessages("인증이 완료되었습니다.");
-      setIsCheckCodeSuccess(true);
-      setTimerSeconds(0);
-      setIsCounting(false);
     }
   };
 
