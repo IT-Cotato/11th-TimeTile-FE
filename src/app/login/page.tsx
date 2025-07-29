@@ -47,28 +47,24 @@ export default function Login() {
       setErrorMsg("비밀번호를 입력해주세요.");
       return;
     }
-
     try {
       const response = await axiosApi.post("/auth/login", {
         email: info.email,
         password: info.password,
       });
 
-      const data = response.data;
-      if (data.isSuccess) {
-        // 토큰 저장
-        localStorage.setItem("accessToken", data.data.accessToken);
-        localStorage.setItem("refreshToken", data.data.refreshToken);
-
-        // 로그인 성공 후, 메인 페이지 이동
+      if (response.status === 200) {
         router.push("/");
+        console.log("로그인 성공");
+      }
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        setIsError(true);
+        setErrorMsg("존재하지 않는 유저입니다.");
       } else {
         setIsError(true);
-        setErrorMsg(data.message || "로그인에 실패했습니다.");
+        setErrorMsg("로그인에 실패했습니다.");
       }
-    } catch (error) {
-      setIsError(true);
-      setErrorMsg("로그인 요청 중 오류가 발생했습니다.");
     }
   };
 
@@ -89,7 +85,7 @@ export default function Login() {
       </CloseIconWrapper>
       <ContentWrapper>
         <FlexBox direction="column" gap={24} style={{ height: "100%" }}>
-          <Svg children={<SymbolTextLogo />} />
+          <Svg children={<SymbolTextLogo />} onClick={() => router.push("/")} />
           <LoginArea>
             <OnboardingInput
               variant="default"

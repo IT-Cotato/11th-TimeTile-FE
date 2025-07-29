@@ -1,43 +1,32 @@
-import { AxiosInstance } from "axios";
-
-const getAccessToken = () => localStorage.getItem("accessToken");
-const getRefreshToken = () => localStorage.getItem("refreshToken");
+import { AxiosInstance, AxiosError } from "axios";
 
 export const authInterceptor = (
   authAxios: AxiosInstance,
   axiosApi: AxiosInstance
 ) => {
+  // 요청 시 쿠키 전송 설정
   authAxios.interceptors.request.use((config) => {
-    const token = getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    config.withCredentials = true;
     return config;
   });
 
   authAxios.interceptors.response.use(
     (response) => response,
-    async (error) => {
-      const originalRequest = error.config;
+    async (error: AxiosError) => {
+      const originalRequest = error.config as any;
+
+      // accessToken이 만료되어 401 발생시
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-          const refreshToken = getRefreshToken();
-          if (!refreshToken) return Promise.reject(error);
-
-          const { data } = await axiosApi.post("/auth/reissue", {
-            refreshToken,
-          });
-
-          const newAccessToken = data.data.accessToken;
-          localStorage.setItem("accessToken", newAccessToken);
-
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          await axiosApi.post("/auth/reissue", {}, { withCredentials: true });
           return authAxios(originalRequest);
         } catch (refreshError) {
+          // 재발급 실패 (refreshToken 만료)
           return Promise.reject(refreshError);
         }
       }
+
       return Promise.reject(error);
     }
   );

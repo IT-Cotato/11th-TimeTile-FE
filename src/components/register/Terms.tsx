@@ -1,40 +1,76 @@
 "use client";
 
-import { FlexBox } from "@/components/layouts/FlexBox";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
+import { useAtom } from "jotai";
+import { agreementIdsAtom } from "@/store/auth";
+import { authApi } from "@/apis/authApi";
+
 import RegisterHeader from "./RegisterHeader";
+import { FlexBox } from "@/components/layouts/FlexBox";
 import { Buttons } from "../atoms/Buttons";
 import { CheckBox } from "../atoms/CheckBox";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 
-export default function Terms({ onNext }: { onNext: () => void }) {
+type Term = {
+  id: number;
+  title: string;
+  content: string;
+  required: boolean;
+};
+
+export default function Terms({
+  onNext,
+}: {
+  onNext: (agreementIds: number[]) => void;
+}) {
   const router = useRouter();
-  const [agreement, setAgreement] = useState({
-    service: false,
-    community: false,
-    privacy: false,
-    marketing: false,
-  });
+  const [, setAgreementIds] = useAtom(agreementIdsAtom);
 
-  const handleCheckBox = (key: keyof typeof agreement) => {
-    setAgreement((prev) => ({ ...prev, [key]: !prev[key] }));
+  const [terms, setTerms] = useState<Term[]>([]);
+  const [checkedIds, setCheckedIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    const fetchTerms = async () => {
+      try {
+        const { data } = await authApi.getTerms();
+        if (data.isSuccess) {
+          setTerms(data.data.terms);
+        }
+      } catch (err) {
+        console.error("약관 로딩 실패:", err);
+      }
+    };
+    fetchTerms();
+  }, []);
+
+  const toggleCheck = (id: number) => {
+    console.log(checkedIds);
+    setCheckedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
   };
 
-  const checkAll = Object.values(agreement).every(Boolean);
+  const allChecked =
+    terms.length > 0 && terms.every((term) => checkedIds.includes(term.id));
 
   const handleAllAgree = () => {
-    const isCheckAll = !checkAll;
-    setAgreement({
-      service: isCheckAll,
-      community: isCheckAll,
-      privacy: isCheckAll,
-      marketing: isCheckAll,
-    });
+    if (allChecked) {
+      setCheckedIds([]);
+    } else {
+      setCheckedIds(terms.map((term) => term.id));
+    }
   };
 
-  const isRequiredCheckedAll =
-    agreement.service && agreement.community && agreement.privacy;
+  const requiredChecked = terms
+    .filter((term) => term.required)
+    .every((term) => checkedIds.includes(term.id));
+
+  const handleNext = () => {
+    setAgreementIds(checkedIds);
+    sessionStorage.setItem("agreementIds", JSON.stringify(checkedIds));
+    onNext(checkedIds);
+  };
 
   return (
     <Wrapper>
@@ -45,39 +81,21 @@ export default function Terms({ onNext }: { onNext: () => void }) {
             onPrev={() => router.push("/login")}
           />
           <RegisterArea>
-            <CheckBox
-              title="서비스 이용약관 동의"
-              required={true}
-              body="서비스 이용약관 서비스 이용약관서비스 이용약관서비스 이용약관"
-              checked={agreement.service}
-              onClick={() => handleCheckBox("service")}
-            />
-            <CheckBox
-              title="커뮤니티 이용 규칙 확인"
-              required={true}
-              body="서비스 이용약관 서비스 이용약관서비스 이용약관서비스 이용약관"
-              checked={agreement.community}
-              onClick={() => handleCheckBox("community")}
-            />
-            <CheckBox
-              title="개인정보 수집 및 이용 동의"
-              required={true}
-              body="서비스 이용약관 서비스 이용약관서비스 이용약관서비스 이용약관"
-              checked={agreement.privacy}
-              onClick={() => handleCheckBox("privacy")}
-            />
-            <CheckBox
-              title="마케팅 정보 수신"
-              required={false}
-              body="서비스 이용약관 서비스 이용약관서비스 이용약관서비스 이용약관"
-              checked={agreement.marketing}
-              onClick={() => handleCheckBox("marketing")}
-            />
+            {terms.map((term) => (
+              <CheckBox
+                key={term.id}
+                title={term.title}
+                required={term.required}
+                body={term.content}
+                checked={checkedIds.includes(term.id)}
+                onClick={() => toggleCheck(term.id)}
+              />
+            ))}
             <AllCheckWrapper>
               <CheckBox
                 title="위 약관에 모두 동의합니다."
                 allAgree={true}
-                checked={checkAll}
+                checked={allChecked}
                 onClick={handleAllAgree}
               />
             </AllCheckWrapper>
@@ -85,8 +103,8 @@ export default function Terms({ onNext }: { onNext: () => void }) {
               <Buttons
                 children="다음"
                 variant="addTile"
-                onClick={onNext}
-                disabled={!isRequiredCheckedAll}
+                onClick={handleNext}
+                disabled={!requiredChecked}
               />
             </ButtonWrapper>
           </RegisterArea>

@@ -12,6 +12,7 @@ export function AccountForm() {
   const [errorState, setErrorState] = useState({
     email: { isError: false, message: "" },
     checkcode: { isError: false, message: "" },
+    password: { isError: false, message: "" },
     passwordCheck: { isError: false, message: "" },
   });
 
@@ -53,6 +54,29 @@ export function AccountForm() {
     } else {
       setFieldError("passwordCheck", false);
       setIsPasswordCheck(true);
+    }
+  };
+
+  const isPasswordValid = (password: string) => {
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>/?]).{6,19}$/;
+    return regex.test(password);
+  };
+
+  const handlePasswordBlur = () => {
+    if (!info.password) {
+      setFieldError("password", false);
+      return;
+    }
+
+    if (!isPasswordValid(info.password)) {
+      setFieldError(
+        "password",
+        true,
+        "비밀번호는 영문 대소문자, 숫자, 특수문자를 포함한 6자 이상 20자 미만으로 입력해주세요."
+      );
+    } else {
+      setFieldError("password", false);
     }
   };
 
@@ -128,6 +152,7 @@ export function AccountForm() {
     setFieldError,
     handleChange,
     handlePasswordCheck,
+    handlePasswordBlur,
     sendCode,
     checkCode,
     setInfo,

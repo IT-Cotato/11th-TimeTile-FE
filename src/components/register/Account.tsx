@@ -1,15 +1,18 @@
 "use client";
 
-import { AccountForm } from "./AccountForm";
-import { useTimer } from "@/hooks/useTimer";
+import { useState } from "react";
+import styled from "styled-components";
+import RegisterHeader from "./RegisterHeader";
+import { OnboardingInput } from "@/components/atoms/OnboardingInput";
 import { CheckButton } from "@/components/atoms/CheckButton";
 import { LargeButton } from "@/components/atoms/LargeButton";
-import { OnboardingInput } from "@/components/atoms/OnboardingInput";
-import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
+import { Text } from "@/components/atoms/Text";
 import { theme } from "@/styles/theme";
-import RegisterHeader from "@/components/register/RegisterHeader";
-import styled from "styled-components";
+import { useTimer } from "@/hooks/useTimer";
+import { AccountForm } from "./AccountForm";
+import { registerInfoAtom } from "@/store/auth";
+import { useAtom } from "jotai";
 
 export default function Account({
   onNext,
@@ -26,25 +29,22 @@ export default function Account({
     isPasswordCheck,
     handleChange,
     handlePasswordCheck,
+    handlePasswordBlur,
     sendCode,
     checkCode,
-    setFieldError,
   } = AccountForm();
 
   const { seconds, isCounting, startTimer, stopTimer } = useTimer(0);
+  const [registerInfo, setRegisterInfo] = useAtom(registerInfoAtom);
 
   const handleSendCodeClick = async () => {
     const success = await sendCode();
-    if (success) {
-      startTimer(180);
-    }
+    if (success) startTimer(180);
   };
 
   const handleCheckCodeClick = async () => {
     const success = await checkCode();
-    if (success) {
-      stopTimer();
-    }
+    if (success) stopTimer();
   };
 
   const isNextEnabled =
@@ -57,6 +57,15 @@ export default function Account({
     !errorState.passwordCheck.isError &&
     isCheckCodeSuccess &&
     isPasswordCheck;
+
+  const handleNextClick = () => {
+    setRegisterInfo((prev) => ({
+      ...prev,
+      email: info.email,
+      password: info.password,
+    }));
+    onNext();
+  };
 
   return (
     <Wrapper>
@@ -103,8 +112,12 @@ export default function Account({
             <OnboardingInput
               variant="password"
               value={info.password}
+              onBlur={handlePasswordBlur}
               onChange={(e) => handleChange("password", e.target.value)}
               label="비밀번호"
+              placeholder="영문 대소문자, 숫자, 특수문자를 포함해 6~20자 이내로 입력해주세요."
+              isError={errorState.password.isError}
+              errormsg={errorState.password.message}
             />
             <OnboardingInput
               variant="password"
@@ -112,6 +125,7 @@ export default function Account({
               onChange={(e) => handleChange("passwordCheck", e.target.value)}
               onBlur={handlePasswordCheck}
               label="비밀번호 확인"
+              placeholder="비밀번호를 다시 입력해주세요."
               isError={errorState.passwordCheck.isError}
               errormsg={errorState.passwordCheck.message}
               isCheck={isPasswordCheck}
@@ -123,7 +137,7 @@ export default function Account({
               children="다음"
               variant="default"
               disabled={!isNextEnabled}
-              onClick={onNext}
+              onClick={handleNextClick}
             />
           </ButtonWrapper>
 
@@ -137,6 +151,7 @@ export default function Account({
             />
             <Line />
           </FlexBox>
+
           <SocialLoginContainer>
             <LargeButton
               variant="google"
@@ -171,7 +186,7 @@ const Wrapper = styled.div`
 const ContentWrapper = styled.div`
   width: 100%;
   max-width: 424px;
-  padding: 46px 0px;
+  padding: 46px 0;
 
   @media (max-width: 480px) {
     padding: 46px 10px;

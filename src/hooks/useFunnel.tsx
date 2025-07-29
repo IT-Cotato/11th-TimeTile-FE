@@ -1,32 +1,42 @@
-import { useState, ReactNode } from "react";
+import { useState, useEffect } from "react";
 
-export function useFunnel<T extends string>(steps: T[]) {
-  const [currentStep, setCurrentStep] = useState<T>(steps[0]);
+export function useFunnel(steps: string[], initialStep?: string) {
+  const [currentStep, setCurrentStep] = useState(
+    initialStep && steps.includes(initialStep) ? initialStep : steps[0]
+  );
 
-  const Funnel = ({ children }: { children: ReactNode }) => <>{children}</>;
+  useEffect(() => {
+    if (!steps.includes(currentStep)) {
+      setCurrentStep(
+        initialStep && steps.includes(initialStep) ? initialStep : steps[0]
+      );
+    }
+  }, [steps, initialStep, currentStep]);
 
-  const Step = ({ name, children }: { name: T; children: ReactNode }) => {
+  const toNext = () => {
+    const idx = steps.indexOf(currentStep);
+    if (idx < steps.length - 1) setCurrentStep(steps[idx + 1]);
+  };
+
+  const toPrev = () => {
+    const idx = steps.indexOf(currentStep);
+    if (idx > 0) setCurrentStep(steps[idx - 1]);
+  };
+
+  const Funnel = ({ children }: { children: React.ReactNode }) => {
+    return <>{children}</>;
+  };
+
+  const Step = ({
+    name,
+    children,
+  }: {
+    name: string;
+    children: React.ReactNode;
+  }) => {
     if (name !== currentStep) return null;
     return <>{children}</>;
   };
 
-  const toNext = () => {
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
-    }
-  };
-
-  const toPrev = () => {
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1]);
-    }
-  };
-
-  const moveStep = (step: T) => {
-    if (steps.includes(step)) setCurrentStep(step);
-  };
-
-  return { Funnel, Step, toNext, toPrev, moveStep, currentStep };
+  return { Funnel, Step, toNext, toPrev, currentStep, setCurrentStep };
 }

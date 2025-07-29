@@ -1,26 +1,53 @@
 "use client";
-import { useRef } from "react";
+
+import { useRef, useState } from "react";
 import styled from "styled-components";
 import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
 import { ImageIcon } from "@/assets/icons/ImageIcon";
+import { authApi } from "@/apis/authApi";
 
 export const ProfileImageUploader = ({
   imageFile,
   onChange,
+  onUploadComplete,
 }: {
   imageFile: File | null;
   onChange: (file: File | null) => void;
+  onUploadComplete: (key: string) => void;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
   const handleClick = () => fileInputRef.current?.click();
 
-  const previewUrl = imageFile ? URL.createObjectURL(imageFile) : null;
+  const handleFileChange = async (file: File) => {
+    onChange(file);
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    if (!ext || !["jpg", "jpeg", "png"].includes(ext)) return;
+
+    setUploading(true);
+    try {
+      const res = await authApi.getPresignedUrl(ext as any);
+      const { key, url } = res.data;
+
+      await fetch(url, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      });
+
+      onUploadComplete(key);
+    } catch (error) {
+      console.error("파일 업로드 실패", error);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   return (
     <>
       <Container onClick={handleClick}>
-        {previewUrl ? (
-          <img src={previewUrl} alt="프로필 미리보기" />
+        {imageFile ? (
+          <img src={URL.createObjectURL(imageFile)} alt="프로필 미리보기" />
         ) : (
           <Wrapper>
             <BasicSymbolLogo />
@@ -37,7 +64,7 @@ export const ProfileImageUploader = ({
         ref={fileInputRef}
         onChange={(e) => {
           if (e.target.files && e.target.files[0]) {
-            onChange(e.target.files[0]);
+            handleFileChange(e.target.files[0]);
           }
         }}
         style={{ display: "none" }}

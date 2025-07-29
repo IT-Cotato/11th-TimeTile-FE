@@ -1,39 +1,95 @@
 "use client";
 
-import { FlexBox } from "@/components/layouts/FlexBox";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { LargeButton } from "@/components/atoms/LargeButton";
-import { OnboardingInput } from "@/components/atoms/OnboardingInput";
-import { CheckButton } from "../atoms/CheckButton";
-import { useState } from "react";
 import RegisterHeader from "./RegisterHeader";
 import { ProfileImageUploader } from "./ProfileImageUploader";
+import { OnboardingInput } from "@/components/atoms/OnboardingInput";
+import { CheckButton } from "../atoms/CheckButton";
+import { LargeButton } from "@/components/atoms/LargeButton";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/apis/authApi";
+import { FlexBox } from "@/components/layouts/FlexBox";
+import { useAtom } from "jotai";
+import {
+  agreementIdsAtom,
+  registerInfoAtom,
+  socialRegisterInfoAtom,
+} from "@/store/auth";
 
-export default function Profile({ onPrev }: { onPrev: () => void }) {
+export default function Profile({
+  onPrev,
+  temporaryToken,
+}: {
+  onPrev: () => void;
+  temporaryToken?: string;
+}) {
   const router = useRouter();
-  const [info, setInfo] = useState({
-    nickname: "",
-    intro: "",
-    profileImage: null as File | null,
-  });
-
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessages, setSuccessMessages] = useState("");
 
-  const handleChange = (
-    key: keyof typeof info,
-    value: string | File | null
-  ) => {
-    setInfo((prev) => ({ ...prev, [key]: value }));
-    if (key === "nickname") {
-      setIsNicknameAvailable(false);
-      setErrorMessage("");
-      setSuccessMessages("");
+  const [registerInfo, setRegisterInfo] = useAtom(registerInfoAtom);
+  const [socialRegisterInfo, setSocialRegisterInfo] = useAtom(
+    socialRegisterInfoAtom
+  );
+  const [agreementIds] = useAtom(agreementIdsAtom);
+
+  const [nickname, setNickname] = useState("");
+  const [intro, setIntro] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (temporaryToken) {
+      const stored = sessionStorage.getItem("agreementIds");
+      if (stored) {
+        const ids = JSON.parse(stored);
+        setSocialRegisterInfo((prev) => ({
+          ...prev,
+          agreementIds: ids,
+        }));
+      }
+    } else {
+      setRegisterInfo((prev) => ({
+        ...prev,
+        agreementIds,
+      }));
+    }
+  }, [temporaryToken, agreementIds, setSocialRegisterInfo, setRegisterInfo]);
+
+  useEffect(() => {
+    const currentInfo = temporaryToken ? socialRegisterInfo : registerInfo;
+    setNickname(currentInfo.nickname);
+    setIntro(currentInfo.intro);
+  }, [temporaryToken, registerInfo, socialRegisterInfo]);
+
+  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNickname(e.target.value);
+    setIsNicknameAvailable(false);
+    setErrorMessage("");
+    setSuccessMessages("");
+  };
+
+  const handleIntroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIntro(e.target.value);
+  };
+
+  const handleNicknameBlur = () => {
+    if (temporaryToken) {
+      setSocialRegisterInfo((prev) => ({ ...prev, nickname }));
+    } else {
+      setRegisterInfo((prev) => ({ ...prev, nickname }));
     }
   };
+
+  const handleIntroBlur = () => {
+    if (temporaryToken) {
+      setSocialRegisterInfo((prev) => ({ ...prev, intro }));
+    } else {
+      setRegisterInfo((prev) => ({ ...prev, intro }));
+    }
+  };
+
+  const currentInfo = temporaryToken ? socialRegisterInfo : registerInfo;
 
   const validateNickname = (nickname: string) => {
     const regex = /^[가-힣a-z0-9]{2,15}$/;
@@ -41,14 +97,14 @@ export default function Profile({ onPrev }: { onPrev: () => void }) {
   };
 
   const handleCheckNickname = async () => {
-    if (!info.nickname.trim()) {
+    if (!currentInfo.nickname.trim()) {
       setIsNicknameAvailable(false);
       setErrorMessage("닉네임을 입력해주세요.");
       setSuccessMessages("");
       return;
     }
 
-    if (!validateNickname(info.nickname)) {
+    if (!validateNickname(currentInfo.nickname)) {
       setIsNicknameAvailable(false);
       setErrorMessage("닉네임은 2~15자, 한글/소문자/숫자만 가능합니다.");
       setSuccessMessages("");
@@ -56,20 +112,51 @@ export default function Profile({ onPrev }: { onPrev: () => void }) {
     }
 
     try {
-      const { data } = await authApi.checkNickname(info.nickname);
+      const { data } = await authApi.checkNickname(currentInfo.nickname);
       if (data.isSuccess && data.data?.isAvailable) {
         setIsNicknameAvailable(true);
         setErrorMessage("");
         setSuccessMessages("사용 가능한 닉네임입니다.");
+        console.log(currentInfo);
       } else {
         setIsNicknameAvailable(false);
-        setErrorMessage("이미 사용중인 닉네임입니다.");
+        setErrorMessage("이미 존재하는 닉네임입니다.");
         setSuccessMessages("");
       }
     } catch {
       setIsNicknameAvailable(false);
       setErrorMessage("닉네임 중복 확인에 실패했습니다.");
       setSuccessMessages("");
+    }
+  };
+
+  const handleRegister = async () => {
+    try {
+      const uploadedImageKey = currentInfo.imageKey || null;
+
+      if (temporaryToken) {
+        await authApi.socialRegister({
+          temporaryToken,
+          nickname: currentInfo.nickname,
+          introduction: currentInfo.intro ? currentInfo.intro : null,
+          imageKey: uploadedImageKey,
+          agreementIds: currentInfo.agreementIds,
+        });
+      } else {
+        await authApi.normalRegister({
+          email: registerInfo.email,
+          password: registerInfo.password,
+          nickname: registerInfo.nickname,
+          introduction: registerInfo.intro ? registerInfo.intro : null,
+          imageKey: registerInfo.imageKey ? registerInfo.imageKey : null,
+          agreementIds: registerInfo.agreementIds,
+        });
+      }
+
+      sessionStorage.removeItem("agreementIds");
+      router.replace("/");
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -80,14 +167,31 @@ export default function Profile({ onPrev }: { onPrev: () => void }) {
           <RegisterHeader currentStep={3} onPrev={onPrev} />
           <RegisterArea>
             <ProfileImageUploader
-              imageFile={info.profileImage}
-              onChange={(file) => handleChange("profileImage", file)}
+              imageFile={currentInfo.profileImage}
+              onChange={(file) => {
+                if (temporaryToken) {
+                  setSocialRegisterInfo((prev) => ({
+                    ...prev,
+                    profileImage: file,
+                  }));
+                } else {
+                  setRegisterInfo((prev) => ({ ...prev, profileImage: file }));
+                }
+              }}
+              onUploadComplete={(key) => {
+                if (temporaryToken) {
+                  setSocialRegisterInfo((prev) => ({ ...prev, imageKey: key }));
+                } else {
+                  setRegisterInfo((prev) => ({ ...prev, imageKey: key }));
+                }
+              }}
             />
             <Row>
               <OnboardingInput
                 variant="default"
-                value={info.nickname}
-                onChange={(e) => handleChange("nickname", e.target.value)}
+                value={nickname}
+                onChange={handleNicknameChange}
+                onBlur={handleNicknameBlur}
                 width={350}
                 label="닉네임"
                 placeholder="닉네임을 입력해주세요."
@@ -97,25 +201,25 @@ export default function Profile({ onPrev }: { onPrev: () => void }) {
                 required
                 successMsg={successMessages}
               />
-              <CheckButton children="중복 확인" onClick={handleCheckNickname} />
+              <CheckButton onClick={handleCheckNickname}>중복 확인</CheckButton>
             </Row>
             <OnboardingInput
               variant="count"
-              value={info.intro}
-              onChange={(e) => handleChange("intro", e.target.value)}
+              value={intro ?? ""}
+              onChange={handleIntroChange}
+              onBlur={handleIntroBlur}
               label="한줄 소개"
               placeholder="자기소개를 입력해주세요."
             />
           </RegisterArea>
           <ButtonWrapper>
             <LargeButton
-              children="회원가입"
               variant="default"
-              onClick={() => {
-                router.push("/");
-              }}
+              onClick={handleRegister}
               disabled={!isNicknameAvailable}
-            />
+            >
+              회원가입
+            </LargeButton>
           </ButtonWrapper>
         </FlexBox>
       </ContentWrapper>
