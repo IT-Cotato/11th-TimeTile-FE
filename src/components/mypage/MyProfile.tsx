@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
-import { authAxios, axiosApi } from "@/apis/axios";
 import { Text } from "../atoms/Text";
 import { Tag } from "../atoms/Tag";
 import { Buttons } from "../atoms/Buttons";
