@@ -15,6 +15,7 @@ interface RecordPostProps {
   images: string[];
   likes: number;
   comments: number;
+  onImageClick?: (index: number) => void;
 }
 
 const RecordPost = ({
@@ -27,6 +28,7 @@ const RecordPost = ({
   images,
   likes,
   comments,
+  onImageClick,
 }: RecordPostProps) => {
   const imageGridRef = useRef<HTMLDivElement>(null);
 
@@ -59,7 +61,11 @@ const RecordPost = ({
 
           <ImageGrid ref={imageGridRef}>
             {images.map((img, index) => (
-              <PostImage key={index} src={img} />
+              <PostImage
+                key={index}
+                src={img}
+                onClick={() => onImageClick?.(index)}
+              />
             ))}
           </ImageGrid>
         </ImageWrapper>
@@ -148,8 +154,8 @@ const ImageGrid = styled.div`
 `;
 
 const PostImage = styled.img`
-  width: 164px;
-  height: 164px;
+  width: 274px;
+  height: 232px;
   object-fit: contain;
   border-radius: 8px;
   flex-shrink: 0;
