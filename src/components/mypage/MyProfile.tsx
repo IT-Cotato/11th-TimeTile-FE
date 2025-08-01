@@ -5,29 +5,21 @@ import { Text } from "../atoms/Text";
 import { Tag } from "../atoms/Tag";
 import { Buttons } from "../atoms/Buttons";
 import { EditIcon } from "@/assets/icons/EditIcon";
+import { usersApi } from "@/apis/usersApi";
+import { Editor } from "./../../assets/images/role/Editor";
+import { FlexBox } from "@/components/layouts/FlexBox";
 
 interface UserProfile {
   id: number;
   nickname: string;
   profileImageUrl: string;
   role: string;
+  visibility: string;
   followingCount: number;
   followerCount: number;
   postCount: number;
   introduction: string;
 }
-
-const mockProfile = {
-  id: 1,
-  nickname: "닉네임1",
-  profileImageUrl:
-    "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png",
-  role: "WATCHER",
-  followingCount: 0,
-  followerCount: 0,
-  postCount: 0,
-  introduction: "안녕하세요1",
-};
 
 const song = "투모로우바이투게더 - tommorow xjdjdjdjjaja";
 
@@ -35,8 +27,17 @@ export const MyProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    // 일단 목데이터로 연결
-    setProfile(mockProfile);
+    const fetchProfile = async () => {
+      try {
+        const res = await usersApi.getMyProfile();
+        setProfile(res.data);
+        console.log(res.data);
+      } catch (error) {
+        console.error("프로필을 불러오는데 실패했습니다", error);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   if (!profile) return <div>로딩 중...</div>;
@@ -48,7 +49,10 @@ export const MyProfile = () => {
         alt={`${profile.nickname}의 프로필 이미지`}
       />
       <Info>
-        <Text typo="H1" color="gray_1000" children={profile.nickname} />
+        <FlexBox gap={8} justify="start" align="center">
+          <Editor width={24} />
+          <Text typo="H1" color="gray_1000" children={profile.nickname} />
+        </FlexBox>
         <Stats>
           <Part>
             <Text typo="Caption_1" children="내 기록" />

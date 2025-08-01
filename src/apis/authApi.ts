@@ -34,9 +34,4 @@ export const authApi = {
     axiosApi.post("/users/files", { extension }),
 
   getTerms: () => axiosApi.get("/terms"),
-
-  getUserProfile: async (targetId: number) => {
-    const res = await axiosApi.get(`/users/${targetId}/profile`);
-    return res.data;
-  },
 };
