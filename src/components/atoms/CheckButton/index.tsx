@@ -2,7 +2,8 @@ import { theme } from "@/styles/theme";
 import styled from "styled-components";
 import { Text } from "../Text";
 
-interface CheckButtonProps {
+interface CheckButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: string;
   onClick?: () => void;
   isDisabled?: boolean;

@@ -18,10 +18,14 @@ export const ProgressBar = ({ currentStep, totalStep }: ProgressBarProps) => {
 
 const BarWrapper = styled.div`
   position: relative;
-  width: 424px;
+  width: 100%;
   height: 4px;
   border-radius: 2px;
   background-color: ${theme.palette.gray_100};
+
+  @media (max-width: 480px) {
+    display: none;
+  }
 `;
 
 const BarFill = styled.div`

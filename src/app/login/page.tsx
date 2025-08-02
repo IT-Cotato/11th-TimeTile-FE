@@ -1,5 +1,6 @@
 "use client";
 
+import { axiosApi } from "@/apis/axios";
 import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { SymbolTextLogo } from "@/assets/images/SymbolTextLogo";
 import { LargeButton } from "@/components/atoms/LargeButton";
@@ -20,12 +21,11 @@ export default function Login() {
   };
 
   const [info, setInfo] = useState({
-    //이메일, 비번 저장 객체
     email: "",
     password: "",
   });
-  const [isError, setIsError] = useState(false); //에러 여부
-  const [errorMsg, setErrorMsg] = useState(""); //에러 메시지
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleChange = (key: "email" | "password", value: string) => {
     setInfo((prev) => ({
@@ -36,7 +36,7 @@ export default function Login() {
     setErrorMsg("");
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!info.email) {
       setIsError(true);
       setErrorMsg("이메일을 입력해주세요.");
@@ -47,28 +47,45 @@ export default function Login() {
       setErrorMsg("비밀번호를 입력해주세요.");
       return;
     }
+    try {
+      const response = await axiosApi.post("/auth/login", {
+        email: info.email,
+        password: info.password,
+      });
 
-    //실제 로그인 로직 추후 연결 예정
-    const isLoginValid = mockLogin(info.email, info.password);
-    if (!isLoginValid) {
-      setIsError(true);
-      setErrorMsg("이메일 혹은 비밀번호가 일치하지 않습니다.");
-      return;
+      if (response.status === 200) {
+        router.push("/");
+        console.log("로그인 성공");
+      }
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        setIsError(true);
+        setErrorMsg("존재하지 않는 유저입니다.");
+      } else {
+        setIsError(true);
+        setErrorMsg("로그인에 실패했습니다.");
+      }
     }
+  };
+
+  const kakaoLogin = () => {
+    window.location.href =
+      "https://timetile-api.click/oauth2/authorization/kakao";
+  };
+
+  const googleLogin = () => {
+    window.location.href =
+      "https://timetile-api.click/oauth2/authorization/google";
   };
 
   return (
     <Wrapper>
-      <CloseIconWrapper
-        onClick={() => {
-          /* 사용자가 이전에 보던 페이지로 라우팅 예정 */
-        }}
-      >
+      <CloseIconWrapper onClick={() => router.back()}>
         <Svg children={<CloseIcon />} />
       </CloseIconWrapper>
       <ContentWrapper>
         <FlexBox direction="column" gap={24} style={{ height: "100%" }}>
-          <Svg children={<SymbolTextLogo />} />
+          <Svg children={<SymbolTextLogo />} onClick={() => router.push("/")} />
           <LoginArea>
             <OnboardingInput
               variant="default"
@@ -88,19 +105,22 @@ export default function Login() {
             />
           </LoginArea>
           {!isError && <MarginBox />}
-          <LargeButton
-            variant="default"
-            width={424}
-            onClick={handleLogin}
-            disabled={!info.email || !info.password}
-            children="로그인"
-          />
-          <FlexBox gap={16}>
+          <ButtonWrapper>
+            <LargeButton
+              variant="default"
+              width={424}
+              onClick={handleLogin}
+              disabled={!info.email || !info.password}
+              children="로그인"
+            />
+          </ButtonWrapper>
+          <FlexBox gap={16} style={{ width: "100%" }}>
             <Line />
             <Text
               children="SNS로 로그인하기"
               typo="Caption_1"
               color="gray_600"
+              style={{ whiteSpace: "nowrap" }}
             />
             <Line />
           </FlexBox>
@@ -109,19 +129,22 @@ export default function Login() {
               variant="google"
               width={424}
               children="Google로 로그인"
+              onClick={googleLogin}
             />
             <LargeButton
               variant="kakao"
               width={424}
               children="Kakao로 로그인"
+              onClick={kakaoLogin}
             />
           </SocialLoginContainer>
-          <FlexBox gap={16}>
+          <FlexBox gap={16} style={{ width: "100%" }}>
             <Line />
             <Text
               children="아직 계정이 없으신가요?"
               typo="Caption_1"
               color="gray_600"
+              style={{ whiteSpace: "nowrap" }}
             />
             <Line />
           </FlexBox>
@@ -134,16 +157,15 @@ export default function Login() {
   );
 }
 
-// 임시로 테스트 위해 만들어둔 로그인 함수
-const mockLogin = (email: string, password: string) => {
-  return email === "cho1428hee@naver.com" && password === "1234";
-};
-
 const Wrapper = styled.div`
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  @media (max-width: 480px) {
+    padding: 0px 10px;
+  }
 `;
 
 const CloseIconWrapper = styled.div`
@@ -155,16 +177,21 @@ const CloseIconWrapper = styled.div`
 
 const ContentWrapper = styled.div`
   width: 100%;
+  max-width: 424px;
   padding: 128px 0;
 `;
 
 const LoginArea = styled.div`
   margin-top: 68px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 16px;
 `;
 
+const ButtonWrapper = styled.div`
+  width: 100%;
+`;
 const MarginBox = styled.div`
   height: 4px;
 `;
@@ -179,6 +206,7 @@ const SocialLoginContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 17px;
+  width: 100%;
 `;
 
 const RegistButton = styled.button`

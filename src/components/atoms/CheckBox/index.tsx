@@ -8,10 +8,11 @@ import { FlexBox } from "@/components/layouts/FlexBox";
 
 interface CheckBoxProps {
   title: string;
-  body: string;
-  required: boolean;
+  body?: string;
+  required?: boolean;
   checked: boolean;
   onClick?: () => void;
+  allAgree?: boolean;
 }
 
 export const CheckBox = ({
@@ -20,6 +21,7 @@ export const CheckBox = ({
   required,
   checked,
   onClick,
+  allAgree = false,
 }: CheckBoxProps) => {
   return (
     <FlexBox direction="column" align="flex-start" gap={8}>
@@ -29,16 +31,19 @@ export const CheckBox = ({
         </CheckBoxIcon>
         <div>
           <Text typo="Body_3" color="gray_1000" children={title} />
-          {required ? (
-            <Text typo="Body_3" color="warning" children="(필수)" />
-          ) : (
-            <Text typo="Body_3" color="gray_500" children="(선택)" />
-          )}
+          {!allAgree &&
+            (required ? (
+              <Text typo="Body_3" color="warning" children="(필수)" />
+            ) : (
+              <Text typo="Body_3" color="gray_500" children="(선택)" />
+            ))}
         </div>
       </CheckArea>
-      <Body>
-        <Text typo="Caption_2" color="gray_1000" children={body} />
-      </Body>
+      {!allAgree && body && (
+        <Body>
+          <Text typo="Caption_2" color="gray_1000" children={body} />
+        </Body>
+      )}
     </FlexBox>
   );
 };
