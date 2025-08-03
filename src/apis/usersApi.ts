@@ -30,4 +30,14 @@ export const usersApi = {
     const res = await basicAxiosApi.put("/users/profile", formData);
     return res.data;
   },
+
+  getFollowingArtists: (lastFollowId?: number) => {
+    const params = lastFollowId ? { lastFollowId } : {};
+    return axiosApi.get("/users/me/following-artists", { params });
+  },
+
+  getFollowingUsers: (lastFollowId?: number) => {
+    const params = lastFollowId ? { lastFollowId } : {};
+    return axiosApi.get("/users/me/following-users", { params });
+  },
 };

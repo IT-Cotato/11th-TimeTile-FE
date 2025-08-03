@@ -14,6 +14,7 @@ import { PrivateIcon } from "@/assets/icons/PrivateIcon";
 import { useSetAtom } from "jotai";
 import { userProfileAtom } from "@/store/UserProfileAtom";
 import { useRouter } from "next/navigation";
+import { FollowingModal } from "./FollowingModal";
 
 interface UserProfile {
   id: number;
@@ -31,6 +32,8 @@ const song = "투모로우바이투게더 - tommorow xjdjdjdjjaja";
 
 export const MyProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isFollowingModalOpen, setIsFollowingModalOpen] =
+    useState<boolean>(false);
   const setUserProfile = useSetAtom(userProfileAtom);
   const router = useRouter();
 
@@ -56,46 +59,47 @@ export const MyProfile = () => {
   if (!profile) return <div>로딩 중...</div>;
 
   return (
-    <Wrapper>
-      <ProfileImg
-        src={profile.profileImageUrl}
-        alt={`${profile.nickname}의 프로필 이미지`}
-      />
-      <Info>
-        <FlexBox gap={8} justify="start" align="center">
-          <Text typo="H1" color="gray_1000" children={profile.nickname} />
-          <RoleIcon role={profile.role} width={24} />
-          {profile.visibility === "PRIVATE" && <PrivateIcon />}
-        </FlexBox>
-        <Stats>
-          <Part>
-            <Text typo="Caption_1" children="내 기록" />
-            <Text typo="Caption_1" children={profile.postCount} />
-          </Part>
-          <Part>
-            <Text typo="Caption_1" children="팔로잉" />
-            <Text typo="Caption_1" children={profile.followingCount} />
-          </Part>
-          <Part>
-            <Text typo="Caption_1" children="팔로워" />
-            <Text typo="Caption_1" children={profile.followerCount} />
-          </Part>
-        </Stats>
-        <FlexDiv>
-          <Tag variant="song" children={song} />
-        </FlexDiv>
-        <Intro>
-          <Text typo="Body_3" children={profile.introduction} />
-        </Intro>
-      </Info>
-      <Buttons
-        width={85}
-        variant="edit"
-        children="수정"
-        leftChildren={<EditIcon />}
-        onClick={handleEditClick}
-      />
-    </Wrapper>
+    <>
+      <Wrapper>
+        <ProfileImg
+          src={profile.profileImageUrl}
+          alt={`${profile.nickname}의 프로필 이미지`}
+        />
+        <Info>
+          <FlexBox gap={8} justify="start" align="center">
+            <Text typo="H1" color="gray_1000" children={profile.nickname} />
+            <RoleIcon role={profile.role} width={24} />
+            {profile.visibility === "PRIVATE" && <PrivateIcon />}
+          </FlexBox>
+          <Stats>
+            <Part onClick={() => setIsFollowingModalOpen(true)}>
+              <Text typo="Caption_1" children="팔로잉" />
+              <Text typo="Caption_1" children={profile.followingCount} />
+            </Part>
+            <Part>
+              <Text typo="Caption_1" children="팔로워" />
+              <Text typo="Caption_1" children={profile.followerCount} />
+            </Part>
+          </Stats>
+          <FlexDiv>
+            <Tag variant="song" children={song} />
+          </FlexDiv>
+          <Intro>
+            <Text typo="Body_3" children={profile.introduction} />
+          </Intro>
+        </Info>
+        <Buttons
+          width={85}
+          variant="edit"
+          children="수정"
+          leftChildren={<EditIcon />}
+          onClick={handleEditClick}
+        />
+      </Wrapper>
+      {isFollowingModalOpen && (
+        <FollowingModal onClose={() => setIsFollowingModalOpen(false)} />
+      )}
+    </>
   );
 };
 
