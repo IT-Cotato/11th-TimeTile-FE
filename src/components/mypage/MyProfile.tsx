@@ -8,12 +8,18 @@ import { EditIcon } from "@/assets/icons/EditIcon";
 import { usersApi } from "@/apis/usersApi";
 import { Editor } from "./../../assets/images/role/Editor";
 import { FlexBox } from "@/components/layouts/FlexBox";
+import { RoleIcon } from "./RoleIcon";
+import { UserRole } from "@/model/common/user";
+import { PrivateIcon } from "@/assets/icons/PrivateIcon";
+import { useSetAtom } from "jotai";
+import { userProfileAtom } from "@/store/UserProfileAtom";
+import { useRouter } from "next/navigation";
 
 interface UserProfile {
   id: number;
   nickname: string;
   profileImageUrl: string;
-  role: string;
+  role: UserRole;
   visibility: string;
   followingCount: number;
   followerCount: number;
@@ -25,12 +31,15 @@ const song = "투모로우바이투게더 - tommorow xjdjdjdjjaja";
 
 export const MyProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const setUserProfile = useSetAtom(userProfileAtom);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await usersApi.getMyProfile();
         setProfile(res.data);
+        setUserProfile(res.data);
         console.log(res.data);
       } catch (error) {
         console.error("프로필을 불러오는데 실패했습니다", error);
@@ -39,6 +48,10 @@ export const MyProfile = () => {
 
     fetchProfile();
   }, []);
+
+  const handleEditClick = () => {
+    router.push("/users/mypage/edit");
+  };
 
   if (!profile) return <div>로딩 중...</div>;
 
@@ -50,8 +63,9 @@ export const MyProfile = () => {
       />
       <Info>
         <FlexBox gap={8} justify="start" align="center">
-          <Editor width={24} />
           <Text typo="H1" color="gray_1000" children={profile.nickname} />
+          <RoleIcon role={profile.role} width={24} />
+          {profile.visibility === "PRIVATE" && <PrivateIcon />}
         </FlexBox>
         <Stats>
           <Part>
@@ -79,6 +93,7 @@ export const MyProfile = () => {
         variant="edit"
         children="수정"
         leftChildren={<EditIcon />}
+        onClick={handleEditClick}
       />
     </Wrapper>
   );

@@ -1,4 +1,4 @@
-import { axiosApi } from "./axios";
+import { axiosApi, basicAxiosApi } from "./axios";
 
 export const usersApi = {
   getUserProfile: async (targetId: number) => {
@@ -13,6 +13,21 @@ export const usersApi = {
 
   getMyProfilePost: async () => {
     const res = await axiosApi.get("/users/me/profile/posts");
+    return res.data;
+  },
+  updateProfile: async (payload: {
+    nickname?: string;
+    introduction?: string;
+    profileImage?: File | null;
+  }) => {
+    const formData = new FormData();
+    if (payload.nickname) formData.append("nickname", payload.nickname);
+    if (payload.introduction)
+      formData.append("introduction", payload.introduction);
+    if (payload.profileImage)
+      formData.append("profileImage", payload.profileImage);
+
+    const res = await basicAxiosApi.put("/users/profile", formData);
     return res.data;
   },
 };
