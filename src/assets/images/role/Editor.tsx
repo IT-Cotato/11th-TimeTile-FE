@@ -1,8 +1,8 @@
-interface EditorProps {
+interface StyleProps {
   width: number;
 }
 
-export const Editor = ({ width }: EditorProps) => {
+export const Editor = ({ width }: StyleProps) => {
   return (
     <>
       <svg

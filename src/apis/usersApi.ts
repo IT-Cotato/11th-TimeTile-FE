@@ -7,7 +7,12 @@ export const usersApi = {
   },
 
   getMyProfile: async () => {
-    const res = await axiosApi.get(`users/me/profile`);
+    const res = await axiosApi.get(`/users/me/profile`);
+    return res.data;
+  },
+
+  getMyProfilePost: async () => {
+    const res = await axiosApi.get("/users/me/profile/posts");
     return res.data;
   },
 };
