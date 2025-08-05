@@ -1,9 +1,6 @@
 "use client";
 
 import styled from "styled-components";
-import { FlexBox } from "../layouts/FlexBox";
-import { useEffect, useState } from "react";
-import { usersApi } from "@/apis/usersApi";
 import { theme } from "@/styles/theme";
 import { Text } from "../atoms/Text";
 import { ChatIcon } from "@/assets/icons/ChatIcon";
@@ -14,9 +11,15 @@ import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
 
 interface TimeLineComponentProps {
   posts: Post[];
+  titleText?: string;
+  infoText?: string;
 }
 
-export const TimeLineComponent = ({ posts }: TimeLineComponentProps) => {
+export const TimeLineComponent = ({
+  posts,
+  titleText = "내 타임라인",
+  infoText = "타임라인이 없습니다.",
+}: TimeLineComponentProps) => {
   // useEffect(() => {
   // const fetchPosts = async () => {
   //   try {
@@ -49,7 +52,7 @@ export const TimeLineComponent = ({ posts }: TimeLineComponentProps) => {
   return (
     <Wrapper>
       <Title>
-        <Text typo="H3" children="내 타임라인" />
+        <Text typo="H3" children={titleText} />
         {!isEmpty && (
           <CursorDiv>
             <MoveRightIcon />
@@ -60,7 +63,7 @@ export const TimeLineComponent = ({ posts }: TimeLineComponentProps) => {
         <EmptyText>
           <BasicSymbolLogo />
           <Text typo="H3" color="gray_500">
-            타임라인이 없습니다.
+            {infoText}
           </Text>
         </EmptyText>
       ) : (

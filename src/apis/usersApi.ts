@@ -15,6 +15,7 @@ export const usersApi = {
     const res = await axiosApi.get("/users/me/profile/posts");
     return res.data;
   },
+
   updateProfile: async (payload: {
     nickname?: string;
     introduction?: string;
@@ -44,5 +45,15 @@ export const usersApi = {
   getFollowerUsers: (lastFollowId?: number) => {
     const params = lastFollowId ? { lastFollowId } : {};
     return axiosApi.get("/users/me/follower-users", { params });
+  },
+
+  getUserProfileById: async (targetId: number) => {
+    const res = await axiosApi.get(`/users/${targetId}/profile`);
+    return res.data.data;
+  },
+
+  getUserProfilePost: async (targetId: number) => {
+    const res = await axiosApi.get(`/users/${targetId}/profile/posts`);
+    return res.data;
   },
 };
