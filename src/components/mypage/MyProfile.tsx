@@ -15,6 +15,7 @@ import { useSetAtom } from "jotai";
 import { userProfileAtom } from "@/store/UserProfileAtom";
 import { useRouter } from "next/navigation";
 import { FollowingModal } from "./FollowingModal";
+import { FollowerModal } from "./FollowerModal";
 
 interface UserProfile {
   id: number;
@@ -33,6 +34,8 @@ const song = "투모로우바이투게더 - tommorow xjdjdjdjjaja";
 export const MyProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isFollowingModalOpen, setIsFollowingModalOpen] =
+    useState<boolean>(false);
+  const [isFollowerModalOpen, setIsFollowerModalOpen] =
     useState<boolean>(false);
   const setUserProfile = useSetAtom(userProfileAtom);
   const router = useRouter();
@@ -76,7 +79,7 @@ export const MyProfile = () => {
               <Text typo="Caption_1" children="팔로잉" />
               <Text typo="Caption_1" children={profile.followingCount} />
             </Part>
-            <Part>
+            <Part onClick={() => setIsFollowerModalOpen(true)}>
               <Text typo="Caption_1" children="팔로워" />
               <Text typo="Caption_1" children={profile.followerCount} />
             </Part>
@@ -98,6 +101,9 @@ export const MyProfile = () => {
       </Wrapper>
       {isFollowingModalOpen && (
         <FollowingModal onClose={() => setIsFollowingModalOpen(false)} />
+      )}
+      {isFollowerModalOpen && (
+        <FollowerModal onClose={() => setIsFollowerModalOpen(false)} />
       )}
     </>
   );

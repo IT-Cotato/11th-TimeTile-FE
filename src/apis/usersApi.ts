@@ -40,4 +40,9 @@ export const usersApi = {
     const params = lastFollowId ? { lastFollowId } : {};
     return axiosApi.get("/users/me/following-users", { params });
   },
+
+  getFollowerUsers: (lastFollowId?: number) => {
+    const params = lastFollowId ? { lastFollowId } : {};
+    return axiosApi.get("/users/me/follower-users", { params });
+  },
 };
