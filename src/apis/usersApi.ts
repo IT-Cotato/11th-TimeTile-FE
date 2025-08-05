@@ -1,44 +1,9 @@
-import { Post } from "@/model/components/Post";
+import {
+  CommentsResponse,
+  GetDataParams,
+  PostsResponse,
+} from "@/model/api/usersApiTypes";
 import { axiosApi, basicAxiosApi } from "./axios";
-import { Comment } from "@/model/components/Comment";
-
-interface GetDataParams {
-  visibility: string;
-  page?: number;
-  size?: number;
-}
-
-interface PostsResponse {
-  isSuccess: boolean;
-  code: string;
-  message: string;
-  data: {
-    posts: Post[];
-    page: number;
-    size: number;
-    totalPages: number;
-    totalElements: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    isLast: boolean;
-  };
-}
-
-interface CommentsResponse {
-  isSuccess: boolean;
-  code: string;
-  message: string;
-  data: {
-    comments: Comment[];
-    page: number;
-    size: number;
-    totalPages: number;
-    totalElements: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-    isLast: boolean;
-  };
-}
 
 export const usersApi = {
   getUserProfile: async (targetId: number) => {
