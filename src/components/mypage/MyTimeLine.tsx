@@ -6,6 +6,60 @@ import { Post } from "@/model/components/Post";
 import { usersApi } from "@/apis/usersApi";
 import { TimeLineComponent } from "@/components/mypage/TimeLineComponent";
 import PaginationComponent from "./PaginationComponent";
+import { Comment } from "@/model/components/Comment";
+import { MyCommentComponent } from "./MyCommentComponent";
+
+const MOCK_COMMENT = [
+  {
+    isSuccess: true,
+    code: "COMMON001",
+    message: "요청 성공",
+    data: {
+      comments: [
+        {
+          name: "Corporate Brandingddddddd Manager",
+          artistName: "Bruno Mars",
+          postId: 20,
+          postTitle: "Kilback, Bogan and Sasssssssssssssswayn",
+          content:
+            "Lady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGaLady GaGa",
+          likeCount: 0,
+        },
+        {
+          name: "Corporate Branding Manager",
+          artistName: "Bruno Mars",
+          postId: 20,
+          postTitle: "Kilback, Bogan and Sawayn",
+          content: "Sting",
+          likeCount: 0,
+        },
+        {
+          name: "Corporate Branding Manager",
+          artistName: "Bruno Mars",
+          postId: 22,
+          postTitle: "Kilback, Bogan and Sawayn",
+          content: "Sting",
+          likeCount: 0,
+        },
+        {
+          name: "Corporate Branding Manager",
+          artistName: "Bruno Mars",
+          postId: 23,
+          postTitle: "Kilback, Bogan and Sawayn",
+          content: "Sting",
+          likeCount: 0,
+        },
+      ],
+      page: 1,
+      size: 18,
+      totalPages: 1,
+      totalElements: 2,
+      hasNext: false,
+      hasPrevious: false,
+      isLast: true,
+    },
+  },
+];
 
 export const MyTimeLine = () => {
   const [selected, setSelected] = useState<"post" | "comment">("post");
@@ -13,16 +67,17 @@ export const MyTimeLine = () => {
     "public" | "private"
   >("public");
   const [posts, setPosts] = useState<Post[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const fetchPosts = async (page: number) => {
+  const fetchData = async (page: number) => {
     setLoading(true);
     try {
+      const visibilityParam =
+        selectedVisibility === "private" ? "PRIVATE" : "PUBLIC";
       if (selected === "post") {
-        const visibilityParam =
-          selectedVisibility === "private" ? "PRIVATE" : "PUBLIC";
         const res = await usersApi.getMyTimeLinePosts({
           page,
           size: 10,
@@ -32,20 +87,66 @@ export const MyTimeLine = () => {
           setPosts(res.data.posts);
           setPage(res.data.page);
           setTotalPages(res.data.totalPages);
+          setComments([]);
         } else {
           setPosts([]);
         }
+      } else if (selected === "comment") {
+        const res = await usersApi.getMyTimeLineComments({
+          page,
+          size: 18,
+          visibility: visibilityParam,
+        });
+        if (res.isSuccess) {
+          setComments(res.data.comments);
+          setPage(res.data.page);
+          setTotalPages(res.data.totalPages);
+          setPosts([]);
+        } else {
+          setComments([]);
+        }
       }
     } catch (err) {
-      console.error("게시글 가져오기 실패", err);
+      console.error("데이터 가져오기 실패", err);
+      setPosts([]);
+      setComments([]);
     } finally {
       setLoading(false);
     }
   };
+  //     } else if (selected === "comment") {
+  //       const res = await usersApi.getMyTimeLineComments({
+  //         page,
+  //         size: 18,
+  //         visibility: visibilityParam,
+  //       });
+  //       if (res.isSuccess) {
+  //         if (res.data.comments.length === 0) {
+  //           setComments(MOCK_COMMENT[0].data.comments);
+  //           setTotalPages(1);
+  //           setPage(1);
+  //         } else {
+  //           setComments(res.data.comments);
+  //           setPage(res.data.page);
+  //           setTotalPages(res.data.totalPages);
+  //           setPosts([]);
+  //         }
+  //         setPosts([]);
+  //       } else {
+  //         setComments([]);
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.error("데이터 가져오기 실패", err);
+  //     setPosts([]);
+  //     setComments([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
-    fetchPosts(page);
-    console.log(posts, page);
+    fetchData(page);
   }, [page, selectedVisibility, selected]);
 
   const handlePageChange = (newPage: number) => {
@@ -97,14 +198,16 @@ export const MyTimeLine = () => {
           </VisibilityText>
         </VisibilitySelect>
       </SelectHeader>
-      <TimeLineComponent
-        posts={posts}
-        titleText=""
-        infoText={
-          selected === "comment" ? "댓글이 없습니다." : "게시글이 없습니다."
-        }
-      />
-      {posts.length > 0 && (
+      {selected === "post" ? (
+        <TimeLineComponent
+          posts={posts}
+          titleText=""
+          infoText="게시글이 없습니다."
+        />
+      ) : (
+        <MyCommentComponent comments={comments} infoText="댓글이 없습니다." />
+      )}
+      {(selected === "post" ? posts.length : comments.length) > 0 && (
         <PaginationComponent
           totalPages={totalPages}
           page={page}
@@ -119,7 +222,6 @@ const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
 `;
 
 const SelectHeader = styled.div`

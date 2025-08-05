@@ -83,6 +83,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   gap: 24px;
+  margin-top: 100px;
 `;
 
 const ArrowButton = styled.button`

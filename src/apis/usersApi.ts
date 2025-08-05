@@ -1,7 +1,8 @@
 import { Post } from "@/model/components/Post";
 import { axiosApi, basicAxiosApi } from "./axios";
+import { Comment } from "@/model/components/Comment";
 
-interface GetPostsParams {
+interface GetDataParams {
   visibility: string;
   page?: number;
   size?: number;
@@ -13,6 +14,22 @@ interface PostsResponse {
   message: string;
   data: {
     posts: Post[];
+    page: number;
+    size: number;
+    totalPages: number;
+    totalElements: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    isLast: boolean;
+  };
+}
+
+interface CommentsResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  data: {
+    comments: Comment[];
     page: number;
     size: number;
     totalPages: number;
@@ -97,9 +114,18 @@ export const usersApi = {
   },
 
   getMyTimeLinePosts: async (
-    params?: GetPostsParams
+    params?: GetDataParams
   ): Promise<PostsResponse> => {
     const response = await axiosApi.get("/users/me/posts", {
+      params,
+    });
+    return response.data;
+  },
+
+  getMyTimeLineComments: async (
+    params?: GetDataParams
+  ): Promise<CommentsResponse> => {
+    const response = await axiosApi.get("users/me/comments", {
       params,
     });
     return response.data;
