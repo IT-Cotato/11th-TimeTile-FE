@@ -13,12 +13,14 @@ interface TimeLineComponentProps {
   posts: Post[];
   titleText?: string;
   infoText?: string;
+  showTitle?: boolean;
 }
 
 export const TimeLineComponent = ({
   posts,
   titleText = "내 타임라인",
   infoText = "타임라인이 없습니다.",
+  showTitle = true,
 }: TimeLineComponentProps) => {
   // useEffect(() => {
   // const fetchPosts = async () => {
@@ -51,14 +53,16 @@ export const TimeLineComponent = ({
 
   return (
     <Wrapper>
-      <Title>
-        <Text typo="H3" children={titleText} />
-        {!isEmpty && (
-          <CursorDiv>
-            <MoveRightIcon />
-          </CursorDiv>
-        )}
-      </Title>
+      {showTitle && (
+        <Title>
+          <Text typo="H3" children={titleText} />
+          {!isEmpty && (
+            <CursorDiv>
+              <MoveRightIcon />
+            </CursorDiv>
+          )}
+        </Title>
+      )}
       {isEmpty ? (
         <EmptyText>
           <BasicSymbolLogo />

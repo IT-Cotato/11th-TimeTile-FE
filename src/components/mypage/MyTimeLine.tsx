@@ -202,6 +202,7 @@ export const MyTimeLine = () => {
         <TimeLineComponent
           posts={posts}
           titleText=""
+          showTitle={false}
           infoText="게시글이 없습니다."
         />
       ) : (
