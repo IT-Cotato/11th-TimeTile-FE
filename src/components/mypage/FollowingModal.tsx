@@ -16,9 +16,13 @@ interface Follower {
 
 interface FollowingModalProps {
   onClose: () => void;
+  targetId?: number;
 }
 
-export const FollowingModal: React.FC<FollowingModalProps> = ({ onClose }) => {
+export const FollowingModal: React.FC<FollowingModalProps> = ({
+  onClose,
+  targetId,
+}) => {
   const [activeTab, setActiveTab] = useState<"artist" | "user">("artist");
 
   const [artistList, setArtistList] = useState<Follower[]>([]);
@@ -39,7 +43,10 @@ export const FollowingModal: React.FC<FollowingModalProps> = ({ onClose }) => {
     if (!artistHasNext || artistLoading) return;
     setArtistLoading(true);
     try {
-      const res = await usersApi.getFollowingArtists(artistLastId);
+      const res = targetId
+        ? await usersApi.getUserFollowingArtists(targetId, artistLastId)
+        : await usersApi.getFollowingArtists(artistLastId);
+
       if (res.data.isSuccess) {
         const newFollowers = res.data.data.followers;
         setArtistList((prev) => [...prev, ...newFollowers]);
@@ -57,7 +64,10 @@ export const FollowingModal: React.FC<FollowingModalProps> = ({ onClose }) => {
     if (!userHasNext || userLoading) return;
     setUserLoading(true);
     try {
-      const res = await usersApi.getFollowingUsers(userLastId);
+      const res = targetId
+        ? await usersApi.getUserFollowingUsers(targetId, userLastId)
+        : await usersApi.getFollowingUsers(userLastId);
+
       if (res.data.isSuccess) {
         const newFollowers = res.data.data.followers;
         setUserList((prev) => [...prev, ...newFollowers]);

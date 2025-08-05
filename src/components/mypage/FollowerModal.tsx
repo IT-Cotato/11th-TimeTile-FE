@@ -16,9 +16,13 @@ interface Follower {
 
 interface FollowerModalProps {
   onClose: () => void;
+  targetId?: number;
 }
 
-export const FollowerModal: React.FC<FollowerModalProps> = ({ onClose }) => {
+export const FollowerModal: React.FC<FollowerModalProps> = ({
+  onClose,
+  targetId,
+}) => {
   const [followerList, setFollowerList] = useState<Follower[]>([]);
   const [lastId, setLastId] = useState<number | undefined>(undefined);
   const [hasNext, setHasNext] = useState(true);
@@ -30,7 +34,10 @@ export const FollowerModal: React.FC<FollowerModalProps> = ({ onClose }) => {
     if (!hasNext || loading) return;
     setLoading(true);
     try {
-      const res = await usersApi.getFollowerUsers(lastId);
+      const res = targetId
+        ? await usersApi.getUserFollowerUsers(targetId, lastId)
+        : await usersApi.getFollowerUsers(lastId);
+
       if (res.data.isSuccess) {
         const newFollowers = res.data.data.followers;
         setFollowerList((prev) => [...prev, ...newFollowers]);

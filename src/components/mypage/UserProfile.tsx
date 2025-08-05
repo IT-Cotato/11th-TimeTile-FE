@@ -9,6 +9,8 @@ import { FollowButton } from "@/components/atoms/FollowButton";
 import { Tag } from "../atoms/Tag";
 import { UserRole } from "@/model/common/user";
 import { theme } from "@/styles/theme";
+import { FollowingModal } from "./FollowingModal";
+import { FollowerModal } from "./FollowerModal";
 
 interface UserProfileProps {
   targetId: number;
@@ -30,6 +32,8 @@ interface UserProfileData {
 const song = "투모로우바이투게더 - tommorow xjdjdjdjjaja";
 
 export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
+  const [isFollowingModalOpen, setIsFollowingModalOpen] = useState(false);
+  const [isFollowerModalOpen, setIsFollowerModalOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfileData | null>(null);
   const [followVariant, setFollowVariant] = useState<
     "follow" | "following" | "unfollow"
@@ -71,51 +75,65 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
   };
 
   return (
-    <Wrapper>
-      <ProfileImg
-        src={profile.profileImageUrl}
-        alt={`${profile.nickname}의 프로필 이미지`}
-      />
-      <Info>
-        <FlexBox gap={8} justify="start" align="center">
-          <Text typo="H1" color="gray_1000">
-            {profile.nickname}
-          </Text>
-          <RoleIcon role={profile.role} width={24} />
-          {profile.visibility === "PRIVATE" && <PrivateIcon />}
-        </FlexBox>
-        <Stats>
-          <Part>
-            <Text typo="Caption_1">팔로잉</Text>
-            <Text typo="Caption_1">{profile.followingCount}</Text>
-          </Part>
-          <Part>
-            <Text typo="Caption_1">팔로워</Text>
-            <Text typo="Caption_1">{profile.followerCount}</Text>
-          </Part>
-        </Stats>
-        <FlexDiv>
-          <Tag variant="song">{song}</Tag>
-        </FlexDiv>
-        <Intro>
-          <Text typo="Body_3">{profile.introduction}</Text>
-        </Intro>
-      </Info>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          width: "115px",
-        }}
-      >
-        <FollowButton
-          variant={followVariant}
-          onClick={handleFollowClick}
-          onUnfollowClick={handleUnfollowClick}
-          width={68}
+    <>
+      <Wrapper>
+        <ProfileImg
+          src={profile.profileImageUrl}
+          alt={`${profile.nickname}의 프로필 이미지`}
         />
-      </div>
-    </Wrapper>
+        <Info>
+          <FlexBox gap={8} justify="start" align="center">
+            <Text typo="H1" color="gray_1000">
+              {profile.nickname}
+            </Text>
+            <RoleIcon role={profile.role} width={24} />
+            {profile.visibility === "PRIVATE" && <PrivateIcon />}
+          </FlexBox>
+          <Stats>
+            <Part onClick={() => setIsFollowingModalOpen(true)}>
+              <Text typo="Caption_1">팔로잉</Text>
+              <Text typo="Caption_1">{profile.followingCount}</Text>
+            </Part>
+            <Part onClick={() => setIsFollowerModalOpen(true)}>
+              <Text typo="Caption_1">팔로워</Text>
+              <Text typo="Caption_1">{profile.followerCount}</Text>
+            </Part>
+          </Stats>
+          <FlexDiv>
+            <Tag variant="song">{song}</Tag>
+          </FlexDiv>
+          <Intro>
+            <Text typo="Body_3">{profile.introduction}</Text>
+          </Intro>
+        </Info>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "115px",
+          }}
+        >
+          <FollowButton
+            variant={followVariant}
+            onClick={handleFollowClick}
+            onUnfollowClick={handleUnfollowClick}
+            width={68}
+          />
+        </div>
+      </Wrapper>
+      {isFollowingModalOpen && (
+        <FollowingModal
+          onClose={() => setIsFollowingModalOpen(false)}
+          targetId={targetId}
+        />
+      )}
+      {isFollowerModalOpen && (
+        <FollowerModal
+          onClose={() => setIsFollowerModalOpen(false)}
+          targetId={targetId}
+        />
+      )}
+    </>
   );
 };
 

@@ -56,4 +56,20 @@ export const usersApi = {
     const res = await axiosApi.get(`/users/${targetId}/profile/posts`);
     return res.data;
   },
+
+  //타유저
+  getUserFollowingUsers: (targetId: number, lastFollowId?: number) => {
+    const params = lastFollowId ? { lastFollowId } : {};
+    return axiosApi.get(`/users/${targetId}/following-users`, { params });
+  },
+
+  getUserFollowingArtists: (targetId: number, lastFollowId?: number) => {
+    const params = lastFollowId ? { lastFollowId } : {};
+    return axiosApi.get(`/users/${targetId}/following-artists`, { params });
+  },
+
+  getUserFollowerUsers: (targetId: number, lastFollowId?: number) => {
+    const params = lastFollowId ? { lastFollowId } : {};
+    return axiosApi.get(`/users/${targetId}/follower-users`, { params });
+  },
 };
