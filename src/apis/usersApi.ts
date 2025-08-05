@@ -1,4 +1,27 @@
+import { Post } from "@/model/components/Post";
 import { axiosApi, basicAxiosApi } from "./axios";
+
+interface GetPostsParams {
+  visibility: string;
+  page?: number;
+  size?: number;
+}
+
+interface PostsResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  data: {
+    posts: Post[];
+    page: number;
+    size: number;
+    totalPages: number;
+    totalElements: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    isLast: boolean;
+  };
+}
 
 export const usersApi = {
   getUserProfile: async (targetId: number) => {
@@ -71,5 +94,14 @@ export const usersApi = {
   getUserFollowerUsers: (targetId: number, lastFollowId?: number) => {
     const params = lastFollowId ? { lastFollowId } : {};
     return axiosApi.get(`/users/${targetId}/follower-users`, { params });
+  },
+
+  getMyTimeLinePosts: async (
+    params?: GetPostsParams
+  ): Promise<PostsResponse> => {
+    const response = await axiosApi.get("/users/me/posts", {
+      params,
+    });
+    return response.data;
   },
 };
