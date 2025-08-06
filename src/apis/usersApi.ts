@@ -1,6 +1,7 @@
 import {
   CommentsResponse,
   GetDataParams,
+  OtherPostsResponse,
   PostsResponse,
 } from "@/model/api/usersApiTypes";
 import { axiosApi, basicAxiosApi } from "./axios";
@@ -91,6 +92,13 @@ export const usersApi = {
     params?: GetDataParams
   ): Promise<CommentsResponse> => {
     const response = await axiosApi.get("users/me/comments", {
+      params,
+    });
+    return response.data;
+  },
+
+  getMyLike: async (params: { page: number }): Promise<OtherPostsResponse> => {
+    const response = await axiosApi.get("users/me/likes/posts", {
       params,
     });
     return response.data;

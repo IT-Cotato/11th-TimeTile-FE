@@ -1,4 +1,4 @@
-import { Post } from "@/model/components/Post";
+import { OtherPost, Post } from "@/model/components/Post";
 import { Comment } from "@/model/components/Comment";
 
 export interface GetDataParams {
@@ -29,6 +29,22 @@ export interface CommentsResponse {
   message: string;
   data: {
     comments: Comment[];
+    page: number;
+    size: number;
+    totalPages: number;
+    totalElements: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    isLast: boolean;
+  };
+}
+
+export interface OtherPostsResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  data: {
+    posts: OtherPost[];
     page: number;
     size: number;
     totalPages: number;

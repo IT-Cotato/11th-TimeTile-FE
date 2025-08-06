@@ -1,5 +1,6 @@
 "use client";
 import { usersApi } from "@/apis/usersApi";
+import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
 import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { MyProfile } from "@/components/mypage/MyProfile";
@@ -206,15 +207,31 @@ export default function Mypage() {
           <TimeLineComponent posts={posts} />
           <Wrap>
             <Text typo="H3" children="좋아요" />
+            <IconDiv
+              onClick={() => (window.location.href = `/users/mypage/like`)}
+            >
+              <MoveRightIcon size={20} />
+            </IconDiv>
           </Wrap>
           <Wrap>
             <Text typo="H3" children="스크랩" />
+            <IconDiv
+              onClick={() => (window.location.href = `/users/mypage/scrap`)}
+            >
+              <MoveRightIcon size={20} />
+            </IconDiv>
           </Wrap>
           <Wrap>
             <Text typo="H3" children="내 등급 확인" />
+            <IconDiv>
+              <MoveRightIcon size={20} />
+            </IconDiv>
           </Wrap>
           <Wrap>
             <Text typo="H3" children="설정" />
+            <IconDiv>
+              <MoveRightIcon size={20} />
+            </IconDiv>
           </Wrap>
         </FlexBox>
       </Wrapper>
@@ -237,9 +254,13 @@ const Wrapper = styled.div`
 
 const Wrap = styled.div`
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   width: 100%;
   gap: 24px;
   padding-top: 24px;
   border-top: 1px solid ${theme.palette.primary_400};
+`;
+
+const IconDiv = styled.div`
+  cursor: pointer;
 `;
