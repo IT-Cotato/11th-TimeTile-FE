@@ -56,6 +56,8 @@ export const Header = () => {
             </SearchIconStyled>
             <SearchInput
               type="text"
+              id="searchinput"
+              name="searchinput"
               placeholder="문서를 검색해보세요."
               onKeyDown={(e) => {
                 if (e.key === "Enter") {

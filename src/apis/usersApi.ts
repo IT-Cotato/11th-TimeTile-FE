@@ -110,4 +110,9 @@ export const usersApi = {
     });
     return response.data;
   },
+
+  getMyGrade: async () => {
+    const res = await axiosApi.get(`/users/me/grade`);
+    return res.data;
+  },
 };
