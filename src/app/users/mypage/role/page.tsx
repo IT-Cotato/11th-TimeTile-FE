@@ -17,15 +17,15 @@ interface GradeData {
   achievementRate: number;
 }
 
-const mockGradeData = {
-  nickname: "초연",
-  role: "WATCHER" as UserRole,
-  visitCount: 12,
-  postCount: 5,
-  likeCount: 20,
-  commentCount: 8,
-  achievementRate: 80,
-};
+// const mockGradeData = {
+//   nickname: "초연",
+//   role: "EDITOR" as UserRole,
+//   visitCount: 12,
+//   postCount: 5,
+//   likeCount: 20,
+//   commentCount: 8,
+//   achievementRate: 80,
+// };
 
 export default function RolePage() {
   const [gradeData, setGradeData] = useState<GradeData | null>(null);
@@ -64,8 +64,8 @@ export default function RolePage() {
   return (
     <Container>
       <Wrapper>
-        {/* {isLoading ? <div>로딩 중...</div> : renderRoleComponent()} */}
-        <WatcherComponent data={mockGradeData} />
+        {isLoading ? <div>로딩 중...</div> : renderRoleComponent()}
+        {/* <EditorComponent data={mockGradeData} /> */}
       </Wrapper>
     </Container>
   );

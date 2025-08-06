@@ -11,10 +11,17 @@ export const MyRoleSection = ({ data }: any) => {
         <RoleInfo>
           <RoleText>
             <Text typo="H2" color="gray_1000">{`${data.nickname}님은`}</Text>
-            <Text
-              typo="H2"
-              color="gray_1000"
-            >{`이번 달 ${data.role} 등급입니다!`}</Text>
+            <SingleLineText>
+              <Text typo="H2" color="gray_1000">
+                이번 달
+              </Text>
+              <Text typo="H2" color="primary_600">
+                {data.role}
+              </Text>
+              <Text typo="H2" color="gray_1000">
+                등급입니다!
+              </Text>
+            </SingleLineText>
           </RoleText>
           <PredictRole>
             <Text typo="Caption_1" color="gray_600">
@@ -155,6 +162,12 @@ const RoleText = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 18px;
+`;
+
+const SingleLineText = styled.div`
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
 `;
 
 const PredictRole = styled.div`

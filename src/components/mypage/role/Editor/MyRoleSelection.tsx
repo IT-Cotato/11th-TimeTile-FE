@@ -10,10 +10,15 @@ export const MyRoleSection = ({ data }: any) => {
         <RoleInfo>
           <RoleText>
             <Text typo="H2" color="gray_1000">{`${data.nickname}님은`}</Text>
-            <Text
-              typo="H2"
-              color="gray_1000"
-            >{`이번 달 ${data.role} 등급입니다!`}</Text>
+            <SingleLineText>
+              <Text typo="H2" color="gray_1000">
+                이번 달
+              </Text>
+              <EditorColorText>{data.role}</EditorColorText>
+              <Text typo="H2" color="gray_1000">
+                등급입니다!
+              </Text>
+            </SingleLineText>
           </RoleText>
           <PredictRole>
             <Text typo="Caption_1" color="gray_600">
@@ -26,7 +31,6 @@ export const MyRoleSection = ({ data }: any) => {
         </RoleInfo>
         <Editor width={184} />
       </RoleWrap>
-
       <CurrentWrap>
         <Text typo="H4" color="gray_1000">
           등급 조건 진행상황
@@ -157,6 +161,12 @@ const RoleText = styled.div`
   gap: 18px;
 `;
 
+const SingleLineText = styled.div`
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+`;
+
 const PredictRole = styled.div`
   display: flex;
   justify-content: center;
@@ -203,4 +213,17 @@ const FilledBar = styled.div<{ $rate: number }>`
   border-radius: ${({ $rate }) => ($rate === 100 ? "50px" : "50px 0 0 50px")};
   background: linear-gradient(90deg, #e9e66a 0%, #a6c6fa 100%);
   transition: width 0.4s ease;
+`;
+
+const EditorColorText = styled.div`
+  font-family: "Pretendard-SemiBold";
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 100%;
+  background: linear-gradient(180deg, #e9e66a 0%, #a6c6fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; /* Firefox 지원용 */
+  color: transparent;
 `;
