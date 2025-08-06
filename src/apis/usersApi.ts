@@ -103,4 +103,11 @@ export const usersApi = {
     });
     return response.data;
   },
+
+  getMyScrap: async (params: { page: number }): Promise<OtherPostsResponse> => {
+    const response = await axiosApi.get("users/me/scraps/posts", {
+      params,
+    });
+    return response.data;
+  },
 };
