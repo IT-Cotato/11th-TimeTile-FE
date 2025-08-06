@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
@@ -11,7 +13,7 @@ import { FlexBox } from "@/components/layouts/FlexBox";
 import { RoleIcon } from "./RoleIcon";
 import { UserRole } from "@/model/common/user";
 import { PrivateIcon } from "@/assets/icons/PrivateIcon";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { userProfileAtom } from "@/store/UserProfileAtom";
 import { useRouter } from "next/navigation";
 import { FollowingModal } from "./FollowingModal";
@@ -32,12 +34,11 @@ interface UserProfile {
 const song = "투모로우바이투게더 - tommorow xjdjdjdjjaja";
 
 export const MyProfile = () => {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useAtom(userProfileAtom);
   const [isFollowingModalOpen, setIsFollowingModalOpen] =
     useState<boolean>(false);
   const [isFollowerModalOpen, setIsFollowerModalOpen] =
     useState<boolean>(false);
-  const setUserProfile = useSetAtom(userProfileAtom);
   const router = useRouter();
 
   useEffect(() => {
@@ -45,7 +46,6 @@ export const MyProfile = () => {
       try {
         const res = await usersApi.getMyProfile();
         setProfile(res.data);
-        setUserProfile(res.data);
         console.log(res.data);
       } catch (error) {
         console.error("프로필을 불러오는데 실패했습니다", error);

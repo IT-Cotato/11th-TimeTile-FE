@@ -187,7 +187,7 @@ export default function Mypage() {
   useEffect(() => {
     const fetchPosts = async () => {
       const res = await usersApi.getMyProfilePost();
-      setPosts(res.data.data.posts);
+      setPosts(res.data.posts);
       console.log(res);
     };
     fetchPosts();
@@ -223,7 +223,9 @@ export default function Mypage() {
           </Wrap>
           <Wrap>
             <Text typo="H3" children="내 등급 확인" />
-            <IconDiv>
+            <IconDiv
+              onClick={() => (window.location.href = `/users/mypage/role`)}
+            >
               <MoveRightIcon size={20} />
             </IconDiv>
           </Wrap>

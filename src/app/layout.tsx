@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Provider as JotaiProvider } from "jotai";
+import { JotaiInitializer } from "@/components/layouts/JotaiInitializer";
+import { Header } from "@/components/layouts/Header";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +16,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <JotaiProvider>
+          <JotaiInitializer />
+          <Header />
+          {children}
+        </JotaiProvider>
+      </body>
     </html>
   );
 }
