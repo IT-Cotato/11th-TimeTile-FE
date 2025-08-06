@@ -64,18 +64,15 @@ export const RoleIntroSection = () => {
             <Condition>
               <FlexBox gap={8}>
                 <CheckBlueIcon />
-                <Text typo="Body_3" children="누적 방문 일수 14일" />
+                <Text typo="Body_3" children="누적 방문 일수 7일" />
               </FlexBox>
               <FlexBox gap={8}>
                 <CheckBlueIcon />
-                <Text typo="Body_3" children="개인기록 10개 이상 작성" />
+                <Text typo="Body_3" children="타임라인 3개 이상 열람" />
               </FlexBox>
               <FlexBox gap={8}>
                 <CheckBlueIcon />
-                <Text
-                  typo="Body_3"
-                  children="커뮤니티 반응(좋아요, 댓글) 각 10개 이상"
-                />
+                <Text typo="Body_3" children="개인기록 1개 이상 작성" />
               </FlexBox>
             </Condition>
           </RoleBox>
@@ -140,7 +137,7 @@ const ForWatcher = styled.div`
   gap: 16px;
   border-radius: 20px;
   border: 1.5px solid ${theme.palette.sub_400};
-  background: ${theme.palette.sub_50};
+  background: ${theme.palette.sub_400};
 
   ul {
     padding-left: 18px;
@@ -158,7 +155,7 @@ const ForWatcher = styled.div`
 
 const ForLinker = styled(ForWatcher)`
   border: 1.5px solid ${theme.palette.primary_400};
-  background: ${theme.palette.primary_400};
+  background: ${theme.palette.primary_50};
 
   ul {
     color: ${theme.palette.primary_900};

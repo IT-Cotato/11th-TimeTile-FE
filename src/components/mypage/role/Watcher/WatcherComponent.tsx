@@ -1,9 +1,11 @@
-import { UserRole } from "@/model/common/user";
+import { RoleIntroSection } from "./RoleIntroSelection";
+import { MyRoleSection } from "./MyRoleSelection";
+import styled from "styled-components";
 
 interface RoleProps {
   data: {
     nickname: string;
-    role: UserRole;
+    role: string;
     visitCount: number;
     postCount: number;
     likeCount: number;
@@ -14,13 +16,18 @@ interface RoleProps {
 
 export const WatcherComponent = ({ data }: RoleProps) => {
   return (
-    <div>
-      <h2>{data.nickname} 님은 👀 WATCHER 입니다!</h2>
-      <p>방문 횟수: {data.visitCount}</p>
-      <p>기록 수: {data.postCount}</p>
-      <p>좋아요 수: {data.likeCount}</p>
-      <p>댓글 수: {data.commentCount}</p>
-      <p>달성률: {data.achievementRate}%</p>
-    </div>
+    <Container>
+      <MyRoleSection data={data} />
+      <RoleIntroSection />
+    </Container>
   );
 };
+
+const Container = styled.div`
+  display: flex;
+  width: 950px;
+  padding: 24px 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+`;
