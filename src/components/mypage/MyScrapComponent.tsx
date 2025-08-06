@@ -5,6 +5,7 @@ import { MoveLeftIcon } from "@/assets/icons/MoveLeftIcon";
 import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
 import { FolderIcon } from "@/assets/icons/FolderIcon";
 import { theme } from "@/styles/theme";
+import { FolderAddModal } from "./FolderAddModal";
 
 const MOCK_FOLDERS = [
   { name: "에스파", count: 105 },
@@ -22,6 +23,7 @@ const MAX_VISIBLE = 5;
 
 export const MyScrapComponent = () => {
   const [startIndex, setStartIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const canScrollLeft = startIndex > 0;
   const canScrollRight = startIndex + MAX_VISIBLE < MOCK_FOLDERS.length;
@@ -40,20 +42,29 @@ export const MyScrapComponent = () => {
   );
 
   return (
-    <Container>
-      <FolderContainer>
-        {visibleFolders.map((folder, index) => (
-          <ScrapFolder key={index} name={folder.name} count={folder.count} />
-        ))}
-      </FolderContainer>
-      <ArrowButton disabled={!canScrollLeft} onClick={handleScrollLeft}>
-        <MoveLeftIcon />
-      </ArrowButton>
-      <ArrowButton disabled={!canScrollRight} onClick={handleScrollRight}>
-        <MoveRightIcon />
-      </ArrowButton>
-      <FolderIcon />
-    </Container>
+    <>
+      <Container>
+        <FolderContainer>
+          {visibleFolders.map((folder, index) => (
+            <ScrapFolder key={index} name={folder.name} count={folder.count} />
+          ))}
+        </FolderContainer>
+
+        <ArrowButton disabled={!canScrollLeft} onClick={handleScrollLeft}>
+          <MoveLeftIcon />
+        </ArrowButton>
+
+        <ArrowButton disabled={!canScrollRight} onClick={handleScrollRight}>
+          <MoveRightIcon />
+        </ArrowButton>
+
+        <IconButton onClick={() => setIsModalOpen(true)}>
+          <FolderIcon />
+        </IconButton>
+      </Container>
+
+      {isModalOpen && <FolderAddModal onClose={() => setIsModalOpen(false)} />}
+    </>
   );
 };
 
@@ -77,6 +88,16 @@ const ArrowButton = styled.button<{ disabled: boolean }>`
   color: ${({ disabled }) =>
     disabled ? `${theme.palette.gray_300}` : `${theme.palette.gray_1000}`};
   cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const IconButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
