@@ -1,5 +1,3 @@
-import { Text } from "@/components/atoms/Text";
-
 interface EditorToolTipProps {
   achievementRate: number;
 }

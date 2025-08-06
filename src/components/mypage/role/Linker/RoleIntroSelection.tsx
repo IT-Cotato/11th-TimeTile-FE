@@ -158,7 +158,7 @@ const ForWatcher = styled.div`
 
 const ForLinker = styled(ForWatcher)`
   border: 1.5px solid ${theme.palette.primary_400};
-  background: ${theme.palette.primary_50};
+  background: ${theme.palette.primary_400};
 
   ul {
     color: ${theme.palette.primary_900};
@@ -167,7 +167,11 @@ const ForLinker = styled(ForWatcher)`
 
 const ForEditor = styled(ForWatcher)`
   border: 1.5px solid #a0ab44;
-  background: linear-gradient(180deg, #e9e66a 0%, #a6c6fa 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(233, 230, 106, 0.3) 0%,
+    rgba(166, 198, 250, 0.3) 100%
+  );
 
   ul {
     color: ${theme.palette.primary_900};

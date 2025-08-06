@@ -19,7 +19,7 @@ interface GradeData {
 
 const mockGradeData = {
   nickname: "초연",
-  role: "EDITOR" as UserRole,
+  role: "LINKER" as UserRole,
   visitCount: 12,
   postCount: 5,
   likeCount: 20,
@@ -64,7 +64,8 @@ export default function RolePage() {
   return (
     <Container>
       <Wrapper>
-        <EditorComponent data={mockGradeData} />
+        {/* {isLoading ? <div>로딩 중...</div> : renderRoleComponent()} */}
+        <LinkerComponent data={mockGradeData} />
       </Wrapper>
     </Container>
   );
