@@ -30,7 +30,6 @@ export const ScrapFolder = ({ name, count }: FolderCardProps) => {
 };
 
 const BlueContainer = styled.div`
-  margin-top: 14px;
   width: 140px;
   height: 104px;
   border-radius: 13px;
