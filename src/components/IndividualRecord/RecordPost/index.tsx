@@ -5,6 +5,14 @@ import { MoreIcon } from '@/assets/icons/MoreIcon';
 import { RightArrowIcon } from '@/assets/icons/RightArrowIcon';
 import { LeftArrowIcon } from '@/assets/icons/LeftArrowIcon';
 
+interface Comment {
+  id: number;
+  author: string;
+  content: string;
+  createdAt: string;
+  likes: number;
+}
+
 interface RecordPostProps {
   profileImage: string;
   username: string;
@@ -15,6 +23,7 @@ interface RecordPostProps {
   images: string[];
   likes: number;
   comments: number;
+  commentsData: Comment[];
   onImageClick?: (index: number) => void;
 }
 
@@ -28,6 +37,7 @@ const RecordPost = ({
   images,
   likes,
   comments,
+  commentsData,
   onImageClick,
 }: RecordPostProps) => {
   const imageGridRef = useRef<HTMLDivElement>(null);
@@ -80,7 +90,27 @@ const RecordPost = ({
         </ArrowGroup>
       </ImageContainer>
 
-      <CommentInput placeholder="댓글을 입력해보세요." />
+      <MetaInfo>
+        <Text typo="Body_3">❤️ {likes}</Text>
+        <Text typo="Body_3">💬 {comments}</Text>
+      </MetaInfo>
+
+      <Divider />
+
+      <Text typo="Body_2">{commentsData.length}개의 댓글</Text>
+      <CommentList>
+        {commentsData.map(comment => (
+          <CommentItem key={comment.id}>
+            <CommentTop>
+              <Text typo="Body_3">{comment.author}</Text>
+              <Text typo="Caption_2" color="gray_600">
+                {comment.createdAt}
+              </Text>
+            </CommentTop>
+            <Text typo="Body_2">{comment.content}</Text>
+          </CommentItem>
+        ))}
+      </CommentList>
     </Wrapper>
   );
 };
@@ -199,4 +229,32 @@ const CommentInput = styled.input`
   outline: none;
   width: 902px;
   height: 56px;
+`;
+
+const MetaInfo = styled.div`
+  display: flex;
+  gap: 16px;
+`;
+
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 16px 0;
+`;
+
+const CommentList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const CommentItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const CommentTop = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;

@@ -6,6 +6,7 @@ import { ChatIcon } from '@/assets/icons/ChatIcon';
 import { RightIcon } from '@/assets/icons/RightIcon';
 
 interface RecordCardMediumProps {
+  postId: number;
   profileImage: string;
   profileName: string;
   date: string;
@@ -17,6 +18,7 @@ interface RecordCardMediumProps {
 }
 
 const RecordCardMedium = ({
+  postId,
   profileImage,
   profileName,
   date,

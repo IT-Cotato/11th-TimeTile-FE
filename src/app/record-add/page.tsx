@@ -8,6 +8,7 @@ import MediaThumbnail from '@/components/atoms/MediaThumbnail';
 import { LeftArrowIcon } from '@/assets/icons/LeftArrowIcon';
 import { RightArrowIcon } from '@/assets/icons/RightArrowIcon';
 import { AddRecordButton as RawAddRecordButton } from '@/components/atoms/AddRecordButton';
+import { postApi } from '@/apis/postApi';
 
 const MAX_FILE_COUNT = 10;
 const MAX_BODY_LENGTH = 500;
@@ -24,6 +25,30 @@ const IndividualRecordPage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isPublic, setIsPublic] = useState(true);
   const mediaListRef = useRef<HTMLDivElement>(null);
+  const [mediaKeys, setMediaKeys] = useState<string[]>([]);
+
+  const handleSubmit = async () => {
+    if (!title || !body || body.length > MAX_BODY_LENGTH) {
+      alert('제목과 본문을 확인해주세요.');
+      return;
+    }
+
+    try {
+      await postApi.createPost({
+        groupId: '42776184-f31d-4f6b-949e-6fc77e144864', // 🧩 실사용 값으로 교체
+        title,
+        content: body,
+        visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
+        mediaKeys,
+        mainImageIndex: files.length > 0 ? selectedIndex : null,
+      });
+
+      alert('기록이 등록되었습니다.');
+    } catch (err) {
+      console.error(err);
+      alert('기록 등록에 실패했습니다.');
+    }
+  };
 
   const handleScroll = (dir: 'left' | 'right') => {
     mediaListRef.current?.scrollBy({
@@ -133,7 +158,9 @@ const IndividualRecordPage = () => {
       </MainForm>
 
       <AddRecordButtonWrapper>
-        <AddRecordButton variant="able">기록 추가</AddRecordButton>
+        <AddRecordButton variant="able" onClick={handleSubmit}>
+          기록 추가
+        </AddRecordButton>
       </AddRecordButtonWrapper>
     </PageWrapper>
   );

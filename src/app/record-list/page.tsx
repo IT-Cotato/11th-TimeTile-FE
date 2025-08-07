@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import RecordCardMedium from '@/components/IndividualRecord/RecordCardMedium';
 import { Text } from '@/components/atoms/Text';
 import { AddRecordButton as RawAddRecordButton } from '@/components/atoms/AddRecordButton';
+import { postApi } from '@/apis/postApi';
 
 interface RecordItem {
+  postId: number;
   profileImage: string;
   profileName: string;
   date: string;
@@ -17,22 +19,92 @@ interface RecordItem {
   comments: number;
 }
 
+const recordsPerPage = 16;
+
 const IndividualRecordPage = () => {
-  const [selected, setSelected] = useState<'latest' | 'popular'>('latest');
+  const [records, setRecords] = useState<RecordItem[]>([]);
+  const [selected, setSelected] = useState<'LATEST' | 'HOTTEST'>('LATEST');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const groupId = '42776184-f31d-4f6b-949e-6fc77e144864';
 
-  const records: RecordItem[] = Array.from({ length: 4 }).map((_, i) => ({
-    profileImage: '/profile-default.png',
-    profileName: '유저닉네임',
-    date: '2025.04.23',
-    title: `게시글 제목 게시글 제목 게시글 제목 게시글 제목...`,
-    description:
-      'aespa(에스파)는 대한민국의 4인조 다국적 걸그룹이다. SMCU 프로젝트의 첫 주자이며, 프로젝트 내에서 독립적인 세계관으로 이야기를 펼치고 있다.',
-    imageSrc: '/record-image.png',
-    likes: 99,
-    comments: 99,
-  }));
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        const safePage = Math.max(currentPage - 1, 0);
+        const safeSort = selected.toUpperCase() as 'LATEST' | 'HOTTEST';
 
-  const hasRecords = records.length > 0;
+        const res = await postApi.getAllPosts({
+          groupId,
+          page: safePage,
+          sortBy: safeSort,
+        });
+
+        const { posts, totalPages } = res.data.data;
+
+        const mapped: RecordItem[] = posts.map((post: any) => ({
+          postId: post.postId,
+          profileImage: post.authorProfileImageUrl,
+          profileName: post.authorNickname,
+          date: post.createdAt.split('T')[0],
+          title: post.title,
+          description: post.content,
+          imageSrc: post.mainImageUrl,
+          likes: post.likeCount,
+          comments: post.commentCount,
+        }));
+
+        setRecords(mapped);
+        setTotalPages(totalPages);
+      } catch (error: any) {
+        alert('게시글을 불러오지 못했습니다.');
+      }
+    };
+
+    fetchRecords();
+  }, [groupId, currentPage, selected]);
+
+  const Pagination = () => {
+    const visibleCount = 5;
+    const half = Math.floor(visibleCount / 2);
+    let start = Math.max(currentPage - half, 1);
+    let end = start + visibleCount - 1;
+    if (end > totalPages) {
+      end = totalPages;
+      start = Math.max(end - visibleCount + 1, 1);
+    }
+
+    const pageNumbers = Array.from(
+      { length: end - start + 1 },
+      (_, i) => start + i,
+    );
+
+    return (
+      <PaginationWrapper>
+        <PageButton
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(prev => prev - 1)}
+        >
+          ‹
+        </PageButton>
+        {pageNumbers.map(page => (
+          <PageNumber
+            key={page}
+            active={page === currentPage}
+            onClick={() => setCurrentPage(page)}
+          >
+            {page}
+          </PageNumber>
+        ))}
+        <PageButton
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(prev => prev + 1)}
+        >
+          ›
+        </PageButton>
+      </PaginationWrapper>
+    );
+  };
 
   return (
     <PageWrapper>
@@ -50,14 +122,20 @@ const IndividualRecordPage = () => {
         <ToggleWrapper>
           <ToggleButtonGroup>
             <ToggleButton
-              selected={selected === 'latest'}
-              onClick={() => setSelected('latest')}
+              selected={selected === 'LATEST'}
+              onClick={() => {
+                setSelected('LATEST');
+                setCurrentPage(1);
+              }}
             >
               최신순
             </ToggleButton>
             <ToggleButton
-              selected={selected === 'popular'}
-              onClick={() => setSelected('popular')}
+              selected={selected === 'HOTTEST'}
+              onClick={() => {
+                setSelected('HOTTEST');
+                setCurrentPage(1);
+              }}
             >
               인기순
             </ToggleButton>
@@ -67,15 +145,18 @@ const IndividualRecordPage = () => {
         <AddRecordButton variant="able">기록 추가</AddRecordButton>
       </FilterGroup>
 
-      {hasRecords ? (
-        <CardGrid>
-          {records.map((record: RecordItem, idx: number) => (
-            <RecordCardMedium key={idx} {...record} />
-          ))}
-        </CardGrid>
+      {records.length > 0 ? (
+        <>
+          <CardGrid>
+            {records.map(record => (
+              <RecordCardMedium key={record.postId} {...record} />
+            ))}
+          </CardGrid>
+          <Pagination />
+        </>
       ) : (
         <EmptyContainer>
-          <Text typo="Body_2">첫 번째 기록을 추가해보세요.</Text>
+          <Text typo="Body_2">로그인 후 기록을 확인할 수 있습니다.</Text>
           <AddRecordButton variant="able">기록 추가</AddRecordButton>
         </EmptyContainer>
       )}
@@ -189,6 +270,34 @@ const EmptyContainer = styled.div`
   background: var(--Primary-20, #fbfdff);
 `;
 
-const EmptyText = styled(Text)`
-  font-size: 16px;
+const PaginationWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  gap: 8px;
+`;
+
+const PageButton = styled.button`
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+`;
+
+const PageNumber = styled.button<{ active: boolean }>`
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: ${({ active }) => (active ? '#C3DBFF' : 'transparent')};
+  color: ${({ active }) => (active ? '#0D2364' : '#666')};
+  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
+  cursor: pointer;
+  font-size: 14px;
 `;
