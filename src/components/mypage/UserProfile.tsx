@@ -59,9 +59,9 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
 
   if (!profile) return <div>로딩 중...</div>;
 
-  const handleFollowClick = () => {
+  const handleFollowClick = async () => {
     if (followVariant === "follow") {
-      // 팔로우 API 호출
+      await usersApi.followUser(targetId);
       setFollowVariant("following");
     } else if (followVariant === "following") {
       setFollowVariant("unfollow");
@@ -69,9 +69,13 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
     }
   };
 
-  const handleUnfollowClick = () => {
-    // 언팔로우 API 호출
-    setFollowVariant("follow");
+  const handleUnfollowClick = async () => {
+    try {
+      await usersApi.unfollowUser(targetId);
+      setFollowVariant("follow");
+    } catch (error) {
+      console.error("언팔로우 실패", error);
+    }
   };
 
   return (

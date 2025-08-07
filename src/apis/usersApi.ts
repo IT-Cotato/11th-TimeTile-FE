@@ -115,4 +115,14 @@ export const usersApi = {
     const res = await axiosApi.get(`/users/me/grade`);
     return res.data;
   },
+
+  followUser: async (followerId: number) => {
+    const res = await axiosApi.post(`/users/${followerId}/follow`);
+    return res.data;
+  },
+
+  unfollowUser: async (followerId: number) => {
+    const res = await axiosApi.delete(`/users/${followerId}/follow`);
+    return res.data;
+  },
 };
