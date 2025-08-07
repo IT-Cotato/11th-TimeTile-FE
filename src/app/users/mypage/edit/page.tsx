@@ -17,8 +17,8 @@ export default function EditProfile() {
   const [profile, setProfile] = useAtom(userProfileAtom);
   const [nickname, setNickname] = useState("");
   const [introduction, setIntroduction] = useState("");
-  const [profileImage, setProfileImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [uploadedImageKey, setUploadedImageKey] = useState<string | null>(null); // 새 이미지 키
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -29,7 +29,7 @@ export default function EditProfile() {
       setNickname(profile.nickname || "");
       setIntroduction(profile.introduction || "");
       setPreview(profile.profileImageUrl || null);
-      setProfileImage(null); // 초기엔 새 파일 없음
+      setUploadedImageKey(null); // 새로 업로드된 이미지 초기화
       setIsNicknameAvailable(true);
       setErrorMessage("");
       setSuccessMessage("");
@@ -39,28 +39,41 @@ export default function EditProfile() {
   if (!profile) return <div>잘못된 접근입니다</div>;
 
   const isNicknameChanged = nickname !== profile.nickname;
-  const isProfileImageChanged = !!profileImage;
+  const isProfileImageChanged = uploadedImageKey !== null;
   const isIntroChanged = introduction !== profile.introduction;
   const isModified =
     isNicknameChanged || isIntroChanged || isProfileImageChanged;
 
   // 닉네임 중복확인 버튼 비활성 조건
   const isCheckButtonDisabled =
-    !isNicknameChanged || // 닉네임이 안바뀌었으면 중복확인 불필요
+    !isNicknameChanged ||
     !nickname.trim() ||
     !/^[가-힣a-z0-9]{2,15}$/.test(nickname) ||
     (errorMessage !== "" && !isNicknameAvailable);
 
-  // 저장 버튼 활성
+  // 저장 버튼 활성화 조건
   const isSaveEnabled = isModified && isNicknameAvailable;
 
+  const extractKeyFromUrl = (url: string | null): string | null => {
+    if (!url) return null;
+    try {
+      const parsed = new URL(url);
+      return decodeURIComponent(parsed.pathname.slice(1));
+    } catch {
+      return null;
+    }
+  };
+
   const handleImageChange = (file: File | null) => {
-    setProfileImage(file);
     if (file) {
       setPreview(URL.createObjectURL(file));
     } else {
       setPreview(null);
     }
+  };
+
+  const handleUploadComplete = (key: string) => {
+    setUploadedImageKey(key);
   };
 
   const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,13 +91,11 @@ export default function EditProfile() {
     }
   };
 
-  // 닉네임 정규식
   const validateNickname = (nickname: string) => {
     const regex = /^[가-힣a-z0-9]{2,15}$/;
     return regex.test(nickname);
   };
 
-  // 닉네임 중복 확인
   const handleCheckNickname = async () => {
     if (!nickname.trim()) {
       setErrorMessage("닉네임을 입력해주세요.");
@@ -125,10 +136,13 @@ export default function EditProfile() {
     }
 
     try {
+      const imageKeyToSend =
+        uploadedImageKey ?? extractKeyFromUrl(profile.profileImageUrl) ?? null;
+
       await usersApi.updateProfile({
         nickname,
         introduction,
-        profileImage,
+        imageKey: imageKeyToSend,
       });
 
       const updated = await usersApi.getMyProfile();
@@ -153,9 +167,10 @@ export default function EditProfile() {
         <Content>
           <EditContainer>
             <ProfileEditUploader
-              imageFile={profileImage}
+              imageFile={null}
               previewUrl={preview}
               onChange={handleImageChange}
+              onUploadComplete={handleUploadComplete}
             />
             <Row>
               <OnboardingInput

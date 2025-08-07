@@ -1,29 +1,71 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import styled from "styled-components";
+import { authApi } from "@/apis/authApi";
 
 interface ProfileEditUploaderProps {
   imageFile: File | null;
   previewUrl: string | null;
   onChange: (file: File | null) => void;
+  onUploadComplete: (key: string) => void; // 업로드 완료 후 key 반환 콜백
 }
 
 export const ProfileEditUploader = ({
   imageFile,
   previewUrl,
   onChange,
+  onUploadComplete,
 }: ProfileEditUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleClick = () => {
     fileInputRef.current?.click();
   };
 
+  const handleFileChange = async (file: File) => {
+    onChange(file);
+
+    // MIME 타입 기반 확장자 추출
+    const mimeToExtMap: Record<string, "jpg" | "jpeg" | "png"> = {
+      "image/jpeg": "jpeg",
+      "image/jpg": "jpg", // 보통은 image/jpeg으로 들어옴
+      "image/png": "png",
+    };
+
+    const ext = mimeToExtMap[file.type];
+    if (!ext) {
+      alert("jpg, jpeg, png 파일만 업로드할 수 있습니다.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const res = await authApi.getPresignedUrl(ext); // 여기서 정확한 확장자로 요청
+      const { key, url } = res.data.data;
+
+      await fetch(url, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type }, // 이건 그대로 유지
+      });
+
+      onUploadComplete(key);
+    } catch (error) {
+      console.error("파일 업로드 실패", error);
+      alert("이미지 업로드에 실패했습니다.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <>
       <Container onClick={handleClick}>
-        {previewUrl ? (
+        {uploading ? (
+          <Placeholder>업로드 중...</Placeholder>
+        ) : previewUrl ? (
           <img src={previewUrl} alt="프로필 미리보기" />
         ) : (
           <Placeholder>프로필 이미지 선택</Placeholder>
@@ -34,8 +76,9 @@ export const ProfileEditUploader = ({
         accept="image/*"
         ref={fileInputRef}
         onChange={(e) => {
-          if (e.target.files && e.target.files[0]) {
-            onChange(e.target.files[0]);
+          const file = e.target.files?.[0];
+          if (file) {
+            handleFileChange(file);
           }
         }}
         style={{ display: "none" }}

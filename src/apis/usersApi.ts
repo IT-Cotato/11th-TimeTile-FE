@@ -25,16 +25,18 @@ export const usersApi = {
   updateProfile: async (payload: {
     nickname?: string;
     introduction?: string;
-    profileImage?: File | null;
+    imageKey?: string | null;
   }) => {
-    const formData = new FormData();
-    if (payload.nickname) formData.append("nickname", payload.nickname);
-    if (payload.introduction)
-      formData.append("introduction", payload.introduction);
-    if (payload.profileImage)
-      formData.append("profileImage", payload.profileImage);
+    const body = {
+      ...(payload.nickname !== undefined && { nickname: payload.nickname }),
+      ...(payload.introduction !== undefined && {
+        introduction: payload.introduction,
+      }),
+      ...(payload.imageKey !== undefined && { imageKey: payload.imageKey }),
+    };
 
-    const res = await basicAxiosApi.put("/users/profile", formData);
+    const res = await axiosApi.put("/users/me/profile", body);
+
     return res.data;
   },
 

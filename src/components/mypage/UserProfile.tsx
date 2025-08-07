@@ -14,7 +14,11 @@ import { FollowerModal } from "./FollowerModal";
 
 interface UserProfileProps {
   targetId: number;
-  onProfileLoad?: (user: { name: string }) => void;
+  onProfileLoad?: (user: {
+    name: string;
+    visibility: string;
+    isFollowing: boolean;
+  }) => void;
 }
 
 interface UserProfileData {
@@ -39,16 +43,44 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
     "follow" | "following" | "unfollow"
   >("follow");
 
+  // useEffect(() => {
+  //   const MOCK_PROFILE = {
+  //     id: targetId,
+  //     nickname: "비공개유저",
+  //     profileImageUrl:
+  //       "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png",
+  //     role: "EDITOR" as UserRole,
+  //     visibility: "PRIVATE",
+  //     followingCount: 3,
+  //     followerCount: 1,
+  //     postCount: 0,
+  //     introduction: "비공개 계정입니다.",
+  //     isFollowing: false,
+  //   };
+
+  //   setProfile(MOCK_PROFILE);
+
+  //   if (onProfileLoad) {
+  //     onProfileLoad({
+  //       name: MOCK_PROFILE.nickname,
+  //       visibility: MOCK_PROFILE.visibility,
+  //       isFollowing: MOCK_PROFILE.isFollowing,
+  //     });
+  //   }
+  // }, [targetId]);
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const data = await usersApi.getUserProfileById(targetId);
         setProfile(data);
-        // setFollowVariant(data.isFollowing ? "following" : "follow");
-        // 추후 isFollowing이 생긴다면 사용
-        // 닉네임 상위로 전달
+
         if (onProfileLoad) {
-          onProfileLoad({ name: data.nickname });
+          onProfileLoad({
+            name: data.nickname,
+            visibility: data.visibility,
+            isFollowing: data.isFollowing ?? false,
+          });
         }
       } catch (error) {
         console.error("프로필 불러오기 실패", error);

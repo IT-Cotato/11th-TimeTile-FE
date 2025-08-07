@@ -7,8 +7,9 @@ import { FlexBox } from "@/components/layouts/FlexBox";
 import { TimeLineComponent } from "@/components/mypage/TimeLineComponent";
 import { Post } from "@/model/components/Post";
 import { useParams } from "next/navigation";
-import { theme } from "@/styles/theme";
 import { UserProfile } from "@/components/mypage/UserProfile";
+import { Text } from "@/components/atoms/Text";
+import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
 
 const MOCK_POSTS: Post[] = [
   {
@@ -97,6 +98,8 @@ export default function OtherUserMyPage() {
   const targetId = Number(params.targetId);
   const [posts, setPosts] = useState<Post[]>([]);
   const [nickname, setNickname] = useState<string>("");
+  const [visibility, setVisibility] = useState<string>("PUBLIC");
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
   useEffect(() => {
     if (!targetId) return;
@@ -126,13 +129,38 @@ export default function OtherUserMyPage() {
         <FlexBox gap={24} direction="column">
           <UserProfile
             targetId={targetId}
-            onProfileLoad={({ name }) => setNickname(name)}
+            onProfileLoad={({ name, visibility, isFollowing }) => {
+              setNickname(name);
+              setVisibility(visibility);
+              setIsFollowing(isFollowing);
+            }}
           />
-          <TimeLineComponent
-            posts={posts}
-            titleText={`${nickname}님의 개별기록`}
-            infoText="개별기록이 없습니다."
-          />
+          {visibility === "PRIVATE" && !isFollowing ? (
+            <PrivateDiv>
+              <TitleDiv>
+                <Title>
+                  <Text typo="H3">{nickname}님의 개별기록</Text>
+                </Title>
+              </TitleDiv>
+              <EmptyText>
+                <BasicSymbolLogo width={180} height={180} />
+                <TextDiv>
+                  <Text typo="H1" color="gray_500">
+                    비공개 계정입니다.
+                  </Text>
+                  <Text typo="H3" color="gray_500">
+                    개별기록을 보려면 계정을 팔로우하세요.
+                  </Text>
+                </TextDiv>
+              </EmptyText>
+            </PrivateDiv>
+          ) : (
+            <TimeLineComponent
+              posts={posts}
+              titleText={`${nickname}님의 개별기록`}
+              infoText="개별기록이 없습니다."
+            />
+          )}
         </FlexBox>
       </Wrapper>
     </Container>
@@ -152,11 +180,32 @@ const Wrapper = styled.div`
   margin-bottom: 150px;
 `;
 
-const Wrap = styled.div`
+const Title = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PrivateDiv = styled.div`
+  width: 100%;
+`;
+
+const TitleDiv = styled.div``;
+
+const EmptyText = styled.div`
+  width: 100%;
+  height: 580px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 56px;
+`;
+
+const TextDiv = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  justify-content: center;
+  align-items: center;
   gap: 24px;
-  padding-top: 24px;
-  border-top: 1px solid ${theme.palette.primary_400};
 `;
