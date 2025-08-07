@@ -24,6 +24,7 @@ interface RecordPostProps {
   likes: number;
   comments: number;
   commentsData: Comment[];
+  isScrapped?: boolean;
   onImageClick?: (index: number) => void;
 }
 
@@ -34,10 +35,10 @@ const RecordPost = ({
   date,
   title,
   content,
-  images,
+  images = [],
   likes,
   comments,
-  commentsData,
+  commentsData = [],
   onImageClick,
 }: RecordPostProps) => {
   const imageGridRef = useRef<HTMLDivElement>(null);
@@ -93,6 +94,7 @@ const RecordPost = ({
       <MetaInfo>
         <Text typo="Body_3">❤️ {likes}</Text>
         <Text typo="Body_3">💬 {comments}</Text>
+        <ScrapButton> 스크랩</ScrapButton>
       </MetaInfo>
 
       <Divider />
@@ -257,4 +259,12 @@ const CommentItem = styled.div`
 const CommentTop = styled.div`
   display: flex;
   justify-content: space-between;
+`;
+
+const ScrapButton = styled.button`
+  border: none;
+  background: none;
+  color: #3a5caa;
+  font-weight: bold;
+  cursor: pointer;
 `;
