@@ -8,6 +8,7 @@ import { HeartIcon } from "@/assets/icons/HeartIcon";
 import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
 import { Post } from "@/model/components/Post";
 import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
+import { useRouter } from "next/navigation";
 
 interface TimeLineComponentProps {
   posts: Post[];
@@ -22,6 +23,7 @@ export const TimeLineComponent = ({
   infoText = "타임라인이 없습니다.",
   showTitle = true,
 }: TimeLineComponentProps) => {
+  const router = useRouter();
   // useEffect(() => {
   // const fetchPosts = async () => {
   //   try {
@@ -56,11 +58,11 @@ export const TimeLineComponent = ({
       {showTitle && (
         <Title>
           <Text typo="H3" children={titleText} />
-          {!isEmpty && (
-            <CursorDiv>
-              <MoveRightIcon />
-            </CursorDiv>
-          )}
+          {/* {!isEmpty && ( */}
+          <CursorDiv onClick={() => router.push("/users/timeline")}>
+            <MoveRightIcon />
+          </CursorDiv>
+          {/* )} */}
         </Title>
       )}
       {isEmpty ? (

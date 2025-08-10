@@ -8,7 +8,7 @@ interface ProfileEditUploaderProps {
   imageFile: File | null;
   previewUrl: string | null;
   onChange: (file: File | null) => void;
-  onUploadComplete: (key: string) => void; // 업로드 완료 후 key 반환 콜백
+  onUploadComplete: (key: string) => void;
 }
 
 export const ProfileEditUploader = ({
@@ -26,11 +26,11 @@ export const ProfileEditUploader = ({
 
   const handleFileChange = async (file: File) => {
     onChange(file);
+    console.log("파일 선택됨:", file);
 
-    // MIME 타입 기반 확장자 추출
     const mimeToExtMap: Record<string, "jpg" | "jpeg" | "png"> = {
       "image/jpeg": "jpeg",
-      "image/jpg": "jpg", // 보통은 image/jpeg으로 들어옴
+      "image/jpg": "jpg",
       "image/png": "png",
     };
 
@@ -42,15 +42,18 @@ export const ProfileEditUploader = ({
 
     setUploading(true);
     try {
-      const res = await authApi.getPresignedUrl(ext); // 여기서 정확한 확장자로 요청
+      const res = await authApi.getPresignedUrl(ext);
+      console.log("프리사인 URL 응답:", res);
+
       const { key, url } = res.data.data;
 
       await fetch(url, {
         method: "PUT",
         body: file,
-        headers: { "Content-Type": file.type }, // 이건 그대로 유지
+        headers: { "Content-Type": file.type },
       });
 
+      console.log("업로드 완료, key:", key);
       onUploadComplete(key);
     } catch (error) {
       console.error("파일 업로드 실패", error);

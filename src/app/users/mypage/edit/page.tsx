@@ -73,6 +73,7 @@ export default function EditProfile() {
   };
 
   const handleUploadComplete = (key: string) => {
+    console.log("업로드 완료된 key:", key);
     setUploadedImageKey(key);
   };
 
@@ -137,7 +138,9 @@ export default function EditProfile() {
 
     try {
       const imageKeyToSend =
-        uploadedImageKey ?? extractKeyFromUrl(profile.profileImageUrl) ?? null;
+        uploadedImageKey ?? // 새 업로드가 있으면 이거
+        extractKeyFromUrl(profile.profileImageUrl) ?? // 없으면 기존 이미지 key
+        null;
 
       await usersApi.updateProfile({
         nickname,

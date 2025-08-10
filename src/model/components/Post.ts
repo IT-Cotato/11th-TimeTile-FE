@@ -15,8 +15,9 @@ export interface OtherPost {
   name: string;
   groupId: string;
   artistName: string;
-  nickname: string;
-  writerImageUrl: string | null;
+  authorId: number;
+  authorNickname: string;
+  authorProfileImageUrl: string | null;
   postId: number;
   title: string;
   content: string;

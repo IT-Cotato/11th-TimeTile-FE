@@ -4,7 +4,7 @@ import {
   OtherPostsResponse,
   PostsResponse,
 } from "@/model/api/usersApiTypes";
-import { axiosApi, basicAxiosApi } from "./axios";
+import { axiosApi } from "./axios";
 
 export const usersApi = {
   getUserProfile: async (targetId: number) => {
@@ -125,6 +125,18 @@ export const usersApi = {
 
   unfollowUser: async (followerId: number) => {
     const res = await axiosApi.delete(`/users/${followerId}/follow`);
+    return res.data;
+  },
+
+  getMyEventsArtists: async () => {
+    const res = await axiosApi.get("/users/me/events/artists");
+    return res.data;
+  },
+
+  getEventsByArtist: async (artistId: string, page: number = 1) => {
+    const res = await axiosApi.get(`/users/me/events/artists/${artistId}`, {
+      params: { page },
+    });
     return res.data;
   },
 };

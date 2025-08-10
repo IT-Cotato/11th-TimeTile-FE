@@ -64,14 +64,14 @@ export const OtherPostComponent = ({
                 </CardContent>
                 <PostContent>
                   <UserInfoHeader>
-                    {post.writerImageUrl && (
+                    {post.authorProfileImageUrl && (
                       <WriterImage
-                        src={post.writerImageUrl}
+                        src={post.authorProfileImageUrl}
                         alt="게시물 작성자 프로필 이미지"
                       />
                     )}
                     <UserTextWrapper>
-                      <Text typo="Body_3">{post.nickname}</Text>
+                      <Text typo="Body_3">{post.authorNickname}</Text>
                     </UserTextWrapper>
                     <Text typo="Body_3" color="gray_700">
                       {formatDate(post.createdAt)}
