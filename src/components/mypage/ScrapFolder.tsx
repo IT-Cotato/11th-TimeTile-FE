@@ -6,18 +6,19 @@ import { Text } from "../atoms/Text";
 interface FolderCardProps {
   name: string;
   count: number;
+  onClick?: () => void;
 }
 
-export const ScrapFolder = ({ name, count }: FolderCardProps) => {
+export const ScrapFolder = ({ name, count, onClick }: FolderCardProps) => {
   const displayCount = count > 99 ? "99+" : count;
 
   return (
-    <BlueContainer>
+    <BlueContainer onClick={onClick}>
       <LeftTab />
       <WhiteOverlay>
         <BookmarkArea>
           <BookmarkIcon />
-          <Text typo="Body_3" color="primary_400" children={displayCount} />
+          {/* <Text typo="Body_3" color="primary_400" children={displayCount} /> */}
         </BookmarkArea>
         <Content>
           <Title>
@@ -35,6 +36,7 @@ const BlueContainer = styled.div`
   border-radius: 13px;
   background-color: ${theme.palette.primary_400};
   position: relative;
+  cursor: pointer;
 `;
 
 const LeftTab = styled.div`

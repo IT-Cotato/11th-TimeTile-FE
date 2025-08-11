@@ -8,22 +8,29 @@ import { FlexBox } from "../layouts/FlexBox";
 interface FolderInputProps {
   value: string;
   onChange: (value: string) => void;
+  onSubmit?: () => void;
   placeholder?: string;
   maxLength?: number;
+  buttonText?: string;
+  buttonDisabled?: boolean;
 }
 
 export const FolderInput = ({
   value,
   onChange,
+  onSubmit,
   placeholder = "폴더 이름을 입력해주세요",
   maxLength = 20,
+  buttonText = "추가하기",
+  buttonDisabled,
 }: FolderInputProps) => {
-  const handleSubmit = () => {
-    if (!value.trim()) return;
-    // 추후 api 생기면 연결 예정
-    console.log("폴더 이름:", value);
-    onChange("");
-  };
+  // const handleSubmit = () => {
+  //   if (!value.trim()) return;
+  //   // 추후 api 생기면 연결 예정
+  //   console.log("폴더 이름:", value);
+  //   onChange("");
+  // };
+  const disabled = buttonDisabled ?? value.trim().length === 0;
   return (
     <Wrapper>
       <div>
@@ -51,9 +58,9 @@ export const FolderInput = ({
         <Buttons
           variant="addTile"
           width={82}
-          disabled={value.trim().length === 0}
-          children="추가하기"
-          onClick={handleSubmit}
+          disabled={disabled}
+          children={buttonText}
+          onClick={onSubmit}
         />
       </FlexBox>
     </Wrapper>

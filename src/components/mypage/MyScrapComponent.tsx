@@ -12,6 +12,7 @@ import { OtherPost } from "@/model/components/Post";
 import { usersApi } from "@/apis/usersApi";
 import { OtherPostComponent } from "./OtherPostComponent";
 import PaginationComponent from "./PaginationComponent";
+import { useRouter } from "next/navigation";
 
 const MOCK_FOLDERS = [
   { name: "에스파", count: 105 },
@@ -79,21 +80,25 @@ const MOCK_DATA = [
   },
 ];
 
-const MAX_VISIBLE = 5;
-
 export const MyScrapComponent = () => {
   const [posts, setPosts] = useState<OtherPost[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+
+  const [folders, setFolders] = useState<
+    { id: number; name: string; count: number }[]
+  >([]);
   const [startIndex, setStartIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+
+  const MAX_VISIBLE = 5;
 
   const fetchData = async (page: number) => {
     setLoading(true);
     try {
       const res = await usersApi.getMyScrap({ page });
-      // const res = MOCK_DATA[0];
       if (res.isSuccess) {
         setPosts(res.data.posts);
         setPage(res.data.page);
@@ -109,6 +114,30 @@ export const MyScrapComponent = () => {
     }
   };
 
+  const fetchFolders = async () => {
+    try {
+      const res = await usersApi.getMyScrapFolders();
+      if (res.isSuccess) {
+        // count 정보가 없으므로 일단 count 0 기본값 설정
+        const mappedFolders = res.data.scrapFolders.map((folder: any) => ({
+          id: folder.id,
+          name: folder.name,
+          count: folder.count ?? 0,
+        }));
+        setFolders(mappedFolders);
+      } else {
+        setFolders([]);
+      }
+    } catch (err) {
+      console.error("스크랩 폴더 가져오기 실패", err);
+      setFolders([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchFolders();
+  }, []);
+
   useEffect(() => {
     fetchData(page);
   }, [page]);
@@ -118,7 +147,7 @@ export const MyScrapComponent = () => {
   };
 
   const canScrollLeft = startIndex > 0;
-  const canScrollRight = startIndex + MAX_VISIBLE < MOCK_FOLDERS.length;
+  const canScrollRight = startIndex + MAX_VISIBLE < folders.length;
 
   const handleScrollLeft = () => {
     if (canScrollLeft) setStartIndex((prev) => prev - 1);
@@ -128,21 +157,25 @@ export const MyScrapComponent = () => {
     if (canScrollRight) setStartIndex((prev) => prev + 1);
   };
 
-  const visibleFolders = MOCK_FOLDERS.slice(
-    startIndex,
-    startIndex + MAX_VISIBLE
-  );
+  const visibleFolders = folders.slice(startIndex, startIndex + MAX_VISIBLE);
 
   return (
     <>
       <FlexBox gap={8} direction="column">
         <Container>
           <FolderContainer>
-            {visibleFolders.map((folder, index) => (
+            {visibleFolders.map((folder) => (
               <ScrapFolder
-                key={index}
+                key={folder.id}
                 name={folder.name}
                 count={folder.count}
+                onClick={() =>
+                  router.push(
+                    `/users/mypage/scrap/${folder.id}?name=${encodeURIComponent(
+                      folder.name
+                    )}`
+                  )
+                }
               />
             ))}
           </FolderContainer>

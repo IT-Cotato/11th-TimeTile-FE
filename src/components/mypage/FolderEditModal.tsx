@@ -3,33 +3,47 @@ import styled from "styled-components";
 import { Text } from "../atoms/Text";
 import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { FolderInput } from "./FolderInput";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usersApi } from "@/apis/usersApi";
 
-interface FolderAddModalProps {
+interface FolderEditModalProps {
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (updatedName: string) => void;
+  initialName: string;
+  folderId: number | string;
 }
 
-export const FolderAddModal = ({ onClose, onSuccess }: FolderAddModalProps) => {
-  const [folderName, setFolderName] = useState("");
+export const FolderEditModal = ({
+  onClose,
+  onSuccess,
+  initialName,
+  folderId,
+}: FolderEditModalProps) => {
+  const [folderName, setFolderName] = useState(initialName);
   const [loading, setLoading] = useState(false);
 
-  const handleAdd = async () => {
+  useEffect(() => {
+    setFolderName(initialName);
+  }, [initialName]);
+
+  const handleEdit = async () => {
     if (!folderName.trim()) return;
     setLoading(true);
     try {
-      const res = await usersApi.createScrapFolder(folderName);
+      const res = await usersApi.updateScrapFolder(
+        Number(folderId),
+        folderName
+      );
       if (res.isSuccess) {
-        console.log("폴더 생성 성공:", folderName);
-        if (onSuccess) onSuccess();
+        console.log("폴더 수정 성공:", folderName);
+        if (onSuccess) onSuccess(folderName);
         onClose();
         window.location.reload();
       } else {
-        console.error("폴더 생성 실패:", res.message);
+        console.error("폴더 수정 실패:", res.message);
       }
     } catch (err) {
-      console.error("폴더 생성 API 에러", err);
+      console.error("폴더 수정 API 에러", err);
     } finally {
       setLoading(false);
     }
@@ -41,9 +55,9 @@ export const FolderAddModal = ({ onClose, onSuccess }: FolderAddModalProps) => {
         <Content>
           <HeadDiv>
             <Text typo="H3" color="gray_800">
-              폴더 추가
+              폴더 이름 수정
             </Text>
-            <div onClick={onClose}>
+            <div onClick={onClose} style={{ cursor: "pointer" }}>
               <CloseIcon />
             </div>
           </HeadDiv>
@@ -51,7 +65,9 @@ export const FolderAddModal = ({ onClose, onSuccess }: FolderAddModalProps) => {
             value={folderName}
             onChange={setFolderName}
             placeholder="폴더명을 입력하세요"
-            onSubmit={handleAdd}
+            buttonText="수정하기"
+            onSubmit={handleEdit}
+            buttonDisabled={folderName.trim().length === 0 || loading}
           />
         </Content>
       </ModalBox>
@@ -93,4 +109,9 @@ const Content = styled.div`
 const HeadDiv = styled.div`
   display: flex;
   justify-content: space-between;
+`;
+
+const ButtonRow = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;

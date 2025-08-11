@@ -175,6 +175,7 @@ const TimeLineWrap = styled.div`
   flex-wrap: wrap;
   gap: 16px;
   margin-top: 24px;
+  justify-content: center;
 `;
 
 const TimeLineCard = styled.div`

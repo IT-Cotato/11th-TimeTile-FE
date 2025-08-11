@@ -139,4 +139,31 @@ export const usersApi = {
     });
     return res.data;
   },
+
+  getMyScrapFolders: async () => {
+    const res = await axiosApi.get("/scrap-folders");
+    return res.data;
+  },
+
+  createScrapFolder: async (name: string) => {
+    const res = await axiosApi.post("/scrap-folders", { name });
+    return res.data;
+  },
+
+  getScrapFolderPosts: async (scrapFolderId: string, page: number = 1) => {
+    const res = await axiosApi.get(`/users/me/scraps/${scrapFolderId}/posts`, {
+      params: { page },
+    });
+    return res.data;
+  },
+
+  deleteFolder: async (scrapFolderId: number) => {
+    const res = await axiosApi.delete(`/scrap-folders/${scrapFolderId}`);
+    return res.data;
+  },
+
+  updateScrapFolder: async (scrapFolderId: number, name: string) => {
+    const res = await axiosApi.put(`/scrap-folders/${scrapFolderId}`, { name });
+    return res.data;
+  },
 };
