@@ -28,7 +28,7 @@ export const MyRoleSection = ({ data }: any) => {
               다음달 예상
             </Text>
             <Text typo="Body_2" color="gray_600">
-              {data.role}
+              {data.achievementRate === 100 ? "EDITOR" : "LINKER"}
             </Text>
           </PredictRole>
         </RoleInfo>

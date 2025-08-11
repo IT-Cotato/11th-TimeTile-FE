@@ -25,7 +25,7 @@ export const MyRoleSection = ({ data }: any) => {
               다음달 예상
             </Text>
             <Text typo="Body_2" color="gray_600">
-              {data.role}
+              EDITOR
             </Text>
           </PredictRole>
         </RoleInfo>
@@ -224,6 +224,6 @@ const EditorColorText = styled.div`
   background: linear-gradient(180deg, #e9e66a 0%, #a6c6fa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text; /* Firefox 지원용 */
+  background-clip: text;
   color: transparent;
 `;
