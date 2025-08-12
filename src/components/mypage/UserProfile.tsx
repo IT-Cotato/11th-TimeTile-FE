@@ -135,9 +135,7 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
               <Text typo="Caption_1">{profile.followerCount}</Text>
             </Part>
           </Stats>
-          <FlexDiv>
-            <Tag variant="song">{song}</Tag>
-          </FlexDiv>
+          <FlexDiv>{/* <Tag variant="song">{song}</Tag> */}</FlexDiv>
           <Intro>
             <Text typo="Body_3">{profile.introduction}</Text>
           </Intro>

@@ -84,9 +84,7 @@ export const MyProfile = () => {
               <Text typo="Caption_1" children={profile.followerCount} />
             </Part>
           </Stats>
-          <FlexDiv>
-            <Tag variant="song" children={song} />
-          </FlexDiv>
+          <FlexDiv>{/* <Tag variant="song" children={song} /> */}</FlexDiv>
           <Intro>
             <Text typo="Body_3" children={profile.introduction} />
           </Intro>

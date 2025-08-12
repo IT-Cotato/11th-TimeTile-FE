@@ -99,8 +99,13 @@ export const MyScrapComponent = () => {
     setLoading(true);
     try {
       const res = await usersApi.getMyScrap({ page });
+      // const res = MOCK_DATA[0];
       if (res.isSuccess) {
-        setPosts(res.data.posts);
+        const mappedPosts = res.data.posts.map((post: OtherPost) => ({
+          ...post,
+          isScrapped: true,
+        }));
+        setPosts(mappedPosts);
         setPage(res.data.page);
         setTotalPages(res.data.totalPages);
       } else {
@@ -196,6 +201,7 @@ export const MyScrapComponent = () => {
           showTitle={false}
           posts={posts}
           infoText="스크랩 기록이 없습니다."
+          showScrapIcon={true}
         />
         {posts.length > 0 && (
           <PaginationComponent

@@ -25,4 +25,7 @@ export interface OtherPost {
   createdAt: string;
   likeCount: number;
   commentCount: number;
+
+  isScrapped?: boolean; // 스크랩 여부
+  scrapFolderId?: number; // 스크랩 폴더 ID
 }

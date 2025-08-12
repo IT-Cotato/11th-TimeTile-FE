@@ -8,12 +8,21 @@ import { HeartIcon } from "@/assets/icons/HeartIcon";
 import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
 import { OtherPost } from "@/model/components/Post";
 import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
+import { usersApi } from "@/apis/usersApi";
+import { ScrapIcon } from "@/assets/icons/ScrapIcon";
+import { CheckTrueIcon } from "@/assets/icons/CheckTrueIcon";
+import { CheckFalseIcon } from "@/assets/icons/CheckFalseIcon";
 
 interface OtherPostComponentProps {
   posts: OtherPost[];
   titleText?: string;
   infoText?: string;
   showTitle?: boolean;
+  showScrapIcon?: boolean;
+  isSelectionMode?: boolean;
+  selectedPosts?: Set<number>;
+  onToggleSelect?: (postId: number) => void;
+  isSelectionForFolderDetail?: boolean;
 }
 
 export const OtherPostComponent = ({
@@ -21,6 +30,11 @@ export const OtherPostComponent = ({
   titleText = "내 타임라인",
   infoText = "타임라인이 없습니다.",
   showTitle = true,
+  showScrapIcon = false,
+  isSelectionMode = false,
+  selectedPosts = new Set<number>(),
+  onToggleSelect,
+  isSelectionForFolderDetail = false,
 }: OtherPostComponentProps) => {
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
@@ -28,6 +42,18 @@ export const OtherPostComponent = ({
   };
 
   const isEmpty = posts.length === 0;
+
+  const handleCancel = async (postId: number, scrapFolderId: number) => {
+    try {
+      const res = await usersApi.cancelScrapPost(postId, scrapFolderId);
+      if (res.isSuccess) {
+        alert("스크랩이 취소되었습니다.");
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error("스크랩 취소 실패", err);
+    }
+  };
 
   return (
     <Wrapper>
@@ -55,14 +81,62 @@ export const OtherPostComponent = ({
             return (
               <TimeLineCard key={post.postId}>
                 <CardContent>
-                  <Text typo="Caption_1" color="primary_800">
-                    {post.artistName}
-                  </Text>
-                  <Text typo="Caption_2" color="primary_700">
-                    {post.name}
-                  </Text>
+                  <TextWrapper>
+                    <Text typo="Caption_1" color="primary_800">
+                      {post.artistName}
+                    </Text>
+                    <Text typo="Caption_1" color="primary_800" children="·" />
+                    <Text typo="Caption_2" color="primary_700">
+                      {post.name}
+                    </Text>
+                  </TextWrapper>
+                  {showScrapIcon &&
+                    post.isScrapped &&
+                    post.scrapFolderId &&
+                    !isSelectionMode && (
+                      <button
+                        onClick={() =>
+                          handleCancel(post.postId, post.scrapFolderId!)
+                        }
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
+                        aria-label="스크랩 취소"
+                      >
+                        <ScrapIcon />
+                      </button>
+                    )}
+                  {isSelectionMode && (
+                    <button
+                      onClick={() =>
+                        onToggleSelect && onToggleSelect(post.postId)
+                      }
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                      aria-label={
+                        selectedPosts.has(post.postId) ? "선택 해제" : "선택"
+                      }
+                    >
+                      {selectedPosts.has(post.postId) ? (
+                        <CheckTrueIcon />
+                      ) : (
+                        <CheckFalseIcon />
+                      )}
+                    </button>
+                  )}
                 </CardContent>
-                <PostContent>
+                <PostContent
+                  $isSelected={
+                    isSelectionMode && selectedPosts.has(post.postId)
+                  }
+                  $isSelectionMode={isSelectionMode}
+                  $isSelectionForFolderDetail={isSelectionForFolderDetail}
+                >
                   <UserInfoHeader>
                     {post.authorProfileImageUrl && (
                       <WriterImage
@@ -81,7 +155,7 @@ export const OtherPostComponent = ({
                     <Text typo="H4">{post.title}</Text>
                   </TitleWrap>
                   <PostDiv>
-                    <Wrap hasImage={hasImage}>
+                    <Wrap $hasImage={hasImage}>
                       <Text typo="Body_3">{post.content}</Text>
                     </Wrap>
                     {post.mainImageUrl && (
@@ -190,17 +264,23 @@ const TimeLineCard = styled.div`
 
 const CardContent = styled.div`
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 467px;
   height: 48px;
   padding: 12px 16px;
-  align-items: center;
   border-radius: 20px;
   border: 1px solid ${theme.palette.primary_300};
   background: ${theme.palette.primary_200};
   gap: 2px;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  flex: 1 0 0;
+`;
+
+const TextWrapper = styled.div`
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  gap: 4px;
 `;
 
 const Image = styled.img`
@@ -243,8 +323,8 @@ const PostDiv = styled.div`
   gap: 16px;
 `;
 
-const Wrap = styled.div<{ hasImage: boolean }>`
-  width: ${({ hasImage }) => (hasImage ? "235px" : "100%")};
+const Wrap = styled.div<{ $hasImage: boolean }>`
+  width: ${({ $hasImage }) => ($hasImage ? "235px" : "100%")};
   align-self: stretch;
   overflow: hidden;
   display: -webkit-box;
@@ -266,18 +346,6 @@ const IconWrapper = styled.div`
   gap: 12px;
 `;
 
-const PostContent = styled.div`
-  display: flex;
-  width: 467px;
-  padding: 24px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  border-radius: 20px;
-  border: 1px solid ${theme.palette.primary_300};
-  background: ${theme.palette.primary_20};
-`;
-
 const IconDiv = styled.div`
   display: flex;
   width: 100%;
@@ -293,4 +361,45 @@ const ViewButton = styled.button`
   justify-content: center;
   cursor: pointer;
   color: ${theme.palette.primary_700};
+`;
+
+const PostContent = styled.div<{
+  $isSelected?: boolean;
+  $isSelectionMode?: boolean;
+  $isSelectionForFolderDetail?: boolean;
+}>`
+  display: flex;
+  width: 467px;
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  border-radius: 20px;
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${({ $isSelected, $isSelectionForFolderDetail }) =>
+    $isSelectionForFolderDetail && $isSelected
+      ? theme.palette.primary_100
+      : theme.palette.primary_20};
+
+  ${({ $isSelectionMode, $isSelected }) =>
+    $isSelectionMode &&
+    `
+    cursor: pointer;
+
+    &:hover {
+      background: ${theme.palette.primary_200};
+      border-color: ${theme.palette.primary_400};
+      border-width: 1.5px;
+    }
+
+    ${
+      $isSelected
+        ? `
+      background: ${theme.palette.primary_200};
+      border-color: ${theme.palette.primary_400};
+      border-width: 1.5px;
+    `
+        : ""
+    }
+  `}
 `;

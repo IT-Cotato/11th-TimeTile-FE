@@ -11,6 +11,8 @@ import { MoveLeftIcon } from "@/assets/icons/MoveLeftIcon";
 import { Text } from "@/components/atoms/Text";
 import { KebabIcon } from "@/assets/icons/KebabIcon";
 import { FolderEditModal } from "@/components/mypage/FolderEditModal";
+import { TrashIcon } from "@/assets/icons/TrashIcon";
+import { theme } from "@/styles/theme";
 
 const MOCK_RESPONSE = [
   {
@@ -78,10 +80,12 @@ export default function ScrapFolderDetail() {
   const [loading, setLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteSelectedModalOpen, setDeleteSelectedModalOpen] = useState(false);
   const kebabRef = useRef<HTMLDivElement>(null);
-  const [folderAddModalOpen, setFolderAddModalOpen] = useState(false);
   const [currentFolderName, setCurrentFolderName] = useState(folderName);
   const [folderEditModalOpen, setFolderEditModalOpen] = useState(false);
+  const [onSelectMode, setOnSelectMode] = useState(false);
+  const [selectedPosts, setSelectedPosts] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -104,7 +108,7 @@ export default function ScrapFolderDetail() {
     setLoading(true);
     try {
       const res = await usersApi.getScrapFolderPosts(folderId as string, page);
-      //   const res = MOCK_RESPONSE[0];
+      // const res = MOCK_RESPONSE[0];
       if (res.isSuccess) {
         setPosts(res.data.posts);
         setPage(res.data.page);
@@ -132,7 +136,6 @@ export default function ScrapFolderDetail() {
     if (!folderId) return;
     try {
       const res = await usersApi.deleteFolder(Number(folderId));
-
       if (res.isSuccess) {
         setDeleteModalOpen(false);
         router.back();
@@ -150,111 +153,227 @@ export default function ScrapFolderDetail() {
     setMenuOpen(false);
   };
 
-  //   const handleFolderAddModalClose = (updatedName?: string) => {
-  //     setFolderAddModalOpen(false);
-  //     if (updatedName) {
-  //       setCurrentFolderName(updatedName);
-  //       const searchParams = new URLSearchParams(window.location.search);
-  //       searchParams.set("name", updatedName);
-  //       const newUrl = window.location.pathname + "?" + searchParams.toString();
-  //       window.history.replaceState(null, "", newUrl);
-  //     }
-  //   };
+  const handleSelectToggle = (postId: number) => {
+    setSelectedPosts((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(postId)) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedPosts.size === 0) {
+      alert("선택된 게시글이 없습니다.");
+      return;
+    }
+    if (!folderId) return;
+
+    try {
+      for (const postId of selectedPosts) {
+        await usersApi.cancelScrapPost(postId, Number(folderId));
+      }
+      alert("선택한 게시글이 삭제되었습니다.");
+      await fetchData(page);
+
+      setSelectedPosts(new Set());
+      setOnSelectMode(false);
+    } catch (err) {
+      console.error("선택 삭제 실패", err);
+      alert("선택 삭제에 실패했습니다.");
+    }
+  };
 
   if (loading) return <p>로딩중...</p>;
 
   return (
     <Container>
-      <DetailHeader>
-        <FlexDiv>
-          <div onClick={() => router.back()} style={{ cursor: "pointer" }}>
-            <MoveLeftIcon />
+      <Wrapper>
+        <DetailHeader>
+          <FlexDiv>
+            <div onClick={() => router.back()} style={{ cursor: "pointer" }}>
+              <MoveLeftIcon />
+            </div>
+            <NoWrapText typo="H2" color="primary_800" children={folderName} />
+          </FlexDiv>
+          <div ref={kebabRef} style={{ position: "relative" }}>
+            <div
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                if (onSelectMode) {
+                  setDeleteSelectedModalOpen(true);
+                } else {
+                  // 선택 모드 아닐 때는 케밥
+                  setMenuOpen((prev) => !prev);
+                }
+              }}
+            >
+              {onSelectMode ? <TrashIcon /> : <KebabIcon />}
+            </div>
+            {menuOpen && (
+              <MenuContainer>
+                {!onSelectMode ? (
+                  <>
+                    <MenuItem
+                      onClick={() => {
+                        setDeleteModalOpen(true);
+                        setMenuOpen(false);
+                      }}
+                    >
+                      <Text typo="H5" color="gray_800" children="폴더 삭제" />
+                    </MenuItem>
+                    <MenuItem onClick={handleEditClick}>
+                      <Text
+                        typo="H5"
+                        color="gray_800"
+                        children="폴더 이름 수정"
+                      />
+                    </MenuItem>
+                    <MenuItem
+                      disabled={posts.length === 0}
+                      onClick={() => {
+                        if (posts.length > 0) {
+                          setOnSelectMode(true);
+                          setMenuOpen(false);
+                        }
+                      }}
+                    >
+                      <Text
+                        typo="H5"
+                        color={posts.length === 0 ? "gray_400" : "gray_800"}
+                        children="게시글 선택 삭제"
+                      />
+                    </MenuItem>
+                  </>
+                ) : (
+                  <MenuItem
+                    onClick={() => {
+                      setDeleteSelectedModalOpen(true);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <Text
+                      typo="H5"
+                      color="gray_800"
+                      children="선택한 타일 삭제"
+                    />
+                  </MenuItem>
+                )}
+              </MenuContainer>
+            )}
           </div>
-          <NoWrapText typo="H2" color="primary_800" children={folderName} />
-        </FlexDiv>
-        <div ref={kebabRef} style={{ position: "relative" }}>
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => setMenuOpen((prev) => !prev)}
+        </DetailHeader>
+        <OtherPostComponent
+          showTitle={false}
+          posts={posts.map((post) => ({
+            ...post,
+            isScrapped: true,
+            scrapFolderId: folderId ? Number(folderId) : undefined,
+          }))}
+          infoText="기록이 없습니다."
+          showScrapIcon={true}
+          isSelectionMode={onSelectMode}
+          selectedPosts={selectedPosts}
+          onToggleSelect={handleSelectToggle}
+          isSelectionForFolderDetail={true}
+        />
+        {posts.length > 0 && (
+          <PaginationComponent
+            totalPages={totalPages}
+            page={page}
+            onPageChange={handlePageChange}
+          />
+        )}
+        {/* 폴더 삭제 모달 */}
+        {deleteModalOpen && (
+          <DeleteModalBackground onClick={() => setDeleteModalOpen(false)}>
+            <DeleteModalContainer onClick={(e) => e.stopPropagation()}>
+              <Text
+                typo="Body_3"
+                color="gray_800"
+                children="폴더를 삭제할까요?"
+              />
+              <ButtonRow>
+                <CancelButton onClick={() => setDeleteModalOpen(false)}>
+                  <Text typo="Body_1" color="gray_0" children="취소" />
+                </CancelButton>
+                <ConfirmDeleteButton onClick={handleDeleteConfirm}>
+                  <Text typo="Body_1" color="gray_0" children="삭제" />
+                </ConfirmDeleteButton>
+              </ButtonRow>
+            </DeleteModalContainer>
+          </DeleteModalBackground>
+        )}
+        {/* 선택한 타일 삭제 확인 모달 */}
+        {deleteSelectedModalOpen && (
+          <DeleteModalBackground
+            onClick={() => setDeleteSelectedModalOpen(false)}
           >
-            <KebabIcon />
-          </div>
-          {menuOpen && (
-            <MenuContainer>
-              <MenuItem
-                onClick={() => {
-                  setDeleteModalOpen(true);
-                  setMenuOpen(false);
-                }}
-              >
-                <Text typo="H5" color="gray_800" children="폴더 삭제" />
-              </MenuItem>
-              <MenuItem onClick={handleEditClick}>
-                <Text typo="H5" color="gray_800" children="폴더 이름 수정" />
-              </MenuItem>
-              <MenuItem>
-                <Text typo="H5" color="gray_800" children="게시글 선택 삭제" />
-              </MenuItem>
-            </MenuContainer>
-          )}
-        </div>
-      </DetailHeader>
-      <OtherPostComponent
-        showTitle={false}
-        posts={posts}
-        infoText="기록이 없습니다."
-      />
-      {posts.length > 0 && (
-        <PaginationComponent
-          totalPages={totalPages}
-          page={page}
-          onPageChange={handlePageChange}
-        />
-      )}
-      {deleteModalOpen && (
-        <DeleteModalBackground onClick={() => setDeleteModalOpen(false)}>
-          <DeleteModalContainer onClick={(e) => e.stopPropagation()}>
-            <Text
-              typo="Body_3"
-              color="gray_800"
-              children="폴더를 삭제할까요?"
-            />
-            <ButtonRow>
-              <CancelButton onClick={() => setDeleteModalOpen(false)}>
-                <Text typo="Body_1" color="gray_0" children="취소" />
-              </CancelButton>
-              <ConfirmDeleteButton onClick={handleDeleteConfirm}>
-                <Text typo="Body_1" color="gray_0" children="삭제" />
-              </ConfirmDeleteButton>
-            </ButtonRow>
-          </DeleteModalContainer>
-        </DeleteModalBackground>
-      )}
-      {folderEditModalOpen && (
-        <FolderEditModal
-          initialName={currentFolderName}
-          folderId={folderId ? Number(folderId) : 0}
-          onClose={() => setFolderEditModalOpen(false)}
-          onSuccess={(updatedName: string) => {
-            setFolderEditModalOpen(false);
-            setCurrentFolderName(updatedName);
-            const searchParams = new URLSearchParams(window.location.search);
-            searchParams.set("name", updatedName);
-            const newUrl =
-              window.location.pathname + "?" + searchParams.toString();
-            window.history.replaceState(null, "", newUrl);
-          }}
-        />
-      )}
+            <DeleteModalContainer onClick={(e) => e.stopPropagation()}>
+              <Text
+                typo="Body_3"
+                color="gray_800"
+                children="선택된 타일들을 삭제할까요?"
+              />
+              <ButtonRow>
+                <CancelButton
+                  onClick={() => {
+                    setDeleteSelectedModalOpen(false);
+                    setOnSelectMode(false);
+                    setSelectedPosts(new Set());
+                  }}
+                >
+                  <Text typo="Body_1" color="gray_0" children="취소" />
+                </CancelButton>
+                <ConfirmDeleteButton
+                  onClick={() => {
+                    setDeleteSelectedModalOpen(false);
+                    handleDeleteSelected();
+                  }}
+                >
+                  <Text typo="Body_1" color="gray_0" children="삭제" />
+                </ConfirmDeleteButton>
+              </ButtonRow>
+            </DeleteModalContainer>
+          </DeleteModalBackground>
+        )}
+        {/* 폴더 이름 수정 모달 */}
+        {folderEditModalOpen && (
+          <FolderEditModal
+            initialName={currentFolderName}
+            folderId={folderId ? Number(folderId) : 0}
+            onClose={() => setFolderEditModalOpen(false)}
+            onSuccess={(updatedName: string) => {
+              setFolderEditModalOpen(false);
+              setCurrentFolderName(updatedName);
+              const searchParams = new URLSearchParams(window.location.search);
+              searchParams.set("name", updatedName);
+              const newUrl =
+                window.location.pathname + "?" + searchParams.toString();
+              window.history.replaceState(null, "", newUrl);
+            }}
+          />
+        )}
+      </Wrapper>
     </Container>
   );
 }
 
 const Container = styled.div`
+  width: 100%;
+  overflow-x: auto;
+  min-height: 100vh;
+  padding: 0 119px;
+  margin-top: 26px;
+`;
+
+const Wrapper = styled.div`
   width: 962px;
   margin: 0 auto;
-  margin-bottom: 100px;
-  margin-top: 26px;
+  margin-bottom: 150px;
 `;
 
 const DetailHeader = styled.div`
@@ -294,7 +413,7 @@ const MenuContainer = styled.div`
   z-index: 10;
 `;
 
-const MenuItem = styled.div`
+const MenuItem = styled.div<{ disabled?: boolean }>`
   display: flex;
   width: 168px;
   height: 40px;
@@ -303,10 +422,14 @@ const MenuItem = styled.div`
   align-items: center;
   gap: 10px;
   border-radius: 10px;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
+  color: ${({ disabled }) =>
+    disabled ? `${theme.palette.gray_400}` : `${theme.palette.gray_800}`};
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "auto")};
 
   &:hover {
-    background: var(--Primary-200, #e6f0ff);
+    background: ${({ disabled }) =>
+      disabled ? "none" : "var(--Primary-200, #e6f0ff)"};
   }
 `;
 
@@ -323,7 +446,7 @@ const DeleteModalBackground = styled.div`
 const DeleteModalContainer = styled.div`
   display: flex;
   width: 224px;
-  padding: 32px;
+  padding: 32px 16px;
   flex-direction: column;
   justify-content: center;
   align-items: center;

@@ -82,6 +82,7 @@ export const TimeLineComponent = ({
                   <Text typo="Caption_1" color="primary_800">
                     {post.artistName}
                   </Text>
+                  <Text typo="Caption_1" color="primary_800" children="·" />
                   <Text typo="Caption_2" color="primary_700">
                     {post.name}
                   </Text>
@@ -91,7 +92,7 @@ export const TimeLineComponent = ({
                     <Text typo="H4">{post.title}</Text>
                   </TitleWrap>
                   <PostDiv>
-                    <Wrap hasImage={hasImage}>
+                    <Wrap $hasImage={hasImage}>
                       <Text typo="Body_3">{post.content}</Text>
                     </Wrap>
                     {post.mainImageUrl && (
@@ -227,8 +228,8 @@ const PostDiv = styled.div`
   gap: 16px;
 `;
 
-const Wrap = styled.div<{ hasImage: boolean }>`
-  width: ${({ hasImage }) => (hasImage ? "235px" : "100%")};
+const Wrap = styled.div<{ $hasImage: boolean }>`
+  width: ${({ $hasImage }) => ($hasImage ? "235px" : "100%")};
   align-self: stretch;
   overflow: hidden;
   display: -webkit-box;

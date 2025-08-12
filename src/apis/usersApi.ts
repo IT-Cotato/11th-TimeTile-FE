@@ -166,4 +166,11 @@ export const usersApi = {
     const res = await axiosApi.put(`/scrap-folders/${scrapFolderId}`, { name });
     return res.data;
   },
+
+  cancelScrapPost: async (postId: number, scrapFolderId: number) => {
+    const res = await axiosApi.delete(
+      `/posts/${postId}/scrap/${scrapFolderId}`
+    );
+    return res.data;
+  },
 };
