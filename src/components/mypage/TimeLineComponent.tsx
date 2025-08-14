@@ -114,7 +114,7 @@ export const TimeLineComponent = ({
                     </IconWrapper>
                     <ViewButton
                       onClick={() =>
-                        (window.location.href = `/post/${post.postId}`)
+                        (window.location.href = `/record-post/${post.postId}`)
                       }
                     >
                       <Text
@@ -135,7 +135,6 @@ export const TimeLineComponent = ({
   );
 };
 
-// Styled Components
 const Wrapper = styled.div`
   width: 100%;
 `;

@@ -8,7 +8,7 @@ import { HeartIcon } from "@/assets/icons/HeartIcon";
 
 interface Props {
   comments: Comment[];
-  infoText: string;    
+  infoText: string;
 }
 
 export const MyCommentComponent = ({ comments, infoText }: Props) => {
@@ -66,7 +66,7 @@ export const MyCommentComponent = ({ comments, infoText }: Props) => {
                   </IconWrapper>
                   <ViewButton
                     onClick={() =>
-                      (window.location.href = `/post/${comment.postId}`)
+                      (window.location.href = `/record-post/${comment.postId}`)
                     }
                   >
                     <Text

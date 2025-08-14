@@ -60,8 +60,11 @@ export const usersApi = {
     return res.data.data;
   },
 
-  getUserProfilePost: async (targetId: number) => {
-    const res = await axiosApi.get(`/users/${targetId}/profile/posts`);
+  getUserProfilePost: async (targetId: number, lastPostId?: number) => {
+    const params = lastPostId ? { lastPostId } : {};
+    const res = await axiosApi.get(`/users/${targetId}/profile/posts`, {
+      params,
+    });
     return res.data;
   },
 

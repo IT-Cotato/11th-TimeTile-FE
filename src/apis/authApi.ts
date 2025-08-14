@@ -34,4 +34,6 @@ export const authApi = {
     axiosApi.post("/users/files", { extension }),
 
   getTerms: () => axiosApi.get("/terms"),
+
+  logout: () => axiosApi.post("/auth/logout"),
 };
