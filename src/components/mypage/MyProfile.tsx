@@ -4,16 +4,14 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { Text } from "../atoms/Text";
-import { Tag } from "../atoms/Tag";
 import { Buttons } from "../atoms/Buttons";
 import { EditIcon } from "@/assets/icons/EditIcon";
 import { usersApi } from "@/apis/usersApi";
-import { Editor } from "./../../assets/images/role/Editor";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { RoleIcon } from "./RoleIcon";
 import { UserRole } from "@/model/common/user";
 import { PrivateIcon } from "@/assets/icons/PrivateIcon";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { userProfileAtom } from "@/store/UserProfileAtom";
 import { useRouter } from "next/navigation";
 import { FollowingModal } from "./FollowingModal";
@@ -46,7 +44,6 @@ export const MyProfile = () => {
       try {
         const res = await usersApi.getMyProfile();
         setProfile(res.data);
-        console.log(res.data);
       } catch (error) {
         console.error("프로필을 불러오는데 실패했습니다", error);
       }

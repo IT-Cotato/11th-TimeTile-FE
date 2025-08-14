@@ -8,6 +8,7 @@ import { HeartIcon } from "@/assets/icons/HeartIcon";
 import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
 import { Post } from "@/model/components/Post";
 import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
+import { ScrapIcon } from "@/assets/icons/ScrapIcon";
 import { useRouter } from "next/navigation";
 
 interface TimeLineComponentProps {
@@ -15,6 +16,8 @@ interface TimeLineComponentProps {
   titleText?: string;
   infoText?: string;
   showTitle?: boolean;
+  showScrapIcon?: boolean;
+  showViewMore?: boolean;
 }
 
 export const TimeLineComponent = ({
@@ -22,29 +25,10 @@ export const TimeLineComponent = ({
   titleText = "내 타임라인",
   infoText = "타임라인이 없습니다.",
   showTitle = true,
+  showScrapIcon = false,
+  showViewMore = true,
 }: TimeLineComponentProps) => {
   const router = useRouter();
-  // useEffect(() => {
-  // const fetchPosts = async () => {
-  //   try {
-  //     const res = await usersApi.getMyProfilePost();
-  //     setPosts(res.data.data.posts);
-  //     console.log(posts);
-  //   } catch (err) {
-  //     console.error("타임라인 불러오기 실패", err);
-  //   }
-  // };
-
-  // fetchPosts();
-
-  //   const fetchMockPosts = async () => {
-  //     const mockPosts = mockData[0].data.posts;
-  //     setPosts(mockPosts);
-  //     console.log(mockPosts);
-  //   };
-
-  //   fetchMockPosts();
-  // }, []);
 
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
@@ -58,11 +42,11 @@ export const TimeLineComponent = ({
       {showTitle && (
         <Title>
           <Text typo="H3" children={titleText} />
-          {/* {!isEmpty && ( */}
-          <CursorDiv onClick={() => router.push("/users/timeline")}>
-            <MoveRightIcon />
-          </CursorDiv>
-          {/* )} */}
+          {showViewMore && (
+            <CursorDiv onClick={() => router.push("/users/timeline")}>
+              <MoveRightIcon />
+            </CursorDiv>
+          )}
         </Title>
       )}
       {isEmpty ? (
@@ -79,13 +63,20 @@ export const TimeLineComponent = ({
             return (
               <TimeLineCard key={post.postId}>
                 <CardContent>
-                  <Text typo="Caption_1" color="primary_800">
-                    {post.artistName}
-                  </Text>
-                  <Text typo="Caption_1" color="primary_800" children="·" />
-                  <Text typo="Caption_2" color="primary_700">
-                    {post.name}
-                  </Text>
+                  <TextWrapper>
+                    <Text typo="Caption_1" color="primary_800">
+                      {post.artistName}
+                    </Text>
+                    <Text typo="Caption_1" color="primary_800" children="·" />
+                    <Text typo="Caption_2" color="primary_700">
+                      {post.name}
+                    </Text>
+                  </TextWrapper>
+                  {showScrapIcon && post.isScrapped && (
+                    <div style={{ cursor: "default" }}>
+                      <ScrapIcon />
+                    </div>
+                  )}
                 </CardContent>
                 <PostContent>
                   <TitleWrap>
@@ -144,6 +135,7 @@ export const TimeLineComponent = ({
   );
 };
 
+// Styled Components
 const Wrapper = styled.div`
   width: 100%;
 `;
@@ -179,37 +171,37 @@ const TimeLineCard = styled.div`
   width: 467px;
   flex-direction: column;
   align-items: flex-start;
-  gap: -1px;
-  grid-row: 1 / span 1;
-  grid-column: 2 / span 1;
 `;
 
 const CardContent = styled.div`
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 467px;
   height: 48px;
   padding: 12px 16px;
-  align-items: center;
   border-radius: 20px;
   border: 1px solid ${theme.palette.primary_300};
   background: ${theme.palette.primary_200};
   gap: 2px;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  flex: 1 0 0;
+`;
+
+const TextWrapper = styled.div`
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  gap: 4px;
 `;
 
 const Image = styled.img`
   object-fit: cover;
-  display: flex;
   width: 168px;
   height: 142px;
-  justify-content: flex-end;
-  align-items: center;
   border-radius: 16px;
   border: 1px solid ${theme.palette.primary_200};
   background: ${theme.palette.gray_0};
-  box-shadow: 0 4px 12px 0 rgba(159, 198, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(159, 198, 255, 0.25);
 `;
 
 const TitleWrap = styled.div`
@@ -223,14 +215,12 @@ const TitleWrap = styled.div`
 const PostDiv = styled.div`
   display: flex;
   align-items: flex-start;
-  align-self: stretch;
-  margin-top: 4px;
   gap: 16px;
+  margin-top: 4px;
 `;
 
 const Wrap = styled.div<{ $hasImage: boolean }>`
   width: ${({ $hasImage }) => ($hasImage ? "235px" : "100%")};
-  align-self: stretch;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 6;
@@ -242,13 +232,27 @@ const DetailWrap = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  align-self: stretch;
+  width: 100%;
 `;
 
 const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
+`;
+
+const IconDiv = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const ViewButton = styled.button`
+  all: unset;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: ${theme.palette.primary_700};
 `;
 
 const PostContent = styled.div`
@@ -261,21 +265,4 @@ const PostContent = styled.div`
   border-radius: 20px;
   border: 1px solid ${theme.palette.primary_300};
   background: ${theme.palette.primary_20};
-`;
-
-const IconDiv = styled.div`
-  display: flex;
-  width: 100%;
-  height: 26px;
-  align-items: center;
-  gap: 4px;
-`;
-
-const ViewButton = styled.button`
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: ${theme.palette.primary_700};
 `;

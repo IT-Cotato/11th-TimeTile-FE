@@ -45,7 +45,6 @@ export default function Terms({
   }, []);
 
   const toggleCheck = (id: number) => {
-    console.log(checkedIds);
     setCheckedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );

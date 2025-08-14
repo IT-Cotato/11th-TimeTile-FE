@@ -50,6 +50,7 @@ const MOCK_DATA = [
           authorNickname: "닉네임2",
           authorProfileImageUrl:
             "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250807T131629Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250807%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=b4c2759f7c6d55460ad9e2e4b4200ff9cc85e75381aa74d31fdfcf9f901d7c2a",
+          isScrapped: true,
         },
         {
           name: "Corporate Branding Manager",
@@ -67,6 +68,7 @@ const MOCK_DATA = [
           authorNickname: "닉네임2",
           authorProfileImageUrl:
             "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250807T131629Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250807%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=b4c2759f7c6d55460ad9e2e4b4200ff9cc85e75381aa74d31fdfcf9f901d7c2a",
+          isScrapped: true,
         },
       ],
       page: 1,
@@ -101,11 +103,7 @@ export const MyScrapComponent = () => {
       const res = await usersApi.getMyScrap({ page });
       //const res = MOCK_DATA[0];
       if (res.isSuccess) {
-        const mappedPosts = res.data.posts.map((post: OtherPost) => ({
-          ...post,
-          isScrapped: true,
-        }));
-        setPosts(mappedPosts);
+        setPosts(res.data.posts);
         setPage(res.data.page);
         setTotalPages(res.data.totalPages);
       } else {

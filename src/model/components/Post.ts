@@ -9,6 +9,7 @@ export interface Post {
   createdAt: string;
   likeCount: number;
   commentCount: number;
+  isScrapped?: boolean;
 }
 
 export interface OtherPost {
@@ -25,7 +26,6 @@ export interface OtherPost {
   createdAt: string;
   likeCount: number;
   commentCount: number;
-
-  isScrapped?: boolean; // 스크랩 여부
-  scrapFolderId?: number; // 스크랩 폴더 ID
+  isScrapped?: boolean;
+  scrapFolderId?: number;
 }

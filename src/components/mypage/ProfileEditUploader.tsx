@@ -26,7 +26,6 @@ export const ProfileEditUploader = ({
 
   const handleFileChange = async (file: File) => {
     onChange(file);
-    console.log("파일 선택됨:", file);
 
     const mimeToExtMap: Record<string, "jpg" | "jpeg" | "png"> = {
       "image/jpeg": "jpeg",
@@ -43,7 +42,6 @@ export const ProfileEditUploader = ({
     setUploading(true);
     try {
       const res = await authApi.getPresignedUrl(ext);
-      console.log("프리사인 URL 응답:", res);
 
       const { key, url } = res.data.data;
 
@@ -52,8 +50,6 @@ export const ProfileEditUploader = ({
         body: file,
         headers: { "Content-Type": file.type },
       });
-
-      console.log("업로드 완료, key:", key);
       onUploadComplete(key);
     } catch (error) {
       console.error("파일 업로드 실패", error);

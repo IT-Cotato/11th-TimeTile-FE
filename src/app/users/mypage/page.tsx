@@ -186,17 +186,14 @@ export default function Mypage() {
   const [posts, setPosts] = useState<Post[]>([]);
   useEffect(() => {
     const fetchPosts = async () => {
+      //const res = mockData[0];
       const res = await usersApi.getMyProfilePost();
-      setPosts(res.data.posts);
-      console.log(res);
+      const allPosts = res.data.posts;
+
+      const latestPosts = allPosts.slice(0, 6);
+      setPosts(latestPosts);
     };
     fetchPosts();
-    //   const fetchMockPosts = async () => {
-    //     const mockPosts = mockData[0].data.posts;
-    //     setPosts(mockPosts);
-    //     console.log(mockPosts);
-    //   };
-    //   fetchMockPosts();
   }, []);
 
   return (

@@ -38,6 +38,7 @@ const MOCK_RESPONSE = [
           authorNickname: "닉네임2",
           authorProfileImageUrl:
             "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png",
+          isScrapped: true,
         },
         {
           name: "Corporate Branding Manager",
@@ -55,6 +56,7 @@ const MOCK_RESPONSE = [
           authorNickname: "닉네임2",
           authorProfileImageUrl:
             "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png",
+          isScrapped: true,
         },
       ],
       page: 1,
@@ -71,9 +73,16 @@ const MOCK_RESPONSE = [
 export default function ScrapFolderDetail() {
   const router = useRouter();
   const params = useParams();
+  const folderId = Array.isArray(params.folderId)
+    ? params.folderId[0]
+    : params.folderId;
+
   const searchParams = useSearchParams();
-  const folderName = searchParams.get("name") || "";
-  const folderId = params.folderId;
+  const folderNameParam = searchParams.get("name");
+  const folderName = Array.isArray(folderNameParam)
+    ? folderNameParam[0]
+    : folderNameParam || "";
+
   const [posts, setPosts] = useState<OtherPost[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -81,11 +90,12 @@ export default function ScrapFolderDetail() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteSelectedModalOpen, setDeleteSelectedModalOpen] = useState(false);
-  const kebabRef = useRef<HTMLDivElement>(null);
-  const [currentFolderName, setCurrentFolderName] = useState(folderName);
   const [folderEditModalOpen, setFolderEditModalOpen] = useState(false);
   const [onSelectMode, setOnSelectMode] = useState(false);
   const [selectedPosts, setSelectedPosts] = useState<Set<number>>(new Set());
+  const [currentFolderName, setCurrentFolderName] = useState(folderName);
+
+  const kebabRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -93,21 +103,20 @@ export default function ScrapFolderDetail() {
         setMenuOpen(false);
       }
     };
+
     if (menuOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpen]);
-
   const fetchData = async (page: number) => {
     if (!folderId) return;
     setLoading(true);
     try {
-      const res = await usersApi.getScrapFolderPosts(folderId as string, page);
+      const res = await usersApi.getScrapFolderPosts(folderId, page);
       //const res = MOCK_RESPONSE[0];
       if (res.isSuccess) {
         setPosts(res.data.posts);
@@ -128,9 +137,7 @@ export default function ScrapFolderDetail() {
     fetchData(page);
   }, [page, folderId]);
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
+  const handlePageChange = (newPage: number) => setPage(newPage);
 
   const handleDeleteConfirm = async () => {
     if (!folderId) return;
@@ -140,11 +147,11 @@ export default function ScrapFolderDetail() {
         setDeleteModalOpen(false);
         router.back();
       } else {
-        alert("폴더 삭제에 실패했습니다: " + res.message);
+        alert("폴더 삭제 실패: " + res.message);
       }
-    } catch (error) {
-      console.error("폴더 삭제 실패", error);
-      alert("폴더 삭제에 실패했습니다.");
+    } catch (err) {
+      console.error(err);
+      alert("폴더 삭제 실패");
     }
   };
 
@@ -156,11 +163,8 @@ export default function ScrapFolderDetail() {
   const handleSelectToggle = (postId: number) => {
     setSelectedPosts((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(postId)) {
-        newSet.delete(postId);
-      } else {
-        newSet.add(postId);
-      }
+      if (newSet.has(postId)) newSet.delete(postId);
+      else newSet.add(postId);
       return newSet;
     });
   };
@@ -173,17 +177,18 @@ export default function ScrapFolderDetail() {
     if (!folderId) return;
 
     try {
-      for (const postId of selectedPosts) {
-        await usersApi.cancelScrapPost(postId, Number(folderId));
-      }
+      await Promise.all(
+        Array.from(selectedPosts).map((postId) =>
+          usersApi.cancelScrapPost(postId, Number(folderId))
+        )
+      );
       alert("선택한 게시글이 삭제되었습니다.");
       await fetchData(page);
-
       setSelectedPosts(new Set());
       setOnSelectMode(false);
     } catch (err) {
-      console.error("선택 삭제 실패", err);
-      alert("선택 삭제에 실패했습니다.");
+      console.error(err);
+      alert("선택 삭제 실패");
     }
   };
 
@@ -197,99 +202,73 @@ export default function ScrapFolderDetail() {
             <div onClick={() => router.back()} style={{ cursor: "pointer" }}>
               <MoveLeftIcon />
             </div>
-            <NoWrapText typo="H2" color="primary_800" children={folderName} />
+            <NoWrapText typo="H2" color="primary_800">
+              {folderName}
+            </NoWrapText>
           </FlexDiv>
-          <div ref={kebabRef} style={{ position: "relative" }}>
-            <div
-              style={{
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
+          <RightActions ref={kebabRef}>
+            {onSelectMode && (
+              <UnderlinedText typo="Caption_2" color="primary_600">
+                선택삭제
+              </UnderlinedText>
+            )}
+            <ClickableWrapper
               onClick={() => {
-                if (onSelectMode) {
-                  setDeleteSelectedModalOpen(true);
-                } else {
-                  setMenuOpen((prev) => !prev);
-                }
+                if (onSelectMode) setDeleteSelectedModalOpen(true);
+                else setMenuOpen((prev) => !prev);
               }}
             >
-              {onSelectMode && (
-                <UnderlinedText
-                  typo="Caption_2"
-                  color="primary_600"
-                  children="전체삭제"
-                />
-              )}
               {onSelectMode ? <TrashIcon /> : <KebabIcon />}
-            </div>
-            {menuOpen && (
+            </ClickableWrapper>
+            {menuOpen && !onSelectMode && (
               <MenuContainer>
-                {!onSelectMode ? (
-                  <>
-                    <MenuItem
-                      onClick={() => {
-                        setDeleteModalOpen(true);
-                        setMenuOpen(false);
-                      }}
-                    >
-                      <Text typo="H5" color="gray_800" children="폴더 삭제" />
-                    </MenuItem>
-                    <MenuItem onClick={handleEditClick}>
-                      <Text
-                        typo="H5"
-                        color="gray_800"
-                        children="폴더 이름 수정"
-                      />
-                    </MenuItem>
-                    <MenuItem
-                      disabled={posts.length === 0}
-                      onClick={() => {
-                        if (posts.length > 0) {
-                          setOnSelectMode(true);
-                          setMenuOpen(false);
-                        }
-                      }}
-                    >
-                      <Text
-                        typo="H5"
-                        color={posts.length === 0 ? "gray_400" : "gray_800"}
-                        children="게시글 선택 삭제"
-                      />
-                    </MenuItem>
-                  </>
-                ) : (
-                  <MenuItem
-                    onClick={() => {
-                      setDeleteSelectedModalOpen(true);
+                <MenuItem
+                  onClick={() => {
+                    setDeleteModalOpen(true);
+                    setMenuOpen(false);
+                  }}
+                >
+                  <Text typo="H5" color="gray_800">
+                    폴더 삭제
+                  </Text>
+                </MenuItem>
+                <MenuItem onClick={handleEditClick}>
+                  <Text typo="H5" color="gray_800">
+                    폴더 이름 수정
+                  </Text>
+                </MenuItem>
+                <MenuItem
+                  disabled={posts.length === 0}
+                  onClick={() => {
+                    if (posts.length > 0) {
+                      setOnSelectMode(true);
                       setMenuOpen(false);
-                    }}
+                    }
+                  }}
+                >
+                  <Text
+                    typo="H5"
+                    color={posts.length === 0 ? "gray_400" : "gray_800"}
                   >
-                    <Text
-                      typo="H5"
-                      color="gray_800"
-                      children="선택한 타일 삭제"
-                    />
-                  </MenuItem>
-                )}
+                    게시글 선택 삭제
+                  </Text>
+                </MenuItem>
               </MenuContainer>
             )}
-          </div>
+          </RightActions>
         </DetailHeader>
         <OtherPostComponent
           showTitle={false}
           posts={posts.map((post) => ({
             ...post,
-            isScrapped: true,
             scrapFolderId: folderId ? Number(folderId) : undefined,
           }))}
           infoText="기록이 없습니다."
-          showScrapIcon={true}
+          showScrapIcon
           isSelectionMode={onSelectMode}
           selectedPosts={selectedPosts}
           onToggleSelect={handleSelectToggle}
-          isSelectionForFolderDetail={true}
+          isSelectionForFolderDetail
         />
         {posts.length > 0 && (
           <PaginationComponent
@@ -298,37 +277,35 @@ export default function ScrapFolderDetail() {
             onPageChange={handlePageChange}
           />
         )}
-        {/* 폴더 삭제 모달 */}
         {deleteModalOpen && (
           <DeleteModalBackground onClick={() => setDeleteModalOpen(false)}>
             <DeleteModalContainer onClick={(e) => e.stopPropagation()}>
-              <Text
-                typo="Body_3"
-                color="gray_800"
-                children="폴더를 삭제할까요?"
-              />
+              <Text typo="Body_3" color="gray_800">
+                폴더를 삭제할까요?
+              </Text>
               <ButtonRow>
                 <CancelButton onClick={() => setDeleteModalOpen(false)}>
-                  <Text typo="Body_1" color="gray_0" children="취소" />
+                  <Text typo="Body_1" color="gray_0">
+                    취소
+                  </Text>
                 </CancelButton>
                 <ConfirmDeleteButton onClick={handleDeleteConfirm}>
-                  <Text typo="Body_1" color="gray_0" children="삭제" />
+                  <Text typo="Body_1" color="gray_0">
+                    삭제
+                  </Text>
                 </ConfirmDeleteButton>
               </ButtonRow>
             </DeleteModalContainer>
           </DeleteModalBackground>
         )}
-        {/* 선택한 타일 삭제 확인 모달 */}
         {deleteSelectedModalOpen && (
           <DeleteModalBackground
             onClick={() => setDeleteSelectedModalOpen(false)}
           >
             <DeleteModalContainer onClick={(e) => e.stopPropagation()}>
-              <Text
-                typo="Body_3"
-                color="gray_800"
-                children="선택된 타일들을 삭제할까요?"
-              />
+              <Text typo="Body_3" color="gray_800">
+                선택된 타일들을 삭제할까요?
+              </Text>
               <ButtonRow>
                 <CancelButton
                   onClick={() => {
@@ -337,7 +314,9 @@ export default function ScrapFolderDetail() {
                     setSelectedPosts(new Set());
                   }}
                 >
-                  <Text typo="Body_1" color="gray_0" children="취소" />
+                  <Text typo="Body_1" color="gray_0">
+                    취소
+                  </Text>
                 </CancelButton>
                 <ConfirmDeleteButton
                   onClick={() => {
@@ -345,13 +324,14 @@ export default function ScrapFolderDetail() {
                     handleDeleteSelected();
                   }}
                 >
-                  <Text typo="Body_1" color="gray_0" children="삭제" />
+                  <Text typo="Body_1" color="gray_0">
+                    삭제
+                  </Text>
                 </ConfirmDeleteButton>
               </ButtonRow>
             </DeleteModalContainer>
           </DeleteModalBackground>
         )}
-        {/* 폴더 이름 수정 모달 */}
         {folderEditModalOpen && (
           <FolderEditModal
             initialName={currentFolderName}
@@ -362,9 +342,11 @@ export default function ScrapFolderDetail() {
               setCurrentFolderName(updatedName);
               const searchParams = new URLSearchParams(window.location.search);
               searchParams.set("name", updatedName);
-              const newUrl =
-                window.location.pathname + "?" + searchParams.toString();
-              window.history.replaceState(null, "", newUrl);
+              window.history.replaceState(
+                null,
+                "",
+                window.location.pathname + "?" + searchParams.toString()
+              );
             }}
           />
         )}
@@ -389,19 +371,20 @@ const Wrapper = styled.div`
 
 const DetailHeader = styled.div`
   display: flex;
-  height: 24px;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 833px;
+  justify-content: space-between;
+  align-items: center;
   padding-bottom: 48px;
   border-bottom: 1px solid rgba(209, 211, 212, 0.5);
-  position: relative;
-  justify-content: space-between;
 `;
 
 const FlexDiv = styled.div`
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 8px;
+`;
+
+const RightActions = styled.div`
+  display: flex;
   align-items: center;
   gap: 8px;
   position: relative;
@@ -424,23 +407,29 @@ const MenuContainer = styled.div`
   z-index: 10;
 `;
 
+const ClickableWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+`;
+
 const MenuItem = styled.div<{ disabled?: boolean }>`
   display: flex;
   width: 168px;
   height: 40px;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 10px;
   border-radius: 10px;
   cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
   color: ${({ disabled }) =>
-    disabled ? `${theme.palette.gray_400}` : `${theme.palette.gray_800}`};
+    disabled ? theme.palette.gray_400 : theme.palette.gray_800};
   pointer-events: ${({ disabled }) => (disabled ? "none" : "auto")};
 
   &:hover {
     background: ${({ disabled }) =>
-      disabled ? "none" : `${theme.palette.primary_200}`};
+      disabled ? "none" : theme.palette.primary_200};
   }
 `;
 
@@ -483,7 +472,6 @@ const CancelButton = styled.button`
   padding: 10px 13px;
   justify-content: center;
   align-items: center;
-  gap: 10px;
   border-radius: 10px;
   background: ${theme.palette.gray_300};
   cursor: pointer;
@@ -495,7 +483,6 @@ const ConfirmDeleteButton = styled.button`
   padding: 10px 13px;
   justify-content: center;
   align-items: center;
-  gap: 10px;
   border-radius: 10px;
   background: ${theme.palette.primary_500};
   cursor: pointer;
@@ -509,9 +496,5 @@ const NoWrapText = styled(Text)`
 
 const UnderlinedText = styled(Text)`
   text-decoration-line: underline;
-  text-decoration-style: solid;
-  text-decoration-skip-ink: auto;
-  text-decoration-thickness: auto;
-  text-underline-offset: auto;
-  text-underline-position: from-font;
+  white-space: nowrap;
 `;

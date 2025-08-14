@@ -9,6 +9,169 @@ import PaginationComponent from "./PaginationComponent";
 import { Comment } from "@/model/components/Comment";
 import { MyCommentComponent } from "./MyCommentComponent";
 
+const MOCK_DATA = [
+  {
+    isSuccess: true,
+    code: "COMMON001",
+    message: "요청 성공",
+    data: {
+      posts: [
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 12,
+          title: "Dickinson, Mayert and Metz",
+          content:
+            "Cohibeo aedificium aequitas ratione vis nam vulariter versus.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:49:13.737354",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: true,
+        },
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 11,
+          title: "Howell LLC",
+          content:
+            "Soluta odit voco vulnus compono timor ascisco chirographum.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:49:11.629089",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: false,
+        },
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 10,
+          title: "Dooley LLC",
+          content:
+            "Aufero accusator sunt cohibeo sono necessitatibus accusator volva.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:49:09.281998",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: true,
+        },
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 9,
+          title: "Koch - Spencer",
+          content: "Civitas inflammatio animi advoco aeneus tricesimus dens.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:49:07.023323",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: false,
+        },
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 8,
+          title: "Roberts - Carroll",
+          content:
+            "Tamen utpote subiungo sub ante patruus dens carpo celebrer.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:49:04.563124",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: true,
+        },
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 7,
+          title: "Bergnaum Inc",
+          content: "Vigilo amita acies.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:48:57.010337",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: true,
+        },
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 6,
+          title: "Dare and Sons",
+          content: "Temporibus cibo cito.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:48:54.814594",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: true,
+        },
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 5,
+          title: "O'Kon - McKenzie",
+          content:
+            "Aegrus conculco patior recusandae animi deficio apparatus antiquus.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:48:52.668386",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: false,
+        },
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 4,
+          title: "Zboncak, Raynor and Christiansen",
+          content: "Apud inflammatio sto nemo et peccatus.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:48:50.494542",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: true,
+        },
+        {
+          name: "Corporate Branding Manager",
+          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
+          artistName: "Bruno Mars",
+          postId: 3,
+          title: "Von Inc",
+          content: "Dapifer asper ubi accedo versus cohibeo a quis tabernus.",
+          mainImageUrl:
+            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20250731T093403Z&X-Amz-SignedHeaders=host&X-Amz-Credential=AKIAST6S6Z5CPPUI2VF4%2F20250731%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Expires=3600&X-Amz-Signature=97f872e2ccd67c2b20fd96f434012cbdbffcf5edb3b2a0a3726078eb21d3fc60",
+          createdAt: "2025-07-23T20:48:48.091059",
+          likeCount: 0,
+          commentCount: 0,
+          isScrapped: true,
+        },
+      ],
+      page: 1,
+      size: 10,
+      totalPages: 2,
+      totalElements: 12,
+      hasNext: true,
+      hasPrevious: false,
+      isLast: false,
+    },
+  },
+];
 const MOCK_COMMENT = [
   {
     isSuccess: true,
@@ -78,6 +241,7 @@ export const MyTimeLine = () => {
       const visibilityParam =
         selectedVisibility === "private" ? "PRIVATE" : "PUBLIC";
       if (selected === "post") {
+        //const res = MOCK_DATA[0];
         const res = await usersApi.getMyTimeLinePosts({
           page,
           size: 10,
@@ -204,6 +368,7 @@ export const MyTimeLine = () => {
           titleText=""
           showTitle={false}
           infoText="게시글이 없습니다."
+          showScrapIcon={true}
         />
       ) : (
         <MyCommentComponent comments={comments} infoText="댓글이 없습니다." />

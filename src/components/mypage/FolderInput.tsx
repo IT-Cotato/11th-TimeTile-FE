@@ -24,12 +24,6 @@ export const FolderInput = ({
   buttonText = "추가하기",
   buttonDisabled,
 }: FolderInputProps) => {
-  // const handleSubmit = () => {
-  //   if (!value.trim()) return;
-  //   // 추후 api 생기면 연결 예정
-  //   console.log("폴더 이름:", value);
-  //   onChange("");
-  // };
   const disabled = buttonDisabled ?? value.trim().length === 0;
   return (
     <Wrapper>
