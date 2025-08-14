@@ -43,13 +43,32 @@ export const OtherPostComponent = ({
 
   const isEmpty = posts.length === 0;
 
-  const handleCancel = async (postId: number, scrapFolderId: number) => {
+  const handleCancel = async (postId: number) => {
     try {
-      const res = await usersApi.cancelScrapPost(postId, scrapFolderId);
-      if (res.isSuccess) {
-        alert("스크랩이 취소되었습니다.");
-        window.location.reload();
+      // 스크랩 상태 조회
+      const statusRes = await usersApi.getScrapStatus(postId);
+      if (!statusRes.isSuccess) {
+        console.log("스크랩 상태를 불러올 수 없습니다.");
+        return;
       }
+
+      const scrappedFolders = statusRes.data.scrapStatus.filter(
+        (folder: any) => folder.isScrapped
+      );
+
+      if (scrappedFolders.length === 0) {
+        console.log("이미 스크랩이 취소된 상태입니다.");
+        return;
+      }
+
+      // 모든 폴더에서 취소
+      await Promise.all(
+        scrappedFolders.map((folder: any) =>
+          usersApi.cancelScrapPost(postId, folder.scrapFolderId)
+        )
+      );
+      console.log("스크랩이 모두 취소되었습니다.");
+      window.location.reload();
     } catch (err) {
       console.error("스크랩 취소 실패", err);
     }
@@ -90,24 +109,19 @@ export const OtherPostComponent = ({
                       {post.name}
                     </Text>
                   </TextWrapper>
-                  {showScrapIcon &&
-                    post.isScrapped &&
-                    post.scrapFolderId &&
-                    !isSelectionMode && (
-                      <button
-                        onClick={() =>
-                          handleCancel(post.postId, post.scrapFolderId!)
-                        }
-                        style={{
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                        aria-label="스크랩 취소"
-                      >
-                        <ScrapIcon />
-                      </button>
-                    )}
+                  {showScrapIcon && post.isScrapped && !isSelectionMode && (
+                    <button
+                      onClick={() => handleCancel(post.postId)}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                      aria-label="스크랩 취소"
+                    >
+                      <ScrapIcon />
+                    </button>
+                  )}
                   {isSelectionMode && (
                     <button
                       onClick={() =>

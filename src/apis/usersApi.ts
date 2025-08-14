@@ -24,7 +24,7 @@ export const usersApi = {
 
   updateProfile: async (payload: {
     nickname?: string;
-    introduction?: string;
+    introduction?: string | null;
     imageKey?: string | null;
   }) => {
     const body = {
@@ -171,6 +171,11 @@ export const usersApi = {
     const res = await axiosApi.delete(
       `/posts/${postId}/scrap/${scrapFolderId}`
     );
+    return res.data;
+  },
+
+  getScrapStatus: async (postId: number) => {
+    const res = await axiosApi.get(`/posts/${postId}/scrap`);
     return res.data;
   },
 };

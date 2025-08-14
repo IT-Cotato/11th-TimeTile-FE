@@ -37,7 +37,7 @@ const MOCK_DATA = [
           name: "Corporate Branding Manager",
           groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
           artistName: "Bruno Mars",
-          postId: 21,
+          postId: 1,
           title: "Franecki - Franecki",
           content:
             "Auctor laboriosam speciosus tamdiu tergeo utor advenio blanditiis vesper.",
@@ -98,8 +98,8 @@ export const MyScrapComponent = () => {
   const fetchData = async (page: number) => {
     setLoading(true);
     try {
-      const res = await usersApi.getMyScrap({ page });
-      // const res = MOCK_DATA[0];
+      //const res = await usersApi.getMyScrap({ page });
+      const res = MOCK_DATA[0];
       if (res.isSuccess) {
         const mappedPosts = res.data.posts.map((post: OtherPost) => ({
           ...post,

@@ -70,6 +70,7 @@ export const MyLikeComponent = () => {
     setLoading(true);
     try {
       const res = await usersApi.getMyLike({ page });
+      // const res = MOCK_DATA[0];
       if (res.isSuccess) {
         setPosts(res.data.posts);
         setPage(res.data.page);

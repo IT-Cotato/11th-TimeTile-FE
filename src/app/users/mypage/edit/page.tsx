@@ -18,7 +18,8 @@ export default function EditProfile() {
   const [nickname, setNickname] = useState("");
   const [introduction, setIntroduction] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
-  const [uploadedImageKey, setUploadedImageKey] = useState<string | null>(null); // 새 이미지 키
+  const [uploadedImageKey, setUploadedImageKey] = useState<string | null>(null);
+  const [originalImageKey, setOriginalImageKey] = useState<string | null>(null);
   const [isNicknameAvailable, setIsNicknameAvailable] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -29,7 +30,11 @@ export default function EditProfile() {
       setNickname(profile.nickname || "");
       setIntroduction(profile.introduction || "");
       setPreview(profile.profileImageUrl || null);
-      setUploadedImageKey(null); // 새로 업로드된 이미지 초기화
+      setUploadedImageKey(null);
+
+      // profileImageUrl에서 imageKey 추출
+      setOriginalImageKey(extractKeyFromUrl(profile.profileImageUrl));
+
       setIsNicknameAvailable(true);
       setErrorMessage("");
       setSuccessMessage("");
@@ -44,25 +49,23 @@ export default function EditProfile() {
   const isModified =
     isNicknameChanged || isIntroChanged || isProfileImageChanged;
 
-  // 닉네임 중복확인 버튼 비활성 조건
   const isCheckButtonDisabled =
     !isNicknameChanged ||
     !nickname.trim() ||
     !/^[가-힣a-z0-9]{2,15}$/.test(nickname) ||
     (errorMessage !== "" && !isNicknameAvailable);
-
-  // 저장 버튼 활성화 조건
   const isSaveEnabled = isModified && isNicknameAvailable;
+  // const isSaveEnabled = isProfileImageChanged && isNicknameAvailable;
 
-  const extractKeyFromUrl = (url: string | null): string | null => {
+  function extractKeyFromUrl(url: string | null): string | null {
     if (!url) return null;
     try {
       const parsed = new URL(url);
-      return decodeURIComponent(parsed.pathname.slice(1));
+      return decodeURIComponent(parsed.pathname.replace(/^\/+/, ""));
     } catch {
       return null;
     }
-  };
+  }
 
   const handleImageChange = (file: File | null) => {
     if (file) {
@@ -73,7 +76,6 @@ export default function EditProfile() {
   };
 
   const handleUploadComplete = (key: string) => {
-    console.log("업로드 완료된 key:", key);
     setUploadedImageKey(key);
   };
 
@@ -137,15 +139,13 @@ export default function EditProfile() {
     }
 
     try {
-      const imageKeyToSend =
-        uploadedImageKey ?? // 새 업로드가 있으면 이거
-        extractKeyFromUrl(profile.profileImageUrl) ?? // 없으면 기존 이미지 key
-        null;
+      const keyToSend = uploadedImageKey ?? originalImageKey;
+      const introToSend = introduction.trim() === "" ? null : introduction;
 
       await usersApi.updateProfile({
         nickname,
-        introduction,
-        imageKey: imageKeyToSend,
+        introduction: introToSend,
+        imageKey: keyToSend,
       });
 
       const updated = await usersApi.getMyProfile();
