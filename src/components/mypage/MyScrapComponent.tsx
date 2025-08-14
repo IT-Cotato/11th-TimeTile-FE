@@ -98,8 +98,8 @@ export const MyScrapComponent = () => {
   const fetchData = async (page: number) => {
     setLoading(true);
     try {
-      //const res = await usersApi.getMyScrap({ page });
-      const res = MOCK_DATA[0];
+      const res = await usersApi.getMyScrap({ page });
+      //const res = MOCK_DATA[0];
       if (res.isSuccess) {
         const mappedPosts = res.data.posts.map((post: OtherPost) => ({
           ...post,

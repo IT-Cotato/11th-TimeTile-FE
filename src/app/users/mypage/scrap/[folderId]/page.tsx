@@ -108,7 +108,7 @@ export default function ScrapFolderDetail() {
     setLoading(true);
     try {
       const res = await usersApi.getScrapFolderPosts(folderId as string, page);
-      // const res = MOCK_RESPONSE[0];
+      //const res = MOCK_RESPONSE[0];
       if (res.isSuccess) {
         setPosts(res.data.posts);
         setPage(res.data.page);
@@ -201,16 +201,27 @@ export default function ScrapFolderDetail() {
           </FlexDiv>
           <div ref={kebabRef} style={{ position: "relative" }}>
             <div
-              style={{ cursor: "pointer" }}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
               onClick={() => {
                 if (onSelectMode) {
                   setDeleteSelectedModalOpen(true);
                 } else {
-                  // 선택 모드 아닐 때는 케밥
                   setMenuOpen((prev) => !prev);
                 }
               }}
             >
+              {onSelectMode && (
+                <UnderlinedText
+                  typo="Caption_2"
+                  color="primary_600"
+                  children="전체삭제"
+                />
+              )}
               {onSelectMode ? <TrashIcon /> : <KebabIcon />}
             </div>
             {menuOpen && (
@@ -494,4 +505,13 @@ const NoWrapText = styled(Text)`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+
+const UnderlinedText = styled(Text)`
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: auto;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
 `;
