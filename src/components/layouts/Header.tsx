@@ -213,6 +213,7 @@ const ProfileWrapper = styled.div`
 const ProfileImg = styled.img`
   width: 32px;
   height: 32px;
+  object-fit: cover;
   border-radius: 50%;
   cursor: pointer;
 `;
@@ -246,7 +247,7 @@ const ProfileImgLarge = styled.img`
   width: 100px;
   height: 100px;
   flex-shrink: 0;
-  aspect-ratio: 1/1;
+  object-fit: cover;
   border-radius: 50%;
 `;
 
