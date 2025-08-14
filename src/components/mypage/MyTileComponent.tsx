@@ -4,6 +4,21 @@ import { LeftIcon } from "@/assets/icons/LeftIcon";
 import { RightIcon } from "@/assets/icons/RightIcon";
 import { Text } from "../atoms/Text";
 import { LinkIcon } from "@/assets/icons/LinkIcon";
+import { Tag } from "../atoms/Tag";
+import { TagCategory } from "../atoms/TagCategory";
+import { TagCategoryName } from "@/model/common/tagcategory";
+import { theme } from "@/styles/theme";
+
+interface RelatedArtist {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
+interface RelatedEvent {
+  groupId: string;
+  name: string;
+}
 
 interface MyTileComponentProps {
   groupId: string;
@@ -12,6 +27,9 @@ interface MyTileComponentProps {
   startedAt: string;
   relatedMaterials: string[];
   contributorCount: number;
+  activityTypes: string[];
+  relatedArtists: RelatedArtist[];
+  relatedEvents: RelatedEvent[];
 }
 
 export const MyTileComponent = ({
@@ -20,6 +38,9 @@ export const MyTileComponent = ({
   startedAt,
   relatedMaterials,
   contributorCount,
+  activityTypes,
+  relatedArtists,
+  relatedEvents,
 }: MyTileComponentProps) => {
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -29,6 +50,43 @@ export const MyTileComponent = ({
     return `${yy}/${mm}/${dd}`;
   };
 
+  /**태그 스크롤**/
+  const tagsRef = useRef<HTMLDivElement>(null);
+  const [canScrollTagsLeft, setCanScrollTagsLeft] = useState(false);
+  const [canScrollTagsRight, setCanScrollTagsRight] = useState(false);
+
+  useEffect(() => {
+    const el = tagsRef.current;
+    if (!el) return;
+
+    const paddingRight = 30;
+
+    const checkScroll = () => {
+      if (!tagsRef.current) return;
+      const el = tagsRef.current;
+
+      setCanScrollTagsLeft(el.scrollLeft > 0);
+      setCanScrollTagsRight(
+        el.scrollLeft + el.clientWidth < el.scrollWidth - paddingRight - 1
+      );
+    };
+
+    checkScroll();
+    el.addEventListener("scroll", checkScroll);
+    window.addEventListener("resize", checkScroll);
+
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [activityTypes, relatedArtists, relatedEvents]);
+
+  const scrollTagsBy = (amount: number) => {
+    if (!tagsRef.current) return;
+    tagsRef.current.scrollBy({ left: amount, behavior: "smooth" });
+  };
+
+  /**RelatedMaterials 스크롤**/
   const scrollRef = useRef<HTMLUListElement>(null);
   const [showFade, setShowFade] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -37,13 +95,12 @@ export const MyTileComponent = ({
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-
     const paddingRight = 50;
 
     const checkScroll = () => {
       setCanScrollLeft(el.scrollLeft > 0);
       setCanScrollRight(
-        el.scrollLeft + el.clientWidth < el.scrollWidth - paddingRight
+        el.scrollLeft < el.scrollWidth - el.clientWidth - paddingRight - 1
       );
     };
 
@@ -60,11 +117,9 @@ export const MyTileComponent = ({
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-
     const checkOverflow = () => {
       setShowFade(el.scrollWidth > el.clientWidth);
     };
-
     checkOverflow();
     window.addEventListener("resize", checkOverflow);
     return () => window.removeEventListener("resize", checkOverflow);
@@ -79,28 +134,66 @@ export const MyTileComponent = ({
     <Container>
       <Wrapper>
         <TopWrapper>
-          <Text
-            typo="Body_1"
-            color="gray_700"
-            children={formatDate(startedAt)}
-          />
-          <Text typo="H4" color="gray_1000" children={name} />
+          <Text typo="Body_1" color="gray_700">
+            {formatDate(startedAt)}
+          </Text>
+          <Text typo="H4" color="gray_1000">
+            {name}
+          </Text>
         </TopWrapper>
-        <Text typo="Body_3" children={description} />
+        {(activityTypes.length > 0 ||
+          relatedArtists.length > 0 ||
+          relatedEvents.length > 0) && (
+          <TagsScrollWrapper>
+            <TagsScrollContainer ref={tagsRef}>
+              {activityTypes.map((type, idx) => (
+                <TagWrapper key={`type-${idx}`}>
+                  <TagCategory
+                    category={type as TagCategoryName}
+                    variant="default"
+                  />
+                </TagWrapper>
+              ))}
+              {relatedArtists.map((artist) => (
+                <TagWrapper key={artist.id}>
+                  <Tag variant="deck">{artist.name}</Tag>
+                </TagWrapper>
+              ))}
+              {relatedEvents.map((event) => (
+                <TagWrapper key={event.groupId}>
+                  <Tag variant="tile">{event.name}</Tag>
+                </TagWrapper>
+              ))}
+            </TagsScrollContainer>
+            <TagsIconControls>
+              <IconButton
+                onClick={() => scrollTagsBy(-150)}
+                disabled={!canScrollTagsLeft}
+              >
+                <LeftIcon size={16} disabled={!canScrollTagsLeft} />
+              </IconButton>
+              <IconButton
+                onClick={() => scrollTagsBy(150)}
+                disabled={!canScrollTagsRight}
+              >
+                <RightIcon size={16} disabled={!canScrollTagsRight} />
+              </IconButton>
+            </TagsIconControls>
+          </TagsScrollWrapper>
+        )}
+        <Text typo="Body_3">{description}</Text>
         {relatedMaterials.length > 0 && (
           <RelatedMaterials>
             <ScrollWrapper>
               <ScrollContainer ref={scrollRef}>
                 {relatedMaterials.map((url, i) => (
                   <li key={i}>
-                    <MaterialLink bgImage={undefined /* 이미지 넣기 */}>
+                    <MaterialLink>
                       <LinkIconWrapper
                         onClick={(e) => {
                           e.stopPropagation();
                           window.open(url, "_blank", "noopener noreferrer");
                         }}
-                        aria-label={`Open link ${url}`}
-                        title={url}
                       >
                         <LinkIcon />
                       </LinkIconWrapper>
@@ -113,14 +206,12 @@ export const MyTileComponent = ({
             <IconControls>
               <IconButton
                 onClick={() => scrollByAmount(-150)}
-                aria-label="Scroll Left"
                 disabled={!canScrollLeft}
               >
                 <LeftIcon size={24} disabled={!canScrollLeft} />
               </IconButton>
               <IconButton
                 onClick={() => scrollByAmount(150)}
-                aria-label="Scroll Right"
                 disabled={!canScrollRight}
               >
                 <RightIcon size={24} disabled={!canScrollRight} />
@@ -143,13 +234,13 @@ const Container = styled.div`
   flex-direction: column;
   align-items: flex-start;
   border-radius: 16px;
-  border: 1px solid var(--Primary-200, #e6f0ff);
-  background: var(--Gray-0, #fff);
+  border: 1px solid ${theme.palette.primary_200};
+  background: ${theme.palette.gray_0};
   box-shadow: 0 4px 12px 0 rgba(159, 198, 255, 0.25);
 
   &:hover {
-    border: 1.5px solid var(--Primary-400, #a6c6fa);
-    background: var(--Primary-100, #f2f7ff);
+    border: 1.5px solid ${theme.palette.primary_400};
+    background: ${theme.palette.primary_100};
     box-shadow: 0 4px 12px 0 rgba(159, 198, 255, 0.25);
   }
 `;
@@ -223,8 +314,8 @@ const MaterialLink = styled.div<{ bgImage?: string }>`
   width: 168px;
   height: 142px;
   border-radius: 10px;
-  border: 1px solid var(--Gray-400, #c2c3c6);
-  background-color: lightgray;
+  border: 1px solid ${theme.palette.gray_400};
+  background-color: ${theme.palette.gray_300};
   background-position: 50% 50%;
   background-size: cover;
   background-repeat: no-repeat;
@@ -232,7 +323,7 @@ const MaterialLink = styled.div<{ bgImage?: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #555;
+  color: ${theme.palette.gray_300};
   font-size: 24px;
   text-decoration: none;
   overflow: hidden;
@@ -262,18 +353,42 @@ const IconControls = styled.div`
 `;
 
 const IconButton = styled.button`
-  border: none;
-  background: none;
-  padding: 4px;
+  all: unset;
   cursor: pointer;
-
-  &:hover {
-    filter: brightness(0.8);
-  }
 `;
 
 const ContributeDiv = styled.div`
   display: flex;
   width: 100%;
   justify-content: flex-end;
+`;
+
+const TagsScrollWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 43px;
+  width: 100%;
+  position: relative;
+`;
+
+const TagsScrollContainer = styled.div`
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-right: 30px;
+  flex-wrap: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex: 1;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const TagsIconControls = styled.div`
+  display: inline-flex;
+`;
+
+const TagWrapper = styled.div`
+  flex-shrink: 0;
 `;

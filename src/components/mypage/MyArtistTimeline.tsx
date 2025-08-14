@@ -34,58 +34,64 @@ const MOCK_DATA = [
     data: {
       events: [
         {
-          groupId: "239cb613-2f69-416e-97f7-364fb59c8343",
-          name: "Prem Human Assurance Representative",
+          eventId: 14,
+          groupId: "ec8ccd19-1423-47ee-916e-edcc92c6858c",
+          name: "Legacy Directives Orchestrator",
           description:
-            "Tersus temperantia aedificium toties voluptatum truculenter perferendis culpo tempus.",
-          startedAt: "2025-04-21",
-          relatedMaterials: ["https://aged-pacemaker.com/"],
-          contributorCount: 1,
-        },
-        {
-          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
-          name: "Corporate Branding Manager",
-          description: "Canis vesica ventosus solitudo pax.",
+            "Provident delinquo tener curiositas volva caecus tracto denego.",
+          source: "https://jagged-subexpression.us/",
+          relatedEvents: [
+            {
+              groupId: "8ba5b9bf-e82c-4bac-bdbe-ec0e53fc02d2",
+              name: "Faker 1112",
+            },
+            {
+              groupId: "781a8ce4-3897-409b-8500-5a9c084f68ec",
+              name: "Prem Customer Division Associate",
+            },
+          ],
+          relatedArtists: [
+            {
+              id: "6HvZYsbFfjnjFrWF950C9d",
+              name: "NewJeans",
+              imageUrl:
+                "https://i.scdn.co/image/ab6761610000e5eb80668ba2b15094d083780ea9",
+            },
+            {
+              id: "6YVMFz59CuY7ngCxTxjpxE",
+              name: "aespa",
+              imageUrl:
+                "https://i.scdn.co/image/ab6761610000e5eb927f1260251e32135287e032",
+            },
+          ],
+          activityTypes: ["팬사인회/기타", "팬사인회/기타"],
+          relatedMaterials: ["https://miserly-gallery.info"],
           startedAt: "2025-04-11",
-          relatedMaterials: ["https://snoopy-derby.info/"],
-          contributorCount: 1,
-        },
-        {
-          groupId: "1cedc506-3ad7-4845-a66a-a9b92152ae9a",
-          name: "Brakus aaaassss",
-          description:
-            "Depereo ait crepusculum temeritas amplus decens titulus.",
-          startedAt: "2025-04-11",
-          relatedMaterials: ["https://gummy-analogy.info"],
-          contributorCount: 1,
-        },
-        {
-          groupId: "5e3d8ffe-1dd8-48e1-a5f7-241b97ac2874",
-          name: "Faker",
-          description: "Ultra contigo nemo voco subseco.",
-          startedAt: "2025-04-11",
-          relatedMaterials: ["https://gorgeous-tinderbox.us/"],
-          contributorCount: 1,
-        },
-        {
-          groupId: "8ba5b9bf-e82c-4bac-bdbe-ec0e53fc02d2",
-          name: "Faker 1112",
-          description: "Facilis cubitum synagoga sollicito ago civis carus.",
-          startedAt: "2025-04-11",
-          relatedMaterials: ["https://extra-large-arcade.com/"],
+          endedAt: "2025-04-07",
           contributorCount: 1,
         },
       ],
-      page: 1,
+      page: 3,
       size: 5,
       totalPages: 3,
       totalElements: 13,
-      hasNext: true,
-      hasPrevious: false,
-      isLast: false,
+      hasNext: false,
+      hasPrevious: true,
+      isLast: true,
     },
   },
 ];
+
+interface RelatedArtist {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
+interface RelatedEvent {
+  groupId: string;
+  name: string;
+}
 
 interface Event {
   groupId: string;
@@ -94,6 +100,9 @@ interface Event {
   startedAt: string;
   relatedMaterials: string[];
   contributorCount: number;
+  activityTypes: string[];
+  relatedArtists: RelatedArtist[];
+  relatedEvents: RelatedEvent[];
 }
 
 interface Artist {
@@ -110,12 +119,17 @@ export const MyArtistTimeline = () => {
 
   useEffect(() => {
     const fetchArtists = async () => {
-      const data = await usersApi.getMyEventsArtists();
-      // const data = MOCK_ARTIST[0];
-      if (data?.isSuccess && data.data.artists.length > 0) {
-        setArtists(data.data.artists);
-        setSelectedArtistId(data.data.artists[0].id);
-      } else {
+      try {
+        const data = await usersApi.getMyEventsArtists();
+        //const data = MOCK_ARTIST[0];
+        if (data?.isSuccess && data.data.artists.length > 0) {
+          setArtists(data.data.artists);
+          setSelectedArtistId(data.data.artists[0].id);
+        } else {
+          setArtists([]);
+          setSelectedArtistId(null);
+        }
+      } catch {
         setArtists([]);
         setSelectedArtistId(null);
       }
@@ -132,9 +146,9 @@ export const MyArtistTimeline = () => {
 
     const loadEvents = async () => {
       try {
+        //const data = MOCK_DATA[0];
         const data = await usersApi.getEventsByArtist(selectedArtistId, page);
-        // const data = MOCK_DATA[0];
-        if (data && data.isSuccess) {
+        if (data?.isSuccess) {
           setEvents(data.data.events);
           setTotalPages(data.data.totalPages);
         } else {
@@ -165,7 +179,18 @@ export const MyArtistTimeline = () => {
           />
           <EventList>
             {events.map((event) => (
-              <MyTileComponent key={event.groupId} {...event} />
+              <MyTileComponent
+                key={event.groupId}
+                groupId={event.groupId}
+                name={event.name}
+                description={event.description}
+                startedAt={event.startedAt}
+                relatedMaterials={event.relatedMaterials}
+                contributorCount={event.contributorCount}
+                activityTypes={event.activityTypes}
+                relatedArtists={event.relatedArtists}
+                relatedEvents={event.relatedEvents}
+              />
             ))}
           </EventList>
           <PaginationComponent
@@ -196,8 +221,8 @@ const EventList = styled.div`
   align-items: flex-end;
   gap: 16px;
   border-radius: 20px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
 `;
 
 const NoDataMessage = styled.div`

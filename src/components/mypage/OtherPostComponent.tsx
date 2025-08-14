@@ -315,7 +315,7 @@ const WriterImage = styled.img`
   height: 32px;
   aspect-ratio: 1/1;
   border-radius: 16px;
-  background: var(--Gray-200, #e0e1e2);
+  background: ${theme.palette.gray_200};
   object-fit: cover;
   display: flex;
   align-items: center;

@@ -407,8 +407,8 @@ const MenuContainer = styled.div`
   align-items: flex-start;
   gap: 10px;
   border-radius: 20px;
-  border: 1px solid var(--Primary-400, #a6c6fa);
-  background: var(--Primary-50, #f7faff);
+  border: 1px solid ${theme.palette.primary_400};
+  background: ${theme.palette.primary_50};
   box-shadow: 0 4px 16px 0 rgba(159, 198, 255, 0.25);
   z-index: 10;
 `;
@@ -429,7 +429,7 @@ const MenuItem = styled.div<{ disabled?: boolean }>`
 
   &:hover {
     background: ${({ disabled }) =>
-      disabled ? "none" : "var(--Primary-200, #e6f0ff)"};
+      disabled ? "none" : `${theme.palette.primary_200}`};
   }
 `;
 
@@ -452,8 +452,8 @@ const DeleteModalContainer = styled.div`
   align-items: center;
   gap: 24px;
   border-radius: 20px;
-  border: 1px solid var(--Primary-400, #a6c6fa);
-  background: var(--Primary-50, #f7faff);
+  border: 1px solid ${theme.palette.primary_400};
+  background: ${theme.palette.primary_50};
   box-shadow: 0 4px 16px 0 rgba(159, 198, 255, 0.25);
 `;
 
@@ -474,7 +474,7 @@ const CancelButton = styled.button`
   align-items: center;
   gap: 10px;
   border-radius: 10px;
-  background: var(--Gray-300, #d1d3d4);
+  background: ${theme.palette.gray_300};
   cursor: pointer;
 `;
 
@@ -486,7 +486,7 @@ const ConfirmDeleteButton = styled.button`
   align-items: center;
   gap: 10px;
   border-radius: 10px;
-  background: var(--Primary-500, #80a9f2);
+  background: ${theme.palette.primary_500};
   cursor: pointer;
 `;
 
