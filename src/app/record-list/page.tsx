@@ -33,7 +33,7 @@ interface RecordItem {
   comments: number;
 }
 
-// 👇 여기만 추가: 목데이터
+// 목데이터
 const MOCK_EVENT: EventData = {
   name: 'Legacy Directives Orchestrator', // 스케줄 이름
   description:
