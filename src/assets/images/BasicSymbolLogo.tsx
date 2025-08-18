@@ -1,9 +1,17 @@
-export const BasicSymbolLogo = () => {
+type BasicSymbolLogoProps = {
+  width?: number;
+  height?: number;
+};
+
+export const BasicSymbolLogo = ({
+  width = 300,
+  height = 300,
+}: BasicSymbolLogoProps) => {
   return (
     <>
       <svg
-        width="300"
-        height="300"
+        width={width}
+        height={height}
         viewBox="0 0 300 300"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

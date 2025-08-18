@@ -27,7 +27,7 @@ export const ProfileImageUploader = ({
     setUploading(true);
     try {
       const res = await authApi.getPresignedUrl(ext as any);
-      const { key, url } = res.data;
+      const { key, url } = res.data.data;
 
       await fetch(url, {
         method: "PUT",

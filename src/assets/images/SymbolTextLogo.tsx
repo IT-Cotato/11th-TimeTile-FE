@@ -1,9 +1,17 @@
-export const SymbolTextLogo = () => {
+type SymbolTextLogoProps = {
+  width?: number;
+  height?: number;
+};
+
+export const SymbolTextLogo = ({
+  width = 250,
+  height = 50,
+}: SymbolTextLogoProps) => {
   return (
     <>
       <svg
-        width="250"
-        height="50"
+        width={width}
+        height={height}
         viewBox="0 0 250 50"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

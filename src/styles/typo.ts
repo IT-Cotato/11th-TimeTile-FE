@@ -85,4 +85,18 @@ export const typo = {
     line-height: 20.8px;
     font-weight: 600;
   `,
+
+  H4_3: css`
+    font-family: "Pretendard-Medium";
+    font-size: 20px;
+    line-height: 26px;
+    font-weight: 500;
+  `,
+
+  H3_2: css`
+    font-family: "Pretendard-Medium";
+    font-size: 20px;
+    line-height: 26px;
+    font-weight: 500;
+  `,
 };

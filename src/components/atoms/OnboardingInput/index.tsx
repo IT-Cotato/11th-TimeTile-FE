@@ -102,12 +102,12 @@ export const OnboardingInput = ({
           value={value}
           typo="Caption_1"
           onChange={onChange}
-          hasRightIcon={
+          $hasRightIcon={
             variant === "password" ||
             variant === "checkcode" ||
             variant === "count"
           }
-          isNarrow={width === 350}
+          $isNarrow={width === 350}
           variant={variant}
           {...props}
         />
@@ -155,17 +155,17 @@ const CountText = styled.span`
 `;
 
 const Input = styled.input<{
-  hasRightIcon?: boolean;
+  $hasRightIcon?: boolean;
   typo: KeyOfTypo;
-  isNarrow?: boolean;
+  $isNarrow?: boolean;
   variant?: InputVariant;
 }>`
   width: 100%;
   padding-top: 28px;
-  padding-bottom: ${({ isNarrow }) => (isNarrow ? "8px" : "10px")};
+  padding-bottom: ${({ $isNarrow }) => ($isNarrow ? "8px" : "10px")};
   padding-left: 16px;
-  padding-right: ${({ variant, hasRightIcon }) =>
-    variant === "count" ? "16px" : hasRightIcon ? "66px" : "16px"};
+  padding-right: ${({ variant, $hasRightIcon }) =>
+    variant === "count" ? "16px" : $hasRightIcon ? "66px" : "16px"};
   border-radius: 10px;
   border: 1px solid ${theme.palette.primary_400};
   ${({ typo }) => theme.typo[typo]};

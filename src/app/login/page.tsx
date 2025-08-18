@@ -1,6 +1,7 @@
 "use client";
 
 import { axiosApi } from "@/apis/axios";
+import { usersApi } from "@/apis/usersApi";
 import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { SymbolTextLogo } from "@/assets/images/SymbolTextLogo";
 import { LargeButton } from "@/components/atoms/LargeButton";
@@ -8,13 +9,16 @@ import { OnboardingInput } from "@/components/atoms/OnboardingInput";
 import Svg from "@/components/atoms/Svg";
 import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
+import { userProfileAtom } from "@/store/UserProfileAtom";
 import { theme } from "@/styles/theme";
+import { useSetAtom } from "jotai";
 import { useRouter } from "next/Navigation";
 import { useState } from "react";
 import styled from "styled-components";
 
 export default function Login() {
   const router = useRouter();
+  const setUserProfile = useSetAtom(userProfileAtom);
 
   const gotoRegister = () => {
     router.push("/register");
@@ -54,6 +58,8 @@ export default function Login() {
       });
 
       if (response.status === 200) {
+        const profileRes = await usersApi.getMyProfile();
+        setUserProfile(profileRes.data);
         router.push("/");
         console.log("로그인 성공");
       }

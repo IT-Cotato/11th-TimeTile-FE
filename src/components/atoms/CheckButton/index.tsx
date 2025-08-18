@@ -15,7 +15,7 @@ export const CheckButton = ({
   ...props
 }: CheckButtonProps) => {
   return (
-    <StyledButton onClick={onClick} isDisabled={isDisabled} {...props}>
+    <StyledButton onClick={onClick} $isDisabled={isDisabled} {...props}>
       <Text
         typo="Caption_1"
         color={isDisabled ? "gray_600" : "primary_700"}
@@ -25,7 +25,7 @@ export const CheckButton = ({
   );
 };
 
-const StyledButton = styled.button<{ isDisabled: boolean }>`
+const StyledButton = styled.button<{ $isDisabled: boolean }>`
   outline: none;
   width: 64px;
   height: 56px;
@@ -36,9 +36,9 @@ const StyledButton = styled.button<{ isDisabled: boolean }>`
   flex-shrink: 0;
   cursor: pointer;
   border-radius: 8px;
-  background-color: ${({ isDisabled }) =>
-    isDisabled ? theme.palette.gray_70 : theme.palette.primary_200};
+  background-color: ${({ $isDisabled }) =>
+    $isDisabled ? theme.palette.gray_70 : theme.palette.primary_200};
   border: 1px solid
-    ${({ isDisabled }) =>
-      isDisabled ? theme.palette.gray_300 : theme.palette.primary_400};
+    ${({ $isDisabled }) =>
+      $isDisabled ? theme.palette.gray_300 : theme.palette.primary_400};
 `;
