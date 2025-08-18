@@ -1,11 +1,11 @@
-"use client";
-import { useRouter } from "next/Navigation";
-import styled from "styled-components";
-import { ProgressBar } from "@/components/atoms/ProgressBar";
-import { CloseIcon } from "@/assets/icons/CloseIcon";
-import Svg from "@/components/atoms/Svg";
-import { SymbolTextLogo } from "@/assets/images/SymbolTextLogo";
-import { LeftIcon } from "@/assets/icons/LeftIcon";
+'use client';
+import { useRouter } from 'next/navigation';
+import styled from 'styled-components';
+import { ProgressBar } from '@/components/atoms/ProgressBar';
+import { CloseIcon } from '@/assets/icons/CloseIcon';
+import Svg from '@/components/atoms/Svg';
+import { SymbolTextLogo } from '@/assets/images/SymbolTextLogo';
+import { LeftIcon } from '@/assets/icons/LeftIcon';
 
 export default function RegisterHeader({
   currentStep,
@@ -26,7 +26,7 @@ export default function RegisterHeader({
       </CloseIconWrapper>
       <ProgressBar currentStep={currentStep} totalStep={3} />
       <MarginBox />
-      <Svg children={<SymbolTextLogo />} onClick={() => router.push("/")} />
+      <Svg children={<SymbolTextLogo />} onClick={() => router.push('/')} />
     </Container>
   );
 }
