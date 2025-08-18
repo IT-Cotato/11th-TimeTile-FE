@@ -1,60 +1,52 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import RecordPost from '@/components/IndividualRecord/RecordPost';
 import { Text } from '@/components/atoms/Text';
 import { useParams } from 'next/navigation';
 import { postApi } from '@/apis/postApi';
+import ScrapModal from '@/components/Scrap/ScrapModal';
+import CommentList from '@/components/Comments/CommentsList';
 
-interface Comment {
-  id: number;
-  author: string;
-  content: string;
-  createdAt: string;
-  likes: number;
-}
-
-const IndividualRecordPage = () => {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [commentText, setCommentText] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
-  const [post, setPost] = useState<any>(null);
+const IndividualRecordDetailPage = () => {
   const params = useParams<{ postId: string }>();
   const postId = params.postId;
 
-  const handleSubmit = () => {
-    if (!commentText.trim()) return;
+  const [post, setPost] = useState<any>(null);
 
-    const newComment: Comment = {
-      id: Date.now(),
-      author: '유저닉네임',
-      content: commentText,
-      createdAt: '2025.05.25',
-      likes: 0,
-    };
+  // 스크랩
+  const [scrapOpen, setScrapOpen] = useState(false);
 
-    setComments(prev => [newComment, ...prev]);
-    setCommentText('');
-  };
-
+  // 이미지 뷰어
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (!postId) return;
-    const fetchPost = async () => {
+    (async () => {
       try {
         const res = await postApi.getPostDetail(postId);
-        setPost(res.data.data);
-      } catch (err) {
+        const data = res.data;
+        const normalized = {
+          ...data,
+          mediaUrls:
+            (Array.isArray(data.mediaUrls) &&
+              data.mediaUrls.length > 0 &&
+              data.mediaUrls) ||
+            data.imageUrls ||
+            data.images ||
+            (data.mainImageUrl ? [data.mainImageUrl] : []),
+        };
+        setPost(normalized);
+      } catch (e) {
+        console.error('[post detail error]', e);
         alert('게시글을 불러오지 못했습니다.');
       }
-    };
-    fetchPost();
+    })();
   }, [postId]);
 
-  const images = post?.mediaUrls ?? [];
+  const images: string[] = post?.mediaUrls ?? [];
 
   return (
     <PageWrapper>
@@ -66,7 +58,7 @@ const IndividualRecordPage = () => {
               <TitleText typo="Body_2">{post.title}</TitleText>
             </LeftSection>
             <DateText typo="Body_3">
-              {post.createdAt.split('T')[0].replace(/-/g, '.')}
+              {post.createdAt?.split('T')[0]?.replace(/-/g, '.')}
             </DateText>
           </Header>
 
@@ -74,18 +66,23 @@ const IndividualRecordPage = () => {
             profileImage={post.authorProfileImageUrl}
             username={post.authorNickname}
             visibility={post.visibility === 'PUBLIC' ? '전체공개' : '나만보기'}
-            date={post.createdAt.split('T')[0]}
+            date={post.createdAt?.split('T')[0]}
             title={post.title}
             content={post.content}
             images={images}
             likes={post.likeCount}
             comments={post.commentCount}
-            commentsData={comments}
+            commentsData={[]}
+            onImageClick={(idx: number) => {
+              setCurrentIndex(idx);
+              setIsViewerOpen(true);
+            }}
           />
         </>
       )}
 
-      {isViewerOpen && post && (
+      {/* 이미지 뷰어 */}
+      {isViewerOpen && images.length > 0 && (
         <ModalOverlay onClick={() => setIsViewerOpen(false)}>
           <CloseButton onClick={() => setIsViewerOpen(false)}>✕</CloseButton>
           <NavButton
@@ -117,24 +114,19 @@ const IndividualRecordPage = () => {
         </ModalOverlay>
       )}
 
-      <CommentInputWrapper $focused={isFocused || commentText.length > 0}>
-        <CommentInput
-          placeholder="댓글을 입력해보세요."
-          value={commentText}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onChange={e => setCommentText(e.target.value)}
-        />
-        <SubmitButton onClick={handleSubmit} disabled={!commentText.trim()}>
-          등록
-        </SubmitButton>
-      </CommentInputWrapper>
+      {/* 스크랩 모달 (닫을 때 해제하고 싶으면 onClose에서 setScrapped(false) 처리) */}
+      <ScrapModal
+        postId={postId}
+        open={scrapOpen}
+        onClose={() => setScrapOpen(false)}
+      />
     </PageWrapper>
   );
 };
 
-export default IndividualRecordPage;
+export default IndividualRecordDetailPage;
 
+/* ============ styles ============ */
 const PageWrapper = styled.div`
   margin: 0 auto;
   width: 952px;
@@ -170,6 +162,7 @@ const DateText = styled(Text)`
   color: var(--Gray-800, #3e3f40);
 `;
 
+/* 뷰어 */
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -177,38 +170,33 @@ const ModalOverlay = styled.div`
   z-index: 9999;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
 `;
-
 const ModalContent = styled.div`
-  position: relative;
   max-width: 90%;
   max-height: 90%;
 `;
-
 const ImageFull = styled.img`
   width: 600px;
   height: auto;
   object-fit: contain;
   border-radius: 12px;
 `;
-
 const CloseButton = styled.button`
   position: fixed;
   top: 32px;
   left: 32px;
-  color: white;
+  color: #fff;
   font-size: 28px;
   background: none;
   border: none;
   cursor: pointer;
 `;
-
 const NavButton = styled.button.withConfig({
-  shouldForwardProp: prop => prop !== '$left' && prop !== '$right',
+  shouldForwardProp: p => p !== '$left' && p !== '$right',
 })<{ $left?: boolean; $right?: boolean }>`
   position: fixed;
   top: 50%;
@@ -217,49 +205,7 @@ const NavButton = styled.button.withConfig({
   ${({ $right }) => $right && 'right: 32px;'}
   font-size: 48px;
   background: none;
-  color: white;
+  color: #fff;
   border: none;
   cursor: pointer;
-  z-index: 10000;
-`;
-
-const CommentInputWrapper = styled.div<{ $focused: boolean }>`
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  border: 1.5px solid ${({ $focused }) => ($focused ? '#A6C6FA' : '#D2D4D6')};
-  border-radius: 12px;
-  background-color: #fff;
-  gap: 12px;
-  width: 100%;
-`;
-
-const CommentInput = styled.textarea`
-  flex: 1;
-  resize: none;
-  border: none;
-  font-size: 14px;
-  outline: none;
-  color: #000;
-  min-height: 44px;
-  max-height: 100px;
-  line-height: 1.4;
-  background: transparent;
-
-  &::placeholder {
-    color: #c2c3c6;
-  }
-`;
-
-const SubmitButton = styled.button`
-  background-color: ${({ disabled }) => (disabled ? '#BFD5F7' : '#3A5CAA')};
-  color: #fff;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 6px 12px;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
-  border: none;
-  height: 32px;
-  min-width: 50px;
 `;

@@ -6,6 +6,20 @@ import RecordCardMedium from '@/components/IndividualRecord/RecordCardMedium';
 import { Text } from '@/components/atoms/Text';
 import { AddRecordButton as RawAddRecordButton } from '@/components/atoms/AddRecordButton';
 import { postApi } from '@/apis/postApi';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+interface EventData {
+  name: string;
+  description: string;
+  source: string;
+  activityTypes: string[];
+  relatedArtists: { id: string; name: string; imageUrl: string }[];
+  relatedEvents: { groupId: string; name: string }[];
+  relatedMaterials: string[];
+  startedAt: string;
+  endedAt: string;
+}
 
 interface RecordItem {
   postId: number;
@@ -19,20 +33,66 @@ interface RecordItem {
   comments: number;
 }
 
-const recordsPerPage = 16;
+// 👇 여기만 추가: 목데이터
+const MOCK_EVENT: EventData = {
+  name: 'Legacy Directives Orchestrator', // 스케줄 이름
+  description:
+    'Provident delinquo tener curiositas volva caecus tracto denego.',
+  source: 'https://jagged-subexpression.us/',
+  activityTypes: ['콘서트/팬미팅'],
+  relatedEvents: [
+    {
+      groupId: '781a8ce4-3897-409b-8500-5a9c084f68ec',
+      name: 'Prem Customer Division Associate',
+    },
+    { groupId: '8ba5b9bf-e82c-4bac-bdbe-ec0e53fc02d2', name: 'Faker 1112' },
+  ],
+  relatedArtists: [
+    {
+      id: '6HvZYsbFfjnjFrWF950C9d',
+      name: 'NewJeans',
+      imageUrl:
+        'https://i.scdn.co/image/ab6761610000e5eb80668ba2b15094d083780ea9',
+    },
+    {
+      id: '6YVMFz59CuY7ngCxTxjpxE',
+      name: 'aespa',
+      imageUrl:
+        'https://i.scdn.co/image/ab6761610000e5eb927f1260251e32135287e032',
+    },
+  ],
+  relatedMaterials: ['https://miserly-gallery.info'],
+  startedAt: '2025-04-11', // 날짜는 이 값으로 표시
+  endedAt: '2025-04-07',
+};
 
 const IndividualRecordPage = () => {
+  const router = useRouter();
+
   const [records, setRecords] = useState<RecordItem[]>([]);
   const [selected, setSelected] = useState<'LATEST' | 'HOTTEST'>('LATEST');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const groupId = '42776184-f31d-4f6b-949e-6fc77e144864';
+  const groupId = '0da701ad-79e3-4309-9167-16172dfc0b04';
+
+  const [event, setEvent] = useState<EventData | null>(null);
+  const [eventLoading, setEventLoading] = useState(true);
+
+  // '2025-04-11' -> '2025년 4월 11일'
+  const formatKoreanDate = (isoDate?: string) => {
+    if (!isoDate) return '';
+    const [y, m, d] = isoDate.split('-').map(Number);
+    if (!y || !m || !d) return isoDate;
+    return `${y}년 ${m}월 ${d}일`;
+  };
 
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const safePage = Math.max(currentPage - 1, 0);
-        const safeSort = selected.toUpperCase() as 'LATEST' | 'HOTTEST';
+        const safePage = Math.max(currentPage, 1);
+        const safeSort = (
+          selected?.toUpperCase() === 'HOTTEST' ? 'HOTTEST' : 'LATEST'
+        ) as 'LATEST' | 'HOTTEST';
 
         const res = await postApi.getAllPosts({
           groupId,
@@ -40,13 +100,18 @@ const IndividualRecordPage = () => {
           sortBy: safeSort,
         });
 
-        const { posts, totalPages } = res.data.data;
+        const { posts, totalPages } = res.data;
 
-        const mapped: RecordItem[] = posts.map((post: any) => ({
+        if (!posts?.length && safePage > 0) {
+          setCurrentPage(1);
+          return;
+        }
+
+        const mapped = posts.map((post: any) => ({
           postId: post.postId,
-          profileImage: post.authorProfileImageUrl,
+          profileImage: post.authorProfileImageUrl ?? '/default-profile.png',
           profileName: post.authorNickname,
-          date: post.createdAt.split('T')[0],
+          date: (post.createdAt || '').split('T')[0],
           title: post.title,
           description: post.content,
           imageSrc: post.mainImageUrl,
@@ -56,13 +121,25 @@ const IndividualRecordPage = () => {
 
         setRecords(mapped);
         setTotalPages(totalPages);
-      } catch (error: any) {
-        alert('게시글을 불러오지 못했습니다.');
+      } catch (err: any) {
+        console.error(
+          '[getAllPosts error]',
+          err.response?.status,
+          err.response?.data || err.message,
+        );
+        alert(err.response?.data?.message || '게시글을 불러오지 못했습니다.');
       }
     };
 
     fetchRecords();
   }, [groupId, currentPage, selected]);
+
+  // 👇 여기만 변경: 네트워크 요청 대신 목데이터 세팅
+  useEffect(() => {
+    setEventLoading(true);
+    setEvent(MOCK_EVENT);
+    setEventLoading(false);
+  }, []);
 
   const Pagination = () => {
     const visibleCount = 5;
@@ -73,7 +150,6 @@ const IndividualRecordPage = () => {
       end = totalPages;
       start = Math.max(end - visibleCount + 1, 1);
     }
-
     const pageNumbers = Array.from(
       { length: end - start + 1 },
       (_, i) => start + i,
@@ -106,15 +182,24 @@ const IndividualRecordPage = () => {
     );
   };
 
+  // 안전하게 값 뽑기
+  const artistName = event?.relatedArtists?.[0]?.name; // 예: 'NewJeans'
+  const startedAtLabel = formatKoreanDate(event?.startedAt); // 2025년 4월 11일
+  const scheduleName = event?.name; // 스케줄 이름
+
   return (
     <PageWrapper>
       <Header>
         <TopSection>
-          <DateText typo="H4">2025년 2월 17일</DateText>
-          <BackButton>에스파 대표로 돌아가기</BackButton>
+          <DateText typo="H4">
+            {eventLoading ? '로딩 중...' : startedAtLabel || '-'}
+          </DateText>
+          <BackButton>
+            {artistName ? `${artistName} 대표로 돌아가기` : '뒤로가기'}
+          </BackButton>
         </TopSection>
         <TitleText typo="H1">
-          멜론뮤직어워드(<strong>MMA</strong>) 참석
+          {eventLoading ? '불러오는 중...' : scheduleName || ''}
         </TitleText>
       </Header>
 
@@ -142,22 +227,38 @@ const IndividualRecordPage = () => {
           </ToggleButtonGroup>
         </ToggleWrapper>
 
-        <AddRecordButton variant="able">기록 추가</AddRecordButton>
+        <AddRecordButton
+          variant="able"
+          onClick={() => router.push('/record-add')}
+        >
+          기록 추가
+        </AddRecordButton>
       </FilterGroup>
 
       {records.length > 0 ? (
         <>
           <CardGrid>
             {records.map(record => (
-              <RecordCardMedium key={record.postId} {...record} />
+              <Link
+                key={record.postId}
+                href={`/record-post/${record.postId}`}
+                style={{ textDecoration: 'none' }}
+              >
+                <RecordCardMedium {...record} />
+              </Link>
             ))}
           </CardGrid>
           <Pagination />
         </>
       ) : (
         <EmptyContainer>
-          <Text typo="Body_2">로그인 후 기록을 확인할 수 있습니다.</Text>
-          <AddRecordButton variant="able">기록 추가</AddRecordButton>
+          <Text typo="Body_2">첫 번째 기록을 추가해보세요.</Text>
+          <AddRecordButton
+            variant="able"
+            onClick={() => router.push('/record-add')}
+          >
+            기록 추가
+          </AddRecordButton>
         </EmptyContainer>
       )}
     </PageWrapper>
@@ -242,7 +343,7 @@ const ToggleButton = styled.button<{ selected: boolean }>`
     color 0.2s ease;
 `;
 
-const AddRecordButton = styled(RawAddRecordButton)`
+const AddRecordButton = styled(RawAddRecordButton)<{ $variant?: string }>`
   display: flex;
   align-items: center;
 `;

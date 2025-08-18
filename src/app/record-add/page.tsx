@@ -25,7 +25,6 @@ const IndividualRecordPage = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isPublic, setIsPublic] = useState(true);
   const mediaListRef = useRef<HTMLDivElement>(null);
-  const [mediaKeys, setMediaKeys] = useState<string[]>([]);
 
   const handleSubmit = async () => {
     if (!title || !body || body.length > MAX_BODY_LENGTH) {
@@ -35,15 +34,19 @@ const IndividualRecordPage = () => {
 
     try {
       await postApi.createPost({
-        groupId: '42776184-f31d-4f6b-949e-6fc77e144864', // 🧩 실사용 값으로 교체
+        groupId: '0da701ad-79e3-4309-9167-16172dfc0b04',
         title,
         content: body,
         visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
-        mediaKeys,
+        mediaKeys: [],
         mainImageIndex: files.length > 0 ? selectedIndex : null,
       });
 
       alert('기록이 등록되었습니다.');
+      setTitle('');
+      setBody('');
+      setFiles([]);
+      setSelectedIndex(0);
     } catch (err) {
       console.error(err);
       alert('기록 등록에 실패했습니다.');

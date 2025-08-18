@@ -1,28 +1,24 @@
-import { authAxios } from '@/apis/axios';
+import { axiosApi, authAxios } from '@/apis/axios';
 
-export const commentApi = {
-  getComments: (postId: string | number) =>
-    authAxios.get(`/posts/${postId}/comments`),
+export type CommentPayload = { parentId: number | null; content: string };
 
-  writeComment: (
-    postId: string | number,
-    content: string,
-    parentId: number | null,
-  ) =>
-    authAxios.post(`/posts/${postId}/comments`, {
-      parentId,
-      content,
-    }),
+export const commentsApi = {
+  // 조회 (비로그인도 가능이라 가정 → axiosApi)
+  get: (postId: number | string) => axiosApi.get(`/posts/${postId}/comments`),
 
-  editComment: (postId: string | number, commentId: number, content: string) =>
+  // 생성/수정/삭제/좋아요는 인증 필요 → authAxios
+  create: (postId: number | string, body: CommentPayload) =>
+    authAxios.post(`/posts/${postId}/comments`, body),
+
+  update: (postId: number | string, commentId: number, content: string) =>
     authAxios.put(`/posts/${postId}/comments/${commentId}`, { content }),
 
-  deleteComment: (postId: string | number, commentId: number) =>
+  remove: (postId: number | string, commentId: number) =>
     authAxios.delete(`/posts/${postId}/comments/${commentId}`),
 
-  likeComment: (postId: string | number, commentId: number) =>
+  like: (postId: number | string, commentId: number) =>
     authAxios.post(`/posts/${postId}/comments/${commentId}/like`),
 
-  unlikeComment: (postId: string | number, commentId: number) =>
+  unlike: (postId: number | string, commentId: number) =>
     authAxios.delete(`/posts/${postId}/comments/${commentId}/like`),
 };
