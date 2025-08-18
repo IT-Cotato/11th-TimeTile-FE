@@ -13,7 +13,7 @@ export const EditIcon = () => {
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
-          stroke-Linejoin="round"
+          strokeLinejoin="round"
         />
       </svg>
     </>

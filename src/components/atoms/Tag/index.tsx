@@ -7,10 +7,11 @@ import { TAG_COLOR_TYPE, TAG_TEXT_COLOR_TYPE } from "@/constants/atoms/tag";
 
 interface PropsType {
   variant: "tile" | "deck" | "song";
+  children?: string;
   onClick?: () => void;
 }
 
-export const Tag = ({ variant, onClick, ...props }: PropsType) => {
+export const Tag = ({ variant, onClick, children, ...props }: PropsType) => {
   const tagChildren =
     variant === "tile" ? "타일" : variant === "deck" ? "데크" : "";
 
@@ -19,11 +20,7 @@ export const Tag = ({ variant, onClick, ...props }: PropsType) => {
       return (
         <FlexBox justify="center" align="center" gap={6}>
           <Svg children={<MusicIcon />} />
-          <Text
-            typo="Caption_4"
-            color="primary_600"
-            children="노래 하이퍼링크"
-          />
+          <Text typo="Caption_4" color="primary_600" children={children} />
         </FlexBox>
       );
     }

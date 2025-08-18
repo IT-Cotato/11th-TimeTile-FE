@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Provider as JotaiProvider } from "jotai";
+import { JotaiInitializer } from "@/components/layouts/JotaiInitializer";
+import { HeaderWrapper } from "@/components/layouts/HeaderWrapper";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -8,12 +11,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <JotaiProvider>
+          <JotaiInitializer />
+          <HeaderWrapper />
+          {children}
+        </JotaiProvider>
+      </body>
     </html>
   );
 }

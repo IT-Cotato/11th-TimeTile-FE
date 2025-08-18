@@ -3,12 +3,18 @@ import { authInterceptor } from "./authInterceptor";
 
 export const BASE_URL = "https://timetile-api.click/api";
 
-// 인증 필요 없는 요청 (ex: 로그인, 회원가입, 토큰 재발급)
+// 일반 api 요청
 export const axiosApi = axios.create({
   baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
+});
+
+// 헤더 유연한 요청 (ex. 파일 업로드)
+export const basicAxiosApi = axios.create({
+  baseURL: BASE_URL,
   withCredentials: true,
 });
 
