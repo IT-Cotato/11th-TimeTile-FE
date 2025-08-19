@@ -1,31 +1,13 @@
-"use client";
+import { Suspense } from 'react';
+import OAuthRegisterClient from './_client';
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
-import { useSetAtom } from "jotai";
-import { socialRegisterInfoAtom, socialTokenAtom } from "@/store/auth";
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-export default function OAuthRegisterPage() {
-  const params = useSearchParams();
-  const router = useRouter();
-  const token = params.get("token");
-
-  const setSocialToken = useSetAtom(socialTokenAtom);
-  const setSocialRegisterInfo = useSetAtom(socialRegisterInfoAtom);
-
-  useEffect(() => {
-    if (!token) {
-      // router.replace("/");
-      console.log("소셜 로그인 실패");
-    } else {
-      setSocialToken(token);
-      setSocialRegisterInfo((prev) => ({
-        ...prev,
-        temporaryToken: token,
-      }));
-      router.replace(`/register`);
-    }
-  }, [token, router, setSocialToken, setSocialRegisterInfo]);
-
-  return null;
+export default function Page() {
+  return (
+    <Suspense fallback={null}>
+      <OAuthRegisterClient />
+    </Suspense>
+  );
 }
