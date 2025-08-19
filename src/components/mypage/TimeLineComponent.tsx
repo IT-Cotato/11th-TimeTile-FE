@@ -22,7 +22,7 @@ interface TimeLineComponentProps {
 
 export const TimeLineComponent = ({
   posts,
-  titleText = "내 타임라인",
+  titleText = "마이타일 모아보기",
   infoText = "타임라인이 없습니다.",
   showTitle = true,
   showScrapIcon = false,

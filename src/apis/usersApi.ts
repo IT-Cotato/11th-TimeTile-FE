@@ -68,7 +68,6 @@ export const usersApi = {
     return res.data;
   },
 
-  //타유저
   getUserFollowingUsers: (targetId: number, lastFollowId?: number) => {
     const params = lastFollowId ? { lastFollowId } : {};
     return axiosApi.get(`/users/${targetId}/following-users`, { params });

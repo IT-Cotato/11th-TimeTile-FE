@@ -237,7 +237,7 @@ export default function OtherUserMyPage() {
             <PrivateDiv>
               <TitleDiv>
                 <Title>
-                  <Text typo="H3">{nickname}님의 개별기록</Text>
+                  <Text typo="H3">{nickname}님의 마이타일</Text>
                 </Title>
               </TitleDiv>
               <EmptyText>
@@ -247,7 +247,7 @@ export default function OtherUserMyPage() {
                     비공개 계정입니다.
                   </Text>
                   <Text typo="H3" color="gray_500">
-                    개별기록을 보려면 계정을 팔로우하세요.
+                    마이타일을 보려면 계정을 팔로우하세요.
                   </Text>
                 </TextDiv>
               </EmptyText>
@@ -256,8 +256,8 @@ export default function OtherUserMyPage() {
             <>
               <TimeLineComponent
                 posts={posts}
-                titleText={`${nickname}님의 개별기록`}
-                infoText="개별기록이 없습니다."
+                titleText={`${nickname}님의 마이타일`}
+                infoText="마이타일이 없습니다."
                 showViewMore={false}
               />
               <div ref={observerRef} style={{ height: 1 }} />
