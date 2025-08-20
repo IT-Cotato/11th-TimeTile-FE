@@ -16,6 +16,7 @@ import { userProfileAtom } from "@/store/UserProfileAtom";
 import { useRouter } from "next/navigation";
 import { FollowingModal } from "./FollowingModal";
 import { FollowerModal } from "./FollowerModal";
+import { Tag } from "../atoms/Tag";
 
 interface UserProfile {
   id: number;
@@ -81,7 +82,7 @@ export const MyProfile = () => {
               <Text typo="Caption_1" children={profile.followerCount} />
             </Part>
           </Stats>
-          <FlexDiv>{/* <Tag variant="song" children={song} /> */}</FlexDiv>
+          {/* <FlexDiv><Tag variant="song" children={song}/></FlexDiv> */}
           <Intro>
             <Text typo="Body_3" children={profile.introduction} />
           </Intro>

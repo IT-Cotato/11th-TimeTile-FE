@@ -183,7 +183,7 @@ export const OtherPostComponent = ({
                         <Text
                           typo="Body_3"
                           children={post.likeCount}
-                          color="Heart"
+                          color="heart"
                         />
                       </IconDiv>
                       <IconDiv>
@@ -197,7 +197,7 @@ export const OtherPostComponent = ({
                     </IconWrapper>
                     <ViewButton
                       onClick={() =>
-                        (window.location.href = `/post/${post.postId}`)
+                        (window.location.href = `/record-post/${post.postId}`)
                       }
                     >
                       <Text

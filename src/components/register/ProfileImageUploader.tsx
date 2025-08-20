@@ -19,7 +19,13 @@ export const ProfileImageUploader = ({
   const [uploading, setUploading] = useState(false);
   const handleClick = () => fileInputRef.current?.click();
 
+  const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
+
   const handleFileChange = async (file: File) => {
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert("이미지 파일은 3MB 이하만 업로드 가능합니다.");
+      return;
+    }
     onChange(file);
     const ext = file.name.split(".").pop()?.toLowerCase();
     if (!ext || !["jpg", "jpeg", "png"].includes(ext)) return;

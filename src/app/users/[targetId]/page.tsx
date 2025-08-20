@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usersApi } from "@/apis/usersApi";
 import styled from "styled-components";
 import { FlexBox } from "@/components/layouts/FlexBox";
@@ -175,15 +175,51 @@ export default function OtherUserMyPage() {
   const [visibility, setVisibility] = useState<string>("PUBLIC");
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!targetId) return;
-    const fetchPosts = async () => {
+  const [lastPostId, setLastPostId] = useState<number | null>(null);
+  const [hasNext, setHasNext] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  const fetchPosts = async () => {
+    if (!targetId || loading || !hasNext) return;
+    setLoading(true);
+    try {
+      const res = await usersApi.getUserProfilePost(
+        targetId,
+        lastPostId ?? undefined
+      );
       //const res = MOCK_POSTS[0];
-      const res = await usersApi.getUserProfilePost(targetId);
-      setPosts(res.data.posts.slice(0, 6));
-    };
-    fetchPosts();
+      setPosts((prev) => [...prev, ...res.data.posts]);
+      setHasNext(res.data.hasNext);
+      setLastPostId(res.data.lastPostId);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setPosts([]);
+    setLastPostId(null);
+    setHasNext(true);
   }, [targetId]);
+
+  // 무한스크롤
+  useEffect(() => {
+    if (!observerRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNext && !loading) {
+          fetchPosts();
+        }
+      },
+      { threshold: 1.0 }
+    );
+    observer.observe(observerRef.current);
+    return () => observer.disconnect();
+  }, [observerRef, hasNext, loading]);
 
   return (
     <Container>
@@ -201,7 +237,7 @@ export default function OtherUserMyPage() {
             <PrivateDiv>
               <TitleDiv>
                 <Title>
-                  <Text typo="H3">{nickname}님의 개별기록</Text>
+                  <Text typo="H3">{nickname}님의 마이타일</Text>
                 </Title>
               </TitleDiv>
               <EmptyText>
@@ -211,18 +247,26 @@ export default function OtherUserMyPage() {
                     비공개 계정입니다.
                   </Text>
                   <Text typo="H3" color="gray_500">
-                    개별기록을 보려면 계정을 팔로우하세요.
+                    마이타일을 보려면 계정을 팔로우하세요.
                   </Text>
                 </TextDiv>
               </EmptyText>
             </PrivateDiv>
           ) : (
-            <TimeLineComponent
-              posts={posts}
-              titleText={`${nickname}님의 개별기록`}
-              infoText="개별기록이 없습니다."
-              showViewMore={false}
-            />
+            <>
+              <TimeLineComponent
+                posts={posts}
+                titleText={`${nickname}님의 마이타일`}
+                infoText="마이타일이 없습니다."
+                showViewMore={false}
+              />
+              <div ref={observerRef} style={{ height: 1 }} />
+              {loading && (
+                <Text typo="H3" color="gray_500">
+                  로딩 중...
+                </Text>
+              )}
+            </>
           )}
         </FlexBox>
       </Wrapper>
