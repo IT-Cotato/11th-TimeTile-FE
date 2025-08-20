@@ -280,21 +280,23 @@ export default function ScrapFolderDetail() {
         {deleteModalOpen && (
           <DeleteModalBackground onClick={() => setDeleteModalOpen(false)}>
             <DeleteModalContainer onClick={(e) => e.stopPropagation()}>
-              <Text typo="Body_3" color="gray_800">
-                폴더를 삭제할까요?
-              </Text>
-              <ButtonRow>
-                <CancelButton onClick={() => setDeleteModalOpen(false)}>
-                  <Text typo="Body_1" color="gray_0">
-                    취소
-                  </Text>
-                </CancelButton>
-                <ConfirmDeleteButton onClick={handleDeleteConfirm}>
-                  <Text typo="Body_1" color="gray_0">
-                    삭제
-                  </Text>
-                </ConfirmDeleteButton>
-              </ButtonRow>
+              <GapDiv>
+                <Text typo="Body_3" color="gray_800">
+                  폴더를 삭제할까요?
+                </Text>
+                <ButtonRow>
+                  <CancelButton onClick={() => setDeleteModalOpen(false)}>
+                    <Text typo="Body_1" color="gray_0">
+                      취소
+                    </Text>
+                  </CancelButton>
+                  <ConfirmDeleteButton onClick={handleDeleteConfirm}>
+                    <Text typo="Body_1" color="gray_0">
+                      삭제
+                    </Text>
+                  </ConfirmDeleteButton>
+                </ButtonRow>
+              </GapDiv>
             </DeleteModalContainer>
           </DeleteModalBackground>
         )}
@@ -303,32 +305,34 @@ export default function ScrapFolderDetail() {
             onClick={() => setDeleteSelectedModalOpen(false)}
           >
             <DeleteModalContainer onClick={(e) => e.stopPropagation()}>
-              <Text typo="Body_3" color="gray_800">
-                선택된 타일들을 삭제할까요?
-              </Text>
-              <ButtonRow>
-                <CancelButton
-                  onClick={() => {
-                    setDeleteSelectedModalOpen(false);
-                    setOnSelectMode(false);
-                    setSelectedPosts(new Set());
-                  }}
-                >
-                  <Text typo="Body_1" color="gray_0">
-                    취소
-                  </Text>
-                </CancelButton>
-                <ConfirmDeleteButton
-                  onClick={() => {
-                    setDeleteSelectedModalOpen(false);
-                    handleDeleteSelected();
-                  }}
-                >
-                  <Text typo="Body_1" color="gray_0">
-                    삭제
-                  </Text>
-                </ConfirmDeleteButton>
-              </ButtonRow>
+              <GapDiv>
+                <Text typo="Body_3" color="gray_800">
+                  선택된 타일들을 삭제할까요?
+                </Text>
+                <ButtonRow>
+                  <CancelButton
+                    onClick={() => {
+                      setDeleteSelectedModalOpen(false);
+                      setOnSelectMode(false);
+                      setSelectedPosts(new Set());
+                    }}
+                  >
+                    <Text typo="Body_1" color="gray_0">
+                      취소
+                    </Text>
+                  </CancelButton>
+                  <ConfirmDeleteButton
+                    onClick={() => {
+                      setDeleteSelectedModalOpen(false);
+                      handleDeleteSelected();
+                    }}
+                  >
+                    <Text typo="Body_1" color="gray_0">
+                      삭제
+                    </Text>
+                  </ConfirmDeleteButton>
+                </ButtonRow>
+              </GapDiv>
             </DeleteModalContainer>
           </DeleteModalBackground>
         )}
@@ -444,17 +448,22 @@ const DeleteModalBackground = styled.div`
 `;
 
 const DeleteModalContainer = styled.div`
-  display: flex;
-  width: 224px;
-  padding: 32px 16px;
-  flex-direction: column;
+  display: inline-flex;
+  padding: 32px;
   justify-content: center;
   align-items: center;
-  gap: 24px;
+  gap: 10px;
   border-radius: 20px;
   border: 1px solid ${theme.palette.primary_400};
   background: ${theme.palette.primary_50};
   box-shadow: 0 4px 16px 0 rgba(159, 198, 255, 0.25);
+`;
+
+const GapDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
 `;
 
 const ButtonRow = styled.div`
@@ -469,7 +478,7 @@ const ButtonRow = styled.div`
 const CancelButton = styled.button`
   all: unset;
   display: flex;
-  padding: 10px 13px;
+  padding: 12px 13px;
   justify-content: center;
   align-items: center;
   border-radius: 10px;
@@ -480,7 +489,7 @@ const CancelButton = styled.button`
 const ConfirmDeleteButton = styled.button`
   all: unset;
   display: flex;
-  padding: 10px 13px;
+  padding: 12px 13px;
   justify-content: center;
   align-items: center;
   border-radius: 10px;
