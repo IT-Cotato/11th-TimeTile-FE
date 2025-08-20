@@ -29,6 +29,14 @@ export const FollowerModal: React.FC<FollowerModalProps> = ({
   const [loading, setLoading] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
+  const hasFetched = useRef(false);
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      fetchFollowers();
+      hasFetched.current = true;
+    }
+  }, []);
 
   const fetchFollowers = async () => {
     if (!hasNext || loading) return;
@@ -40,7 +48,13 @@ export const FollowerModal: React.FC<FollowerModalProps> = ({
 
       if (res.data.isSuccess) {
         const newFollowers = res.data.data.followers;
-        setFollowerList((prev) => [...prev, ...newFollowers]);
+        setFollowerList((prev) => {
+          const existingIds = new Set(prev.map((f) => f.id));
+          const filteredNew = newFollowers.filter(
+            (f: Follower) => !existingIds.has(f.id)
+          );
+          return [...prev, ...filteredNew];
+        });
         setHasNext(res.data.data.hasNext);
         setLastId(res.data.data.lastFollowId);
       }
