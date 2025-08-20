@@ -76,11 +76,13 @@ export default function Login() {
   };
 
   const kakaoLogin = () => {
+    localStorage.removeItem("loggedOut");
     window.location.href =
       "https://timetile-api.click/oauth2/authorization/kakao";
   };
 
   const googleLogin = () => {
+    localStorage.removeItem("loggedOut");
     window.location.href =
       "https://timetile-api.click/oauth2/authorization/google";
   };
