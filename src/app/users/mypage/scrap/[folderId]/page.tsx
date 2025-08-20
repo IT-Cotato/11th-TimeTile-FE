@@ -250,7 +250,7 @@ export default function ScrapFolderDetail() {
                     typo="H5"
                     color={posts.length === 0 ? "gray_400" : "gray_800"}
                   >
-                    게시글 선택 삭제
+                    마이타일 선택 삭제
                   </Text>
                 </MenuItem>
               </MenuContainer>
@@ -263,7 +263,7 @@ export default function ScrapFolderDetail() {
             ...post,
             scrapFolderId: folderId ? Number(folderId) : undefined,
           }))}
-          infoText="기록이 없습니다."
+          infoText="폴더에 추가된 마이타일이 없습니다."
           showScrapIcon
           isSelectionMode={onSelectMode}
           selectedPosts={selectedPosts}

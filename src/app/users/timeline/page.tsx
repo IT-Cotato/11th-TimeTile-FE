@@ -19,13 +19,13 @@ export default function MyTimeLinePage() {
             onClick={() => setSelected("artist-timeline")}
             $selected={selected === "artist-timeline"}
           >
-            <Text typo="H2" children="내가 기록한 아티스트 타임라인" />
+            <Text typo="H2" children="내가 기록한 타임타일" />
           </SelectText>
           <SelectText
             onClick={() => setSelected("my-timeline")}
             $selected={selected === "my-timeline"}
           >
-            <Text typo="H2" children="내 타임라인" />
+            <Text typo="H2" children="마이타일" />
           </SelectText>
         </SelectHeader>
         {selected === "artist-timeline" ? <MyArtistTimeline /> : <MyTimeLine />}
