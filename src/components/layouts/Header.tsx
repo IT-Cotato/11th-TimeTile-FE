@@ -43,6 +43,7 @@ export const Header = () => {
     try {
       await authApi.logout();
       setUserProfile(null);
+      localStorage.setItem("loggedOut", "true");
       router.push("/");
     } catch (err) {
       console.error(err);
