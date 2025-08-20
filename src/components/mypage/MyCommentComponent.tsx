@@ -60,7 +60,7 @@ export const MyCommentComponent = ({ comments, infoText }: Props) => {
                       <Text
                         typo="Body_3"
                         children={comment.likeCount}
-                        color="Heart"
+                        color="heart"
                       />
                     </IconDiv>
                   </IconWrapper>
