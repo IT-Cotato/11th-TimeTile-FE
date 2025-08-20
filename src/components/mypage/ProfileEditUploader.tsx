@@ -19,12 +19,16 @@ export const ProfileEditUploader = ({
 }: ProfileEditUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
-
+  const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
   const handleClick = () => {
     fileInputRef.current?.click();
   };
 
   const handleFileChange = async (file: File) => {
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert("이미지 파일은 3MB 이하만 업로드 가능합니다.");
+      return;
+    }
     onChange(file);
 
     const mimeToExtMap: Record<string, "jpg" | "jpeg" | "png"> = {
@@ -38,7 +42,6 @@ export const ProfileEditUploader = ({
       alert("jpg, jpeg, png 파일만 업로드할 수 있습니다.");
       return;
     }
-
     setUploading(true);
     try {
       const res = await authApi.getPresignedUrl(ext);
