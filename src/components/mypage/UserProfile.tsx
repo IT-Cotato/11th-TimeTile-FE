@@ -19,6 +19,7 @@ interface UserProfileProps {
     visibility: string;
     isFollowing: boolean;
   }) => void;
+  onError?: () => void;
 }
 
 interface UserProfileData {
@@ -36,7 +37,12 @@ interface UserProfileData {
 
 const song = "투모로우바이투게더 - tommorow xjdjdjdjjaja";
 
-export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
+export const UserProfile = ({
+  targetId,
+  onProfileLoad,
+  onError,
+  userExists = true,
+}: UserProfileProps & { userExists?: boolean }) => {
   const [isFollowingModalOpen, setIsFollowingModalOpen] = useState(false);
   const [isFollowerModalOpen, setIsFollowerModalOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfileData | null>(null);
@@ -67,10 +73,11 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
         }
       } catch (error) {
         console.error("프로필 불러오기 실패", error);
+        if (onError) onError();
       }
     };
     fetchProfile();
-  }, [targetId, onProfileLoad]);
+  }, [targetId, onProfileLoad, onError]);
 
   const handleFollowClick = async () => {
     if (followVariant === "follow") {
@@ -97,6 +104,7 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
     }
   };
 
+  if (!userExists) return null;
   if (!profile) return <div>로딩 중...</div>;
 
   return (

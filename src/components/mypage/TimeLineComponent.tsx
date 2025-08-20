@@ -97,7 +97,7 @@ export const TimeLineComponent = ({
                         <Text
                           typo="Body_3"
                           children={post.likeCount}
-                          color="Heart"
+                          color="heart"
                         />
                       </IconDiv>
                       <IconDiv>

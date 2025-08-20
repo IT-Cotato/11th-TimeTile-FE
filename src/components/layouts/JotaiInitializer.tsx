@@ -9,14 +9,15 @@ export function JotaiInitializer() {
   const setUserProfile = useSetAtom(userProfileAtom);
 
   useEffect(() => {
+    if (localStorage.getItem("loggedOut")) {
+      setUserProfile(null);
+      return;
+    }
+
     usersApi
       .getMyProfile()
-      .then((res) => {
-        setUserProfile(res.data);
-      })
-      .catch(() => {
-        setUserProfile(null); // 로그인 안 된 경우
-      });
+      .then((res) => setUserProfile(res.data))
+      .catch(() => setUserProfile(null));
   }, [setUserProfile]);
 
   return null;
