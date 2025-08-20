@@ -7,6 +7,9 @@ import { Text } from "@/components/atoms/Text";
 import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { theme } from "@/styles/theme";
 import { FlexBox } from "@/components/layouts/FlexBox";
+import { useRouter } from "next/navigation";
+import { userProfileAtom } from "@/store/UserProfileAtom";
+import { useAtomValue } from "jotai";
 
 interface Follower {
   id: string;
@@ -23,6 +26,7 @@ export const FollowingModal: React.FC<FollowingModalProps> = ({
   onClose,
   targetId,
 }) => {
+  const myProfile = useAtomValue(userProfileAtom);
   const [activeTab, setActiveTab] = useState<"artist" | "user">("artist");
 
   const [artistList, setArtistList] = useState<Follower[]>([]);
@@ -38,6 +42,7 @@ export const FollowingModal: React.FC<FollowingModalProps> = ({
   const [userLoading, setUserLoading] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const fetchFollowingArtists = async () => {
     if (!artistHasNext || artistLoading) return;
@@ -154,7 +159,20 @@ export const FollowingModal: React.FC<FollowingModalProps> = ({
           </LineDiv>
           <GridContainer>
             {followersToShow.map(({ id, name, profileImageUrl }) => (
-              <FollowerItem key={id}>
+              <FollowerItem
+                key={id}
+                onClick={() => {
+                  if (activeTab === "user") {
+                    if (myProfile && myProfile.id === Number(id)) {
+                      router.push("/users/mypage");
+                    } else {
+                      router.push(`/users/${id}`);
+                    }
+                    onClose();
+                  }
+                }}
+                style={{ cursor: activeTab === "user" ? "pointer" : "default" }}
+              >
                 <ProfileImg src={profileImageUrl} alt={name} />
                 <Name>
                   <Text typo="H4" color="gray_1000" children={name} />
@@ -230,7 +248,7 @@ const LineDiv = styled.div`
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  column-gap: 32px;
+  column-gap: 24px;
   row-gap: 24px;
   margin-top: 32px;
 `;
