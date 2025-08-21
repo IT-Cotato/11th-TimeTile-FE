@@ -43,7 +43,7 @@ export const MyRoleSection = ({ data }: any) => {
               unit="일"
             />
             <DetailItem
-              label="타임라인 등록"
+              label="타임타일 등록"
               value={data.postCount}
               unit="개"
             />

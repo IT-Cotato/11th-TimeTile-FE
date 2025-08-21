@@ -199,6 +199,7 @@ const Info = styled.div`
 const Part = styled.div`
   display: flex;
   gap: 8px;
+  cursor: pointer;
 `;
 
 const FlexDiv = styled.div`

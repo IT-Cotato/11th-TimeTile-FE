@@ -166,7 +166,7 @@ export const MyArtistTimeline = () => {
   return (
     <Container>
       {artists.length === 0 || !selectedArtistId ? (
-        <NoDataMessage>기록한 아티스트 타임라인이 없습니다.</NoDataMessage>
+        <NoDataMessage>기록한 타임타일이 없습니다.</NoDataMessage>
       ) : (
         <>
           <ArtistListHeader

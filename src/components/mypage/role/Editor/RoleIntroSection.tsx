@@ -16,13 +16,11 @@ export const RoleIntroSection = () => {
               Watcher
             </Text>
             <Text typo="Body_2" color="sub_900">
-              콘텐츠 정리와 스케줄 등록을 <br />
-              맡는 핵심 편집자
+              데크를 열람하는 관찰자
             </Text>
             <ul>
-              <li>스케줄 등록</li>
-              <li>스케줄 자료 링크 등록</li>
-              <li>임시페이지 접근 및 부적절해요</li>
+              <li>데크 열람만 가능</li>
+              <li>마이타일 작성 가능</li>
             </ul>
           </ForWatcher>
           <ForLinker>
@@ -30,14 +28,17 @@ export const RoleIntroSection = () => {
               Linker
             </Text>
             <Text typo="Body_2" color="primary_900">
-              콘텐츠 정리와 스케줄 등록을 <br />
-              맡는 핵심 편집자
+              자료를 연결하고 <br />
+              정보를 보완하는 서포터
             </Text>
             <div style={{ marginTop: "44px" }}>
               <ul>
-                <li>스케줄 등록</li>
-                <li>스케줄 자료 링크 등록</li>
-                <li>임시페이지 접근 및 부적절해요</li>
+                <li>타임타일 컨텐츠 링크 등록</li>
+                <li>
+                  업로드 대기 모드 접근 및<br />
+                  부적절해요
+                </li>
+                <li>마이타일 작성 가능</li>
               </ul>
             </div>
           </ForLinker>
@@ -46,14 +47,18 @@ export const RoleIntroSection = () => {
               Editor
             </Text>
             <Text typo="Body_2" color="sub_900">
-              콘텐츠 정리와 스케줄 등록을 <br />
+              콘텐츠 정리와 타임타일 등록을 <br />
               맡는 핵심 편집자
             </Text>
             <div style={{ marginTop: "104px" }}>
               <ul>
-                <li>스케줄 등록</li>
-                <li>스케줄 자료 링크 등록</li>
-                <li>임시페이지 접근 및 부적절해요</li>
+                <li>타임타일 등록</li>
+                <li>타임타일 컨텐츠 링크 등록</li>
+                <li>
+                  업로드 대기 모드 접근 및<br />
+                  부적절해요
+                </li>
+                <li>마이타일 작성 가능</li>
               </ul>
             </div>
           </ForEditor>
@@ -66,16 +71,17 @@ export const RoleIntroSection = () => {
                 <CheckBlueIcon />
                 <Text typo="Body_3" children="누적 방문 일수 14일" />
               </FlexBox>
-              <FlexBox gap={8}>
+              <FlexBox gap={8} align="flex-start">
                 <CheckBlueIcon />
-                <Text typo="Body_3" children="개인기록 10개 이상 작성" />
+                <Text typo="Body_3">
+                  마이타일 반응 남기기
+                  <br />
+                  (좋아요, 댓글 각 10개 이상)
+                </Text>
               </FlexBox>
               <FlexBox gap={8}>
                 <CheckBlueIcon />
-                <Text
-                  typo="Body_3"
-                  children="커뮤니티 반응(좋아요, 댓글) 각 10개 이상"
-                />
+                <Text typo="Body_3" children="마이타일 10개 이상 작성" />
               </FlexBox>
             </Condition>
           </RoleBox>
@@ -86,8 +92,9 @@ export const RoleIntroSection = () => {
               <FlexBox gap={8} align="flex-start">
                 <CheckBlueIcon />
                 <Text typo="Body_3">
-                  내가 등록한 타일이 ‘부적절해요' 신고로 5회
-                  <br /> 이상 업로드 거부될 경우
+                  내가 등록한 타일이 ‘부적절해요' 신고로
+                  <br />
+                  5회 이상 업로드 거부될 경우
                 </Text>
               </FlexBox>
               <FlexBox gap={8}>
@@ -197,7 +204,6 @@ const RoleBox = styled.div`
 const Condition = styled.div`
   display: flex;
   width: 300px;
-  height: 96px;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
