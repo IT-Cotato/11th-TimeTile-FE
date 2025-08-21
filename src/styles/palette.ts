@@ -38,5 +38,5 @@ export const palette = {
   warning: '#FF5652',
   warning_2: '#FFF3F3',
   notify: '#FE2760',
-  heart: '#FF4977',
+  Heart: '#FF4977',
 } as const;

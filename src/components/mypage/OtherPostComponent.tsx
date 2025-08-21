@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import styled from "styled-components";
-import { theme } from "@/styles/theme";
-import { Text } from "../atoms/Text";
-import { ChatIcon } from "@/assets/icons/ChatIcon";
-import { HeartIcon } from "@/assets/icons/HeartIcon";
-import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
-import { OtherPost } from "@/model/components/Post";
-import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
-import { usersApi } from "@/apis/usersApi";
-import { ScrapIcon } from "@/assets/icons/ScrapIcon";
-import { CheckTrueIcon } from "@/assets/icons/CheckTrueIcon";
-import { CheckFalseIcon } from "@/assets/icons/CheckFalseIcon";
+import styled from 'styled-components';
+import { theme } from '@/styles/theme';
+import { Text } from '../atoms/Text';
+import { ChatIcon } from '@/assets/icons/ChatIcon';
+import { HeartIcon } from '@/assets/icons/HeartIcon';
+import { MoveRightIcon } from '@/assets/icons/MoveRightIcon';
+import { OtherPost } from '@/model/components/Post';
+import { BasicSymbolLogo } from '@/assets/images/BasicSymbolLogo';
+import { usersApi } from '@/apis/usersApi';
+import { ScrapIcon } from '@/assets/icons/ScrapIcon';
+import { CheckTrueIcon } from '@/assets/icons/CheckTrueIcon';
+import { CheckFalseIcon } from '@/assets/icons/CheckFalseIcon';
 
 interface OtherPostComponentProps {
   posts: OtherPost[];
@@ -27,8 +27,8 @@ interface OtherPostComponentProps {
 
 export const OtherPostComponent = ({
   posts,
-  titleText = "내 타임라인",
-  infoText = "타임라인이 없습니다.",
+  titleText = '내 타임라인',
+  infoText = '타임라인이 없습니다.',
   showTitle = true,
   showScrapIcon = false,
   isSelectionMode = false,
@@ -38,7 +38,7 @@ export const OtherPostComponent = ({
 }: OtherPostComponentProps) => {
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
-    return date.toISOString().slice(0, 10).replace(/-/g, ".");
+    return date.toISOString().slice(0, 10).replace(/-/g, '.');
   };
 
   const isEmpty = posts.length === 0;
@@ -48,29 +48,29 @@ export const OtherPostComponent = ({
       // 스크랩 상태 조회
       const statusRes = await usersApi.getScrapStatus(postId);
       if (!statusRes.isSuccess) {
-        console.log("스크랩 상태를 불러올 수 없습니다.");
+        console.log('스크랩 상태를 불러올 수 없습니다.');
         return;
       }
 
       const scrappedFolders = statusRes.data.scrapStatus.filter(
-        (folder: any) => folder.isScrapped
+        (folder: any) => folder.isScrapped,
       );
 
       if (scrappedFolders.length === 0) {
-        console.log("이미 스크랩이 취소된 상태입니다.");
+        console.log('이미 스크랩이 취소된 상태입니다.');
         return;
       }
 
       // 모든 폴더에서 취소
       await Promise.all(
         scrappedFolders.map((folder: any) =>
-          usersApi.cancelScrapPost(postId, folder.scrapFolderId)
-        )
+          usersApi.cancelScrapPost(postId, folder.scrapFolderId),
+        ),
       );
-      console.log("스크랩이 모두 취소되었습니다.");
+      console.log('스크랩이 모두 취소되었습니다.');
       window.location.reload();
     } catch (err) {
-      console.error("스크랩 취소 실패", err);
+      console.error('스크랩 취소 실패', err);
     }
   };
 
@@ -95,7 +95,7 @@ export const OtherPostComponent = ({
         </EmptyText>
       ) : (
         <TimeLineWrap>
-          {posts.map((post) => {
+          {posts.map(post => {
             const hasImage = !!post.mainImageUrl;
             return (
               <TimeLineCard key={post.postId}>
@@ -113,9 +113,9 @@ export const OtherPostComponent = ({
                     <button
                       onClick={() => handleCancel(post.postId)}
                       style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
                       }}
                       aria-label="스크랩 취소"
                     >
@@ -128,12 +128,12 @@ export const OtherPostComponent = ({
                         onToggleSelect && onToggleSelect(post.postId)
                       }
                       style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
                       }}
                       aria-label={
-                        selectedPosts.has(post.postId) ? "선택 해제" : "선택"
+                        selectedPosts.has(post.postId) ? '선택 해제' : '선택'
                       }
                     >
                       {selectedPosts.has(post.postId) ? (
@@ -197,7 +197,7 @@ export const OtherPostComponent = ({
                     </IconWrapper>
                     <ViewButton
                       onClick={() =>
-                        (window.location.href = `/post/${post.postId}`)
+                        (window.location.href = `/record-post/${post.postId}`)
                       }
                     >
                       <Text
@@ -338,7 +338,7 @@ const PostDiv = styled.div`
 `;
 
 const Wrap = styled.div<{ $hasImage: boolean }>`
-  width: ${({ $hasImage }) => ($hasImage ? "235px" : "100%")};
+  width: ${({ $hasImage }) => ($hasImage ? '235px' : '100%')};
   align-self: stretch;
   overflow: hidden;
   display: -webkit-box;
@@ -413,7 +413,7 @@ const PostContent = styled.div<{
       border-color: ${theme.palette.primary_400};
       border-width: 1.5px;
     `
-        : ""
+        : ''
     }
   `}
 `;

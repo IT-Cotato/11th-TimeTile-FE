@@ -1,4 +1,4 @@
-import { FlexBox } from "@/components/layouts/FlexBox";
+import { FlexBox } from '@/components/layouts/FlexBox';
 
 export const ScrapIcon = () => {
   return (

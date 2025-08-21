@@ -1,16 +1,16 @@
-export const RightArrowIcon = () => {
+export const RightArrowIcon1 = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="8"
-      height="12"
-      viewBox="0 0 8 12"
+      height="14"
+      viewBox="0 0 8 14"
       fill="none"
     >
       <path
-        d="M1.5 11L6.5 6L1.5 1"
-        stroke="#587DC9"
-        stroke-width="1.5"
+        d="M1 13L7 7L1 1"
+        stroke="black"
+        stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />

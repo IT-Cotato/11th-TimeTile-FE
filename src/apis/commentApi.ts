@@ -22,3 +22,6 @@ export const commentsApi = {
   unlike: (postId: number | string, commentId: number) =>
     authAxios.delete(`/posts/${postId}/comments/${commentId}/like`),
 };
+
+export const unwrap = <T = any>(res: any): T =>
+  res?.data?.data ?? res?.data ?? res;

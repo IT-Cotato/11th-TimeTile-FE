@@ -8,6 +8,7 @@ import { AddRecordButton as RawAddRecordButton } from '@/components/atoms/AddRec
 import { postApi } from '@/apis/postApi';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { BackIcon } from '@/assets/icons/BackIcon';
 
 interface EventData {
   name: string;
@@ -134,7 +135,6 @@ const IndividualRecordPage = () => {
     fetchRecords();
   }, [groupId, currentPage, selected]);
 
-  // 👇 여기만 변경: 네트워크 요청 대신 목데이터 세팅
   useEffect(() => {
     setEventLoading(true);
     setEvent(MOCK_EVENT);
@@ -182,10 +182,9 @@ const IndividualRecordPage = () => {
     );
   };
 
-  // 안전하게 값 뽑기
-  const artistName = event?.relatedArtists?.[0]?.name; // 예: 'NewJeans'
-  const startedAtLabel = formatKoreanDate(event?.startedAt); // 2025년 4월 11일
-  const scheduleName = event?.name; // 스케줄 이름
+  const artistName = event?.relatedArtists?.[0]?.name;
+  const startedAtLabel = formatKoreanDate(event?.startedAt);
+  const scheduleName = event?.name;
 
   return (
     <PageWrapper>
@@ -195,7 +194,8 @@ const IndividualRecordPage = () => {
             {eventLoading ? '로딩 중...' : startedAtLabel || '-'}
           </DateText>
           <BackButton>
-            {artistName ? `${artistName} 대표로 돌아가기` : '뒤로가기'}
+            <BackIcon />
+            {artistName ? `${artistName} 데크로 돌아가기` : '뒤로가기'}
           </BackButton>
         </TopSection>
         <TitleText typo="H1">
@@ -231,7 +231,7 @@ const IndividualRecordPage = () => {
           variant="able"
           onClick={() => router.push('/record-add')}
         >
-          기록 추가
+          마이타일 추가
         </AddRecordButton>
       </FilterGroup>
 
@@ -257,7 +257,7 @@ const IndividualRecordPage = () => {
             variant="able"
             onClick={() => router.push('/record-add')}
           >
-            기록 추가
+            마이타일 추가
           </AddRecordButton>
         </EmptyContainer>
       )}
@@ -298,14 +298,16 @@ const DateText = styled(Text)`
 const TitleText = styled(Text)``;
 
 const BackButton = styled.button`
-  background: none;
-  border: none;
   color: var(--gray-500);
   font-size: 14px;
   display: flex;
   align-items: center;
   gap: 4px;
   cursor: pointer;
+  border-radius: 16px;
+  border: 1px solid var(--Primary-400, #a6c6fa);
+  background: var(--Primary-20, #fbfdff);
+  padding: 4px 12px;
 `;
 
 const FilterGroup = styled.div`
