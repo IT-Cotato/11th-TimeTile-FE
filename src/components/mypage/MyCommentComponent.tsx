@@ -1,10 +1,10 @@
-import { Comment } from '@/model/components/Comment';
-import styled from 'styled-components';
-import { Text } from '../atoms/Text';
-import { BasicSymbolLogo } from '@/assets/images/BasicSymbolLogo';
-import { theme } from '@/styles/theme';
-import { MoveRightIcon } from '@/assets/icons/MoveRightIcon';
-import { HeartIcon } from '@/assets/icons/HeartIcon';
+import { Comment } from "@/model/components/Comment";
+import styled from "styled-components";
+import { Text } from "../atoms/Text";
+import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
+import { theme } from "@/styles/theme";
+import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
+import { HeartIcon } from "@/assets/icons/HeartIcon";
 
 interface Props {
   comments: Comment[];
@@ -25,7 +25,7 @@ export const MyCommentComponent = ({ comments, infoText }: Props) => {
         </EmptyText>
       ) : (
         <CommentWrap>
-          {comments.map(comment => (
+          {comments.map((comment) => (
             <CommentList
               key={`${comment.postId}-${comment.artistName}-${comment.content}`}
             >
@@ -60,7 +60,7 @@ export const MyCommentComponent = ({ comments, infoText }: Props) => {
                       <Text
                         typo="Body_3"
                         children={comment.likeCount}
-                        color="heart"
+                        color="Heart"
                       />
                     </IconDiv>
                   </IconWrapper>
