@@ -67,7 +67,6 @@ export default function RolePage() {
     <Container>
       <Wrapper>
         {isLoading ? <div>로딩 중...</div> : renderRoleComponent()}
-        {/* <EditorComponent data={mockGradeData} /> */}
       </Wrapper>
     </Container>
   );

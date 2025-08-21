@@ -75,6 +75,13 @@ export default function Login() {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleLogin();
+    }
+  };
+
   const kakaoLogin = () => {
     localStorage.removeItem("loggedOut");
     window.location.href =
@@ -111,6 +118,7 @@ export default function Login() {
               placeholder="비밀번호를 입력해주세요"
               isError={isError}
               errormsg={errorMsg}
+              onKeyDown={handleKeyDown}
             />
           </LoginArea>
           {!isError && <MarginBox />}
