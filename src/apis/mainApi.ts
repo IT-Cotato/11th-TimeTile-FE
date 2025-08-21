@@ -19,4 +19,18 @@ export const mainApi = {
     });
     return res.data;
   },
+
+  getFollowingArtistsEvents: async (page = 1) => {
+    const res = await axiosApi.get("/home/following-artists/events", {
+      params: { page },
+    });
+    return res.data;
+  },
+
+  getFollowingUsersPosts: async (page = 1) => {
+    const res = await axiosApi.get("/home/following-users/posts", {
+      params: { page },
+    });
+    return res.data;
+  },
 };

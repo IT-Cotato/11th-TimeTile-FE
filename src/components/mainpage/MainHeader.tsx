@@ -4,11 +4,13 @@ import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
 import { MainImage } from "@/assets/images/MainImage";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
+import { MainImage2 } from "@/assets/images/MainImage2";
+import { MainImage3 } from "@/assets/images/MainImage3";
 
 const images = [
   <MainImage key={0} />,
-  <MainImage key={1} />,
-  <MainImage key={2} />,
+  <MainImage2 key={1} />,
+  <MainImage3 key={2} />,
 ];
 
 export const MainHeader = () => {
@@ -29,7 +31,7 @@ export const MainHeader = () => {
           <MoveLeftIcon />
         </ArrowButton>
         <SliderWrapper>
-          <Slider currentIndex={currentIndex}>
+          <Slider currentindex={currentIndex}>
             {images.map((img, idx) => (
               <Slide key={idx}>{img}</Slide>
             ))}
@@ -43,7 +45,7 @@ export const MainHeader = () => {
         </ArrowButton>
       </Container>
       <Bar>
-        <Progress $currentIndex={currentIndex} />
+        <Progress $currentIndex={currentIndex} total={images.length} />
       </Bar>
     </Wrapper>
   );
@@ -70,11 +72,11 @@ const SliderWrapper = styled.div`
   overflow: hidden;
 `;
 
-const Slider = styled.div<{ currentIndex: number }>`
+const Slider = styled.div<{ currentindex: number }>`
   flex: 0 0 100%;
   display: flex;
   transition: transform 0.3s ease-in-out;
-  transform: translateX(${({ currentIndex }) => -currentIndex * 100}%);
+  transform: translateX(${({ currentindex }) => -currentindex * 100}%);
 `;
 
 const Slide = styled.div`
@@ -104,11 +106,11 @@ const Bar = styled.div`
   overflow: hidden;
 `;
 
-const Progress = styled.div<{ $currentIndex: number }>`
+const Progress = styled.div<{ $currentIndex: number; total: number }>`
   position: absolute;
   top: 0;
-  left: ${({ $currentIndex }) => $currentIndex * 50}px;
-  width: 50px;
+  left: ${({ $currentIndex, total }) => ($currentIndex * 100) / total}%;
+  width: ${({ total }) => 100 / total}%;
   height: 3px;
   background: ${theme.palette.gray_800};
   border-radius: 2px;

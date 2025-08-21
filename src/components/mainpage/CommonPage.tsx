@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { mainApi } from "@/apis/mainApi";
 import { theme } from "@/styles/theme";
 import useRelativeTime from "@/hooks/useRelativeTime";
+import { useRouter } from "next/navigation";
 
 type Artist = {
   id: string;
@@ -27,6 +28,7 @@ type Post = {
 };
 
 export const CommonPage = () => {
+  const router = useRouter();
   const [artists, setArtists] = useState<Artist[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedTTTab, setSelectedTTTab] = useState<"HOTTEST" | "LATEST">(
@@ -153,7 +155,10 @@ export const CommonPage = () => {
                   <Text typo="Body_2" color="primary_700">
                     {post.artistName}
                   </Text>
-                  <TextDiv>
+                  <TextDiv
+                    onClick={() => router.push(`/record-post/${post.id}`)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <Text typo="Body_3" color="gray_1000">
                       {post.title}
                     </Text>

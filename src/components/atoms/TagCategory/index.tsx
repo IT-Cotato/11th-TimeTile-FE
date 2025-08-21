@@ -23,7 +23,9 @@ export const TagCategory = ({
         role="button"
         tabIndex={0}
       >
-        <Text typo="Caption_1">{category}</Text>
+        <Text typo="Caption_1" whiteSpace="nowrap">
+          {category}
+        </Text>
       </StyledTag>
     </FlexBox>
   );

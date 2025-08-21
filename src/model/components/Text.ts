@@ -6,4 +6,5 @@ export interface TextPropsType extends HTMLAttributes<HTMLSpanElement> {
   typo: TextType["typo"];
   color?: TextType["color"];
   children: any;
+  whiteSpace?: string;
 }

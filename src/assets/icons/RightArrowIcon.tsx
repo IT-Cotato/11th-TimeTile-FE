@@ -10,9 +10,9 @@ export const RightArrowIcon = () => {
       <path
         d="M1.5 11L6.5 6L1.5 1"
         stroke="#587DC9"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

@@ -18,8 +18,9 @@ export const Text = ({ typo, color, children, ...props }: TextPropsType) => {
 const StyledText = styled.span<{
   typoKey: TextType["typo"];
   colorKey?: TextType["color"];
+  whiteSpace?: string;
 }>`
-  white-space: pre-wrap;
+  white-space: ${({ whiteSpace }) => whiteSpace || "pre-wrap"};
   ${({ typoKey }) => theme.typo[typoKey]};
   color: ${({ colorKey }) => {
     return colorKey && theme.palette[colorKey];
