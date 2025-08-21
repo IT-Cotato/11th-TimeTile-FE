@@ -27,7 +27,7 @@ const RecordCardSmall = ({
       <Bottom>
         <IconGroup>
           <HeartIcon />
-          <Text typo="Body_3" color="heart">
+          <Text typo="Body_3" color="Heart">
             {likes}
           </Text>
         </IconGroup>

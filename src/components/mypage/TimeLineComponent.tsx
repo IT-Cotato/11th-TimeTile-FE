@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import styled from "styled-components";
-import { theme } from "@/styles/theme";
-import { Text } from "../atoms/Text";
-import { ChatIcon } from "@/assets/icons/ChatIcon";
-import { HeartIcon } from "@/assets/icons/HeartIcon";
-import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
-import { Post } from "@/model/components/Post";
-import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
-import { ScrapIcon } from "@/assets/icons/ScrapIcon";
-import { useRouter } from "next/navigation";
+import styled from 'styled-components';
+import { theme } from '@/styles/theme';
+import { Text } from '../atoms/Text';
+import { ChatIcon } from '@/assets/icons/ChatIcon';
+import { HeartIcon } from '@/assets/icons/HeartIcon';
+import { MoveRightIcon } from '@/assets/icons/MoveRightIcon';
+import { Post } from '@/model/components/Post';
+import { BasicSymbolLogo } from '@/assets/images/BasicSymbolLogo';
+import { ScrapIcon } from '@/assets/icons/ScrapIcon';
+import { useRouter } from 'next/navigation';
 
 interface TimeLineComponentProps {
   posts: Post[];
@@ -32,7 +32,7 @@ export const TimeLineComponent = ({
 
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
-    return date.toISOString().slice(0, 10).replace(/-/g, ".");
+    return date.toISOString().slice(0, 10).replace(/-/g, '.');
   };
 
   const isEmpty = posts.length === 0;
@@ -43,7 +43,7 @@ export const TimeLineComponent = ({
         <Title>
           <Text typo="H3" children={titleText} />
           {showViewMore && (
-            <CursorDiv onClick={() => router.push("/users/timeline")}>
+            <CursorDiv onClick={() => router.push('/users/timeline')}>
               <MoveRightIcon />
             </CursorDiv>
           )}
@@ -58,7 +58,7 @@ export const TimeLineComponent = ({
         </EmptyText>
       ) : (
         <TimeLineWrap>
-          {posts.map((post) => {
+          {posts.map(post => {
             const hasImage = !!post.mainImageUrl;
             return (
               <TimeLineCard key={post.postId}>
@@ -73,7 +73,7 @@ export const TimeLineComponent = ({
                     </Text>
                   </TextWrapper>
                   {showScrapIcon && post.isScrapped && (
-                    <div style={{ cursor: "default" }}>
+                    <div style={{ cursor: 'default' }}>
                       <ScrapIcon />
                     </div>
                   )}
@@ -219,7 +219,7 @@ const PostDiv = styled.div`
 `;
 
 const Wrap = styled.div<{ $hasImage: boolean }>`
-  width: ${({ $hasImage }) => ($hasImage ? "235px" : "100%")};
+  width: ${({ $hasImage }) => ($hasImage ? '235px' : '100%')};
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 6;

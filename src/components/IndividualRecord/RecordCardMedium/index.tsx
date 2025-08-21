@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Text } from '@/components/atoms/Text';
 import { HeartIcon } from '@/assets/icons/HeartIcon';
 import { ChatIcon } from '@/assets/icons/ChatIcon';
-import { RightIcon } from '@/assets/icons/RightIcon';
+import { RightArrowIcon } from '@/assets/icons/RightArrowIcon';
 
 interface RecordCardMediumProps {
   postId: number;
@@ -50,7 +50,7 @@ const RecordCardMedium = ({
       <BottomRow>
         <Reaction>
           <HeartIcon />
-          <Text typo="Body_3" color="heart">
+          <Text typo="Body_3" color="Heart">
             {likes}
           </Text>
         </Reaction>
@@ -64,7 +64,7 @@ const RecordCardMedium = ({
           <Text typo="Caption_2" color="primary_700">
             원글보기
           </Text>
-          <RightIcon />
+          <RightArrowIcon />
         </ViewMore>
       </BottomRow>
     </Wrapper>
@@ -155,4 +155,5 @@ const ViewMore = styled.div`
   display: flex;
   align-items: center;
   cursor: pointer;
+  gap: 8px;
 `;

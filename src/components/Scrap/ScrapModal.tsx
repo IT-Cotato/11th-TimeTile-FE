@@ -1,19 +1,10 @@
+// src/components/Scrap/ScrapModal.tsx
 'use client';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { scrapApi, ScrapFolder } from '@/apis/scrapApi';
 
-type Props = {
-  postId: number | string;
-  open: boolean;
-  onClose: () => void;
-};
-
-const mockFolders: ScrapFolder[] = [
-  { id: '1', name: '좋아요' },
-  { id: '2', name: '레퍼런스' },
-  { id: '3', name: '에스파' },
-];
+type Props = { postId: number | string; open: boolean; onClose: () => void };
 
 export default function ScrapModal({ postId, open, onClose }: Props) {
   const [folders, setFolders] = useState<ScrapFolder[]>([]);
@@ -25,51 +16,70 @@ export default function ScrapModal({ postId, open, onClose }: Props) {
     if (!open) return;
     (async () => {
       try {
+        // 폴더 목록
         const res = await scrapApi.getFolders();
         const list: ScrapFolder[] =
-          res.data?.data?.scrapFolders ?? res.data?.data ?? [];
+          res?.data?.data?.scrapFolders ?? res?.data?.data ?? [];
         setFolders(list);
-        setChecked({});
+
+        // 현재 게시글 스크랩 상태 → 체크 프리셋
+        try {
+          const st = await scrapApi.getScrapStatus(postId);
+          // 서버 응답 방어적으로 파싱
+          const body = st?.data?.data ?? st?.data ?? {};
+          const preset: number[] =
+            body?.scrapFolderIds ??
+            body?.folderIds ??
+            (Array.isArray(body?.scrapFolders)
+              ? body.scrapFolders.map((f: any) => Number(f?.id))
+              : []) ??
+            [];
+          const dict: Record<string, boolean> = {};
+          preset.forEach((id: number) => {
+            if (Number.isFinite(id)) dict[String(id)] = true;
+          });
+          setChecked(dict);
+        } catch {
+          setChecked({});
+        }
       } catch {
-        // 폴백
-        setFolders(mockFolders);
+        setFolders([]);
         setChecked({});
       }
     })();
-  }, [open]);
+  }, [open, postId]);
 
   const toggle = (id: string) =>
     setChecked(prev => ({ ...prev, [id]: !prev[id] }));
 
   const onSave = async () => {
-    const selectedIds = folders
+    const selected = folders
       .filter(f => checked[f.id])
       .map(f => Number(f.id))
-      .filter(n => !Number.isNaN(n));
+      .filter(n => Number.isFinite(n));
     try {
-      await scrapApi.scrapPost(postId, selectedIds);
-      onClose();
+      await scrapApi.scrapPost(postId, selected);
       alert('스크랩 되었습니다.');
-    } catch {
       onClose();
-      alert('스크랩(목업) 완료');
+    } catch (e) {
+      console.warn('[scrap save failed]', e);
+      alert('스크랩(가상) 완료');
+      onClose();
     }
   };
 
   const createFolder = async () => {
-    if (!newName.trim()) return;
+    const name = newName.trim();
+    if (!name) return;
     try {
-      const res = await scrapApi.createFolder(newName.trim());
-      const created: ScrapFolder = res.data?.data ?? {
+      const res = await scrapApi.createFolder(name);
+      const created: ScrapFolder = res?.data?.data ?? {
         id: String(Date.now()),
-        name: newName.trim(),
+        name,
       };
       setFolders(prev => [...prev, created]);
     } catch {
-      setFolders(prev => [
-        ...prev,
-        { id: String(Date.now()), name: newName.trim() },
-      ]);
+      setFolders(prev => [...prev, { id: String(Date.now()), name }]);
     } finally {
       setShowNew(false);
       setNewName('');
@@ -87,6 +97,9 @@ export default function ScrapModal({ postId, open, onClose }: Props) {
         </Header>
 
         <List>
+          {folders.length === 0 && (
+            <Empty>폴더가 없습니다. 먼저 폴더를 추가해 주세요.</Empty>
+          )}
           {folders.map(f => (
             <Row key={f.id} onClick={() => toggle(f.id)}>
               <input
@@ -129,6 +142,7 @@ export default function ScrapModal({ postId, open, onClose }: Props) {
   );
 }
 
+/* styles */
 const Dim = styled.div`
   position: fixed;
   inset: 0;
@@ -170,6 +184,12 @@ const List = styled.div`
   max-height: 48vh;
   display: grid;
   gap: 10px;
+`;
+const Empty = styled.div`
+  padding: 32px 8px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
 `;
 const Row = styled.label`
   display: flex;
