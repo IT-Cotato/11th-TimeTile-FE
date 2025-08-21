@@ -148,8 +148,8 @@ export default function LoggedInPage() {
   // 팔로잉 아티스트 조회
   useEffect(() => {
     const fetchFollowingArtists = async () => {
-      //const res = await usersApi.getFollowingArtists();
-      const res = MOCK_ARTIST[0];
+      const res = await usersApi.getFollowingArtists();
+      //const res = MOCK_ARTIST[0];
       setFollowingArtists(res.data.followers);
     };
     fetchFollowingArtists();
@@ -159,8 +159,8 @@ export default function LoggedInPage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        //const data = await mainApi.getFollowingArtistsEvents(artistPage);
-        const data = MOCK_DATA[0];
+        const data = await mainApi.getFollowingArtistsEvents(artistPage);
+        //const data = MOCK_DATA[0];
         if (data?.data?.events) {
           setArtistEvents(data.data.events);
           setArtistHasNext(data.data.hasNext);
