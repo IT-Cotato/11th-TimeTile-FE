@@ -67,7 +67,7 @@ export interface CommentsSectionProps {
 // replies: replyId, replierId, replierNickname, replierProfileImageUrl, updatedAt, likeCount
 const mapReply = (r: any): Reply => ({
   id: Number(r?.replyId ?? r?.id),
-  author: r?.replierNickname ?? r?.author ?? '익명',
+  author: r?.replierNickname ?? r?.author,
   avatarUrl: r?.replierProfileImageUrl ?? '/profile-default.png',
   ownerId: Number(r?.replierId ?? 0),
   content: r?.content ?? '',
@@ -81,7 +81,7 @@ const mapReply = (r: any): Reply => ({
 // comments: commentId, commenterId, commenterNickname, commenterProfileImageUrl, updatedAt, likeCount, replies:[]
 const mapComment = (c: any): Comment => ({
   id: Number(c?.commentId ?? c?.id),
-  author: c?.commenterNickname ?? c?.author ?? '익명',
+  author: c?.commenterNickname ?? c?.author,
   avatarUrl: c?.commenterProfileImageUrl ?? '/profile-default.png',
   ownerId: Number(c?.commenterId ?? 0),
   content: c?.content ?? '',
@@ -114,6 +114,14 @@ const getMyId = (): number | undefined => {
   }
 };
 
+const normalizeServerComments = (raw: any[]): Comment[] => {
+  const mapped = raw.map(mapComment);
+  const replyIds = new Set<number>();
+  mapped.forEach(c => c.replies?.forEach(r => replyIds.add(r.id)));
+  // replies에 등장한 id는 top-level에서 제거
+  return mapped.filter(c => !replyIds.has(c.id));
+};
+
 /* ========= Component ========= */
 const CommentsSection: React.FC<CommentsSectionProps> = ({
   postId,
@@ -132,21 +140,6 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
   const [comments, setComments] = React.useState<Comment[]>(() =>
     (commentsData ?? []).map(map => ({ ...map })),
   );
-
-  /* 초기 목록 GET: { data: { comments: [...] } } */
-  React.useEffect(() => {
-    if (!autoFetch || commentsData.length > 0) return;
-    (async () => {
-      try {
-        const res = await commentsApi.get(postId);
-        const body = unwrap(res);
-        const list = Array.isArray(body?.comments) ? body.comments : [];
-        setComments(list.map(mapComment));
-      } catch (e) {
-        console.warn('[comments get error]', e);
-      }
-    })();
-  }, [postId, autoFetch, commentsData.length]);
 
   /* 카운트 동기화 */
   React.useEffect(() => {
@@ -180,13 +173,32 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
     content: string,
   ): Promise<Reply> => {
     const res = await commentsApi.create(postId, {
-      parentId: commentId,
+      parentId: Number(commentId),
       content,
     });
     const r = unwrap(res);
     const created = r?.reply ?? r?.data ?? r;
     return mapReply(created);
   };
+
+  const refreshComments = React.useCallback(async () => {
+    try {
+      const res = await commentsApi.get(postId);
+      const u: any = unwrap?.(res) ?? res;
+      const list = u?.data?.comments ?? u?.comments ?? [];
+      const normalized = normalizeServerComments(
+        Array.isArray(list) ? list : [],
+      );
+      +setComments(normalized);
+    } catch (e) {
+      console.warn('[comments refresh error]', e);
+    }
+  }, [postId]);
+
+  React.useEffect(() => {
+    if (!autoFetch || commentsData.length > 0) return;
+    refreshComments();
+  }, [refreshComments, autoFetch, commentsData.length]);
 
   /* 좋아요 */
   const toggleCommentLike = async (commentId: number) => {
@@ -319,6 +331,13 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
     }
   };
 
+  const removeOnServer = async (
+    postId: number | string,
+    commentOrReplyId: number,
+  ) => {
+    await commentsApi.remove(postId, commentOrReplyId);
+  };
+
   const startEditReply = (cid: number, rid: number) =>
     setComments(prev =>
       prev.map(c =>
@@ -395,6 +414,18 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
   /* 소유자 체크 */
   const ownedByMe = (ownerId?: number) =>
     me !== undefined && ownerId !== undefined && Number(me) === Number(ownerId);
+
+  // 신고 모달 상태
+  const [reportOpen, setReportOpen] = React.useState(false);
+  const [reportText, setReportText] = React.useState('');
+  const maxReportLen = 200;
+
+  // 어떤 것을 신고하는지 구분: comment / reply
+  const [reportTarget, setReportTarget] = React.useState<
+    | { type: 'comment'; id: number }
+    | { type: 'reply'; cid: number; rid: number }
+    | null
+  >(null);
 
   /* ====== 대댓글 등록 핸들러 (ReplySubmit 버튼용) ====== */
   const handleSubmitReply = async (cid: number) => {
@@ -493,15 +524,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
               const created = await (onCreateComment ?? defaultCreateComment)(
                 content,
               );
-              if (created) {
-                setComments(prev =>
-                  prev.map(c =>
-                    c.id === optimistic.id
-                      ? { ...created, replyOpen: false, replyInput: '' }
-                      : c,
-                  ),
-                );
-              }
+              await refreshComments();
             } catch {
               setComments(prev => prev.filter(c => c.id !== optimistic.id));
               setCommentText(content);
@@ -603,7 +626,12 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
                   onChange={e => changeReplyInput(c.id, e.target.value)}
                   maxLength={300}
                 />
-                <ReplySubmit onClick={() => handleSubmitReply(c.id)}>
+                <ReplySubmit
+                  onClick={async () => {
+                    await handleSubmitReply(c.id); // 대댓글 생성
+                    await refreshComments(); // ✅ 서버 값으로 즉시 새로고침
+                  }}
+                >
                   등록
                 </ReplySubmit>
               </ReplyRow>
@@ -765,8 +793,6 @@ const Item = styled.div`
   flex-direction: column;
   gap: 10px;
   background: #fff;
-  border: 1px solid #e6efff;
-  border-radius: 16px;
   padding: 16px;
 `;
 
@@ -815,7 +841,6 @@ const CapsuleBtn = styled.button`
     display: block;
   }
   &[data-active='true'] {
-    color: #ef4444;
     border-color: #ef4444;
     background: #fff5f5;
   }
@@ -900,7 +925,7 @@ const ReplyInput = styled.textarea`
 const ReplySubmit = styled.button`
   padding: 10px 13px;
   border-radius: 10px;
-  border: 1px solid #80a9f2;
+  border: none;
   background: #e9f1ff;
   color: #1f3e9a;
   font-weight: 600;
