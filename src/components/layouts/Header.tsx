@@ -44,7 +44,7 @@ export const Header = () => {
       await authApi.logout();
       setUserProfile(null);
       localStorage.setItem("loggedOut", "true");
-      router.push("/");
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
       alert("로그아웃 중 오류가 발생했습니다.");

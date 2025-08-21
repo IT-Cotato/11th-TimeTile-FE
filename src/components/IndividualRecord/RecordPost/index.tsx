@@ -1,4 +1,3 @@
-// src/components/IndividualRecord/RecordPost/index.tsx
 'use client';
 
 import React, { useRef, useState } from 'react';
@@ -82,10 +81,14 @@ const RecordPost = ({
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
-  const [reportText, setReportText] = useState('');
+  const [reportText, setReportText] = useState("");
   const maxReportLen = 200;
 
   const owned = (currentNickname ?? '') === (username ?? '');
+  // 댓글 카운트(CommentsSection과 동기화)
+  const [commentCount, setCommentCount] = useState<number>(
+    commentsData.length || comments || 0
+  );
 
   // 유틸
   const pick = (k: string) =>
@@ -94,6 +97,12 @@ const RecordPost = ({
   // ✅ 현재 로그인 유저 닉네임/프로필 (댓글 낙관적 렌더용)
   const currentUserName = pick('commenterNickname');
   const currentUserAvatarUrl = pick('commenterProfileImageUrl');
+
+  // 이미지 스크롤
+  const scrollLeft = () =>
+    imageGridRef.current?.scrollBy({ left: -200, behavior: "smooth" });
+  const scrollRight = () =>
+    imageGridRef.current?.scrollBy({ left: 200, behavior: "smooth" });
 
   // 날짜 포맷
   const formatDateYMD = (iso?: string) => {
@@ -157,10 +166,10 @@ const RecordPost = ({
 
   // 삭제
   const handleDelete = async () => {
-    if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
+    if (!confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
     try {
       await postApi.deletePost(postId);
-      alert('삭제되었습니다.');
+      alert("삭제되었습니다.");
       onDeleteSuccess ? onDeleteSuccess() : router.back();
     } catch (e: any) {
       alert(e?.response?.data?.message || e?.message || '삭제 실패');
@@ -218,12 +227,12 @@ const RecordPost = ({
   // 신고
   const handleReport = async () => {
     if (!reportText.trim()) {
-      alert('신고 사유를 입력해주세요.');
+      alert("신고 사유를 입력해주세요.");
       return;
     }
     alert('신고가 접수되었습니다.');
     setReportOpen(false);
-    setReportText('');
+    setReportText("");
     setMenuOpen(false);
   };
 
@@ -246,16 +255,16 @@ const RecordPost = ({
         </Left>
 
         <Right>
-          <MoreBtn onClick={() => setMenuOpen(v => !v)} aria-label="더보기">
+          <MoreBtn onClick={() => setMenuOpen((v) => !v)} aria-label="더보기">
             <MoreIcon />
           </MoreBtn>
           {menuOpen && (
-            <MenuCard onClick={e => e.stopPropagation()}>
+            <MenuCard onClick={(e) => e.stopPropagation()}>
               {owned ? (
                 <>
                   <MenuItem
                     onClick={() => {
-                      alert('수정하기는 준비 중입니다.');
+                      alert("수정하기는 준비 중입니다.");
                       setMenuOpen(false);
                     }}
                   >
@@ -363,10 +372,11 @@ const RecordPost = ({
           <CloseBtn onClick={closeImageViewer}>✕</CloseBtn>
           <NavBtn
             $left
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               setCurrentImageIndex(
                 prev => (prev - 1 + imgs.length) % imgs.length,
+
               );
             }}
           >
@@ -374,7 +384,7 @@ const RecordPost = ({
           </NavBtn>
           <NavBtn
             $right
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               setCurrentImageIndex(prev => (prev + 1) % imgs.length);
             }}
@@ -382,7 +392,7 @@ const RecordPost = ({
             ›
           </NavBtn>
 
-          <ViewerContent onClick={e => e.stopPropagation()}>
+          <ViewerContent onClick={(e) => e.stopPropagation()}>
             <ViewerImage
               src={imgs[currentImageIndex]}
               alt={`image-${currentImageIndex}`}
@@ -393,12 +403,12 @@ const RecordPost = ({
 
       {reportOpen && (
         <ReportBackdrop onClick={() => setReportOpen(false)}>
-          <ReportCard onClick={e => e.stopPropagation()}>
+          <ReportCard onClick={(e) => e.stopPropagation()}>
             <Text typo="H3">신고 사유를 작성해주세요.</Text>
             <ReportTextarea
               value={reportText}
               maxLength={maxReportLen}
-              onChange={e => setReportText(e.target.value)}
+              onChange={(e) => setReportText(e.target.value)}
               placeholder="신고 사유를 입력해주세요."
             />
             <ReportFooter>
@@ -496,7 +506,7 @@ const MenuCard = styled.div`
   overflow: hidden;
 `;
 const MenuItem = styled.button.withConfig({
-  shouldForwardProp: p => p !== '$danger',
+  shouldForwardProp: (p) => p !== "$danger",
 })<{ $danger?: boolean }>`
   width: 100%;
   text-align: left;
@@ -504,7 +514,7 @@ const MenuItem = styled.button.withConfig({
   background: #fff;
   border: none;
   cursor: pointer;
-  color: ${({ $danger }) => ($danger ? '#ef4444' : '#111827')};
+  color: ${({ $danger }) => ($danger ? "#ef4444" : "#111827")};
   &:hover {
     background: #f9fafb;
   }
@@ -561,14 +571,14 @@ const ArrowButton = styled.button`
   cursor: pointer;
   padding: 6px;
 `;
-const BlurOverlay = styled.div<{ position: 'left' | 'right' }>`
+const BlurOverlay = styled.div<{ position: "left" | "right" }>`
   position: absolute;
   top: 0;
   bottom: 0;
   width: 40px;
   ${({ position }) => position}: 0;
   background: linear-gradient(
-    to ${({ position }) => (position === 'left' ? 'right' : 'left')},
+    to ${({ position }) => (position === "left" ? "right" : "left")},
     white 0%,
     transparent 100%
   );
@@ -618,7 +628,7 @@ const CloseBtn = styled.button`
   cursor: pointer;
 `;
 const NavBtn = styled.button.withConfig({
-  shouldForwardProp: p => p !== '$left' && p !== '$right',
+  shouldForwardProp: (p) => p !== "$left" && p !== "$right",
 })<{ $left?: boolean; $right?: boolean }>`
   position: fixed;
   top: 50%;
