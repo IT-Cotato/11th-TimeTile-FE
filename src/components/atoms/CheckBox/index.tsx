@@ -71,4 +71,5 @@ const Body = styled.div`
   border-radius: 10px;
   padding: 12px;
   margin-left: 26px;
+  overflow-y: auto;
 `;

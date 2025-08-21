@@ -19,6 +19,7 @@ interface UserProfileProps {
     visibility: string;
     isFollowing: boolean;
   }) => void;
+  onError?: () => void;
 }
 
 interface UserProfileData {
@@ -31,11 +32,17 @@ interface UserProfileData {
   followerCount: number;
   postCount: number;
   introduction: string;
+  isFollowing: boolean;
 }
 
 const song = "투모로우바이투게더 - tommorow xjdjdjdjjaja";
 
-export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
+export const UserProfile = ({
+  targetId,
+  onProfileLoad,
+  onError,
+  userExists = true,
+}: UserProfileProps & { userExists?: boolean }) => {
   const [isFollowingModalOpen, setIsFollowingModalOpen] = useState(false);
   const [isFollowerModalOpen, setIsFollowerModalOpen] = useState(false);
   const [profile, setProfile] = useState<UserProfileData | null>(null);
@@ -43,37 +50,19 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
     "follow" | "following" | "unfollow"
   >("follow");
 
-  // useEffect(() => {
-  //   const MOCK_PROFILE = {
-  //     id: targetId,
-  //     nickname: "비공개유저",
-  //     profileImageUrl:
-  //       "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png",
-  //     role: "EDITOR" as UserRole,
-  //     visibility: "PRIVATE",
-  //     followingCount: 3,
-  //     followerCount: 1,
-  //     postCount: 0,
-  //     introduction: "비공개 계정입니다.",
-  //     isFollowing: false,
-  //   };
-
-  //   setProfile(MOCK_PROFILE);
-
-  //   if (onProfileLoad) {
-  //     onProfileLoad({
-  //       name: MOCK_PROFILE.nickname,
-  //       visibility: MOCK_PROFILE.visibility,
-  //       isFollowing: MOCK_PROFILE.isFollowing,
-  //     });
-  //   }
-  // }, [targetId]);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const data = await usersApi.getUserProfileById(targetId);
+        const data: UserProfileData = await usersApi.getUserProfileById(
+          targetId
+        );
         setProfile(data);
+        setFollowVariant(data.isFollowing ? "following" : "follow");
+        setFollowerCount(data.followerCount);
+        setFollowingCount(data.followingCount);
 
         if (onProfileLoad) {
           onProfileLoad({
@@ -84,17 +73,21 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
         }
       } catch (error) {
         console.error("프로필 불러오기 실패", error);
+        if (onError) onError();
       }
     };
     fetchProfile();
-  }, [targetId, onProfileLoad]);
-
-  if (!profile) return <div>로딩 중...</div>;
+  }, [targetId, onProfileLoad, onError]);
 
   const handleFollowClick = async () => {
     if (followVariant === "follow") {
-      await usersApi.followUser(targetId);
-      setFollowVariant("following");
+      try {
+        await usersApi.followUser(targetId);
+        setFollowVariant("following");
+        setFollowerCount((prevCount) => prevCount + 1);
+      } catch (error) {
+        console.error("팔로우 실패", error);
+      }
     } else if (followVariant === "following") {
       setFollowVariant("unfollow");
     } else if (followVariant === "unfollow") {
@@ -105,10 +98,14 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
     try {
       await usersApi.unfollowUser(targetId);
       setFollowVariant("follow");
+      setFollowerCount((prevCount) => prevCount - 1);
     } catch (error) {
       console.error("언팔로우 실패", error);
     }
   };
+
+  if (!userExists) return null;
+  if (!profile) return <div>로딩 중...</div>;
 
   return (
     <>
@@ -128,14 +125,16 @@ export const UserProfile = ({ targetId, onProfileLoad }: UserProfileProps) => {
           <Stats>
             <Part onClick={() => setIsFollowingModalOpen(true)}>
               <Text typo="Caption_1">팔로잉</Text>
-              <Text typo="Caption_1">{profile.followingCount}</Text>
+              <Text typo="Caption_1">{followingCount}</Text>
             </Part>
             <Part onClick={() => setIsFollowerModalOpen(true)}>
               <Text typo="Caption_1">팔로워</Text>
-              <Text typo="Caption_1">{profile.followerCount}</Text>
+              <Text typo="Caption_1">{followerCount}</Text>
             </Part>
           </Stats>
-          <FlexDiv>{/* <Tag variant="song">{song}</Tag> */}</FlexDiv>
+          {/* <FlexDiv>
+            <Tag variant="song">{song}</Tag>
+          </FlexDiv> */}
           <Intro>
             <Text typo="Body_3">{profile.introduction}</Text>
           </Intro>
@@ -200,6 +199,7 @@ const Info = styled.div`
 const Part = styled.div`
   display: flex;
   gap: 8px;
+  cursor: pointer;
 `;
 
 const FlexDiv = styled.div`

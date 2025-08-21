@@ -7,6 +7,9 @@ import { Text } from "@/components/atoms/Text";
 import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { theme } from "@/styles/theme";
 import { FlexBox } from "@/components/layouts/FlexBox";
+import { useRouter } from "next/navigation";
+import { useAtomValue } from "jotai";
+import { userProfileAtom } from "@/store/UserProfileAtom";
 
 interface Follower {
   id: string;
@@ -27,8 +30,17 @@ export const FollowerModal: React.FC<FollowerModalProps> = ({
   const [lastId, setLastId] = useState<number | undefined>(undefined);
   const [hasNext, setHasNext] = useState(true);
   const [loading, setLoading] = useState(false);
-
+  const myProfile = useAtomValue(userProfileAtom);
   const contentRef = useRef<HTMLDivElement>(null);
+  const hasFetched = useRef(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!hasFetched.current) {
+      fetchFollowers();
+      hasFetched.current = true;
+    }
+  }, []);
 
   const fetchFollowers = async () => {
     if (!hasNext || loading) return;
@@ -40,7 +52,13 @@ export const FollowerModal: React.FC<FollowerModalProps> = ({
 
       if (res.data.isSuccess) {
         const newFollowers = res.data.data.followers;
-        setFollowerList((prev) => [...prev, ...newFollowers]);
+        setFollowerList((prev) => {
+          const existingIds = new Set(prev.map((f) => f.id));
+          const filteredNew = newFollowers.filter(
+            (f: Follower) => !existingIds.has(f.id)
+          );
+          return [...prev, ...filteredNew];
+        });
         setHasNext(res.data.data.hasNext);
         setLastId(res.data.data.lastFollowId);
       }
@@ -93,7 +111,18 @@ export const FollowerModal: React.FC<FollowerModalProps> = ({
           </LineDiv>
           <GridContainer>
             {followerList.map(({ id, name, profileImageUrl }) => (
-              <FollowerItem key={id}>
+              <FollowerItem
+                key={id}
+                onClick={() => {
+                  if (myProfile && myProfile.id === Number(id)) {
+                    router.push("/users/mypage");
+                  } else {
+                    router.push(`/users/${id}`);
+                  }
+                  onClose();
+                }}
+                style={{ cursor: "pointer" }}
+              >
                 <ProfileImg src={profileImageUrl} alt={name} />
                 <Name>
                   <Text typo="H4" color="gray_1000">
@@ -171,7 +200,7 @@ const CloseButton = styled.div`
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  column-gap: 32px;
+  column-gap: 24px;
   row-gap: 24px;
   margin-top: 32px;
 `;

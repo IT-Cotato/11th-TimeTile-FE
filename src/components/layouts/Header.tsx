@@ -10,6 +10,7 @@ import { AlarmIcon } from "@/assets/icons/AlarmIcon";
 import { theme } from "@/styles/theme";
 import { SearchIcon } from "@/assets/icons/SearchIcon";
 import { Text } from "../atoms/Text";
+import { authApi } from "@/apis/authApi";
 
 export const Header = () => {
   const [userProfile, setUserProfile] = useAtom(userProfileAtom);
@@ -38,9 +39,16 @@ export const Header = () => {
     };
   }, [isProfileModalOpen]);
 
-  const handleLogout = () => {
-    setUserProfile(null);
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+      setUserProfile(null);
+      localStorage.setItem("loggedOut", "true");
+      router.push("/");
+    } catch (err) {
+      console.error(err);
+      alert("로그아웃 중 오류가 발생했습니다.");
+    }
   };
 
   return (

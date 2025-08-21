@@ -22,8 +22,8 @@ interface TimeLineComponentProps {
 
 export const TimeLineComponent = ({
   posts,
-  titleText = '내 타임라인',
-  infoText = '타임라인이 없습니다.',
+  titleText = "마이타일 모아보기",
+  infoText = "마이타일이 없습니다.",
   showTitle = true,
   showScrapIcon = false,
   showViewMore = true,
@@ -97,7 +97,7 @@ export const TimeLineComponent = ({
                         <Text
                           typo="Body_3"
                           children={post.likeCount}
-                          color="Heart"
+                          color="heart"
                         />
                       </IconDiv>
                       <IconDiv>
@@ -135,7 +135,6 @@ export const TimeLineComponent = ({
   );
 };
 
-// Styled Components
 const Wrapper = styled.div`
   width: 100%;
 `;
