@@ -74,8 +74,8 @@ const CheckTimeTile = styled.div`
   align-items: center;
   gap: 12px;
   border-radius: 16px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
 `;
 
 const Divider = styled.div`

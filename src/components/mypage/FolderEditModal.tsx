@@ -94,8 +94,8 @@ const ModalBox = styled.div`
   gap: 10px;
   z-index: 1000;
   border-radius: 20px;
-  border: 1px solid var(--Primary-400, #a6c6fa);
-  background: var(--Primary-50, #f7faff);
+  border: 1px solid ${theme.palette.primary_400};
+  background: ${theme.palette.primary_50};
   box-shadow: 0 4px 16px 0 rgba(159, 198, 255, 0.25);
 `;
 
@@ -109,9 +109,4 @@ const Content = styled.div`
 const HeadDiv = styled.div`
   display: flex;
   justify-content: space-between;
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
 `;

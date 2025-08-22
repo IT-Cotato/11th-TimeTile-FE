@@ -107,7 +107,7 @@ const TabButton = styled.button<{ $isSelected: boolean }>`
       right: 0;
       height: 5px;
       border-radius: 5px 5px 0 0;
-      background: var(--Primary-400, #A6C6FA);
+      background: ${theme.palette.primary_400};
     }
   `}
 `;

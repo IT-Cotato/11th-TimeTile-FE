@@ -239,8 +239,8 @@ const ProfileModal = styled.div`
   flex-direction: column;
   align-items: center;
   border-radius: 20px;
-  border: 1px solid var(--Primary-400, #a6c6fa);
-  background: var(--Primary-50, #f7faff);
+  border: 1px solid ${theme.palette.primary_400};
+  background: ${theme.palette.primary_50};
   box-shadow: 0 4px 16px 0 rgba(159, 198, 255, 0.25);
 `;
 

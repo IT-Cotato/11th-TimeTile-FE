@@ -185,8 +185,8 @@ const Container = styled.div<{ $variant?: "deck" | "notDeck" }>`
   align-items: flex-start;
   gap: ${({ $variant }) => ($variant === "deck" ? "24px" : "20px")};
   border-radius: 16px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
 `;
 
 const Wrapper = styled.div<{ $variant?: "deck" | "notDeck" }>`
