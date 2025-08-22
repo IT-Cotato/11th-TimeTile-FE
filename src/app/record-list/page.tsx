@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import RecordCardMedium from "@/components/IndividualRecord/RecordCardMedium";
-import { Text } from "@/components/atoms/Text";
-import { AddRecordButton as RawAddRecordButton } from "@/components/atoms/AddRecordButton";
-import { postApi } from "@/apis/postApi";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { BackIcon } from "@/assets/icons/BackIcon";
-import { theme } from "@/styles/theme";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import RecordCardMedium from '@/components/IndividualRecord/RecordCardMedium';
+import { Text } from '@/components/atoms/Text';
+import { AddRecordButton as RawAddRecordButton } from '@/components/atoms/AddRecordButton';
+import { postApi } from '@/apis/postApi';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { BackIcon } from '@/assets/icons/BackIcon';
+import { theme } from '@/styles/theme';
 
 interface EventData {
   name: string;
@@ -37,53 +37,52 @@ interface RecordItem {
 
 // 목데이터
 const MOCK_EVENT: EventData = {
-  name: "Legacy Directives Orchestrator", // 스케줄 이름
+  name: '연세대학교 AKARAKA 축제 무대', // 스케줄 이름
   description:
-    "Provident delinquo tener curiositas volva caecus tracto denego.",
-  source: "https://jagged-subexpression.us/",
-  activityTypes: ["콘서트/팬미팅"],
+    'Provident delinquo tener curiositas volva caecus tracto denego.',
+  source: 'https://jagged-subexpression.us/',
+  activityTypes: ['콘서트/팬미팅'],
   relatedEvents: [
     {
-      groupId: "781a8ce4-3897-409b-8500-5a9c084f68ec",
-      name: "Prem Customer Division Associate",
+      groupId: 'df596e5b-f827-49e7-8555-101e26267d9f',
+      name: 'Prem Customer Division Associate',
     },
-    { groupId: "8ba5b9bf-e82c-4bac-bdbe-ec0e53fc02d2", name: "Faker 1112" },
+    { groupId: 'df596e5b-f827-49e7-8555-101e26267d9f', name: 'Faker 1112' },
   ],
   relatedArtists: [
     {
-      id: "6HvZYsbFfjnjFrWF950C9d",
-      name: "NewJeans",
+      id: '6HvZYsbFfjnjFrWF950C9d',
+      name: 'NewJeans',
       imageUrl:
-        "https://i.scdn.co/image/ab6761610000e5eb80668ba2b15094d083780ea9",
+        'https://i.scdn.co/image/ab6761610000e5eb80668ba2b15094d083780ea9',
     },
     {
-      id: "6YVMFz59CuY7ngCxTxjpxE",
-      name: "aespa",
+      id: '6YVMFz59CuY7ngCxTxjpxE',
+      name: 'aespa',
       imageUrl:
-        "https://i.scdn.co/image/ab6761610000e5eb927f1260251e32135287e032",
+        'https://i.scdn.co/image/ab6761610000e5eb927f1260251e32135287e032',
     },
   ],
-  relatedMaterials: ["https://miserly-gallery.info"],
-  startedAt: "2025-04-11", // 날짜는 이 값으로 표시
-  endedAt: "2025-04-07",
+  relatedMaterials: ['https://miserly-gallery.info'],
+  startedAt: '2022-04-11', // 날짜는 이 값으로 표시
+  endedAt: '2025-04-07',
 };
 
 const IndividualRecordPage = () => {
   const router = useRouter();
 
   const [records, setRecords] = useState<RecordItem[]>([]);
-  const [selected, setSelected] = useState<"LATEST" | "HOTTEST">("LATEST");
+  const [selected, setSelected] = useState<'LATEST' | 'HOTTEST'>('LATEST');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const groupId = "0da701ad-79e3-4309-9167-16172dfc0b04";
+  const groupId = 'df596e5b-f827-49e7-8555-101e26267d9f';
 
   const [event, setEvent] = useState<EventData | null>(null);
   const [eventLoading, setEventLoading] = useState(true);
 
-  // '2025-04-11' -> '2025년 4월 11일'
   const formatKoreanDate = (isoDate?: string) => {
-    if (!isoDate) return "";
-    const [y, m, d] = isoDate.split("-").map(Number);
+    if (!isoDate) return '';
+    const [y, m, d] = isoDate.split('-').map(Number);
     if (!y || !m || !d) return isoDate;
     return `${y}년 ${m}월 ${d}일`;
   };
@@ -93,8 +92,8 @@ const IndividualRecordPage = () => {
       try {
         const safePage = Math.max(currentPage, 1);
         const safeSort = (
-          selected?.toUpperCase() === "HOTTEST" ? "HOTTEST" : "LATEST"
-        ) as "LATEST" | "HOTTEST";
+          selected?.toUpperCase() === 'HOTTEST' ? 'HOTTEST' : 'LATEST'
+        ) as 'LATEST' | 'HOTTEST';
 
         const res = await postApi.getAllPosts({
           groupId,
@@ -111,9 +110,9 @@ const IndividualRecordPage = () => {
 
         const mapped = posts.map((post: any) => ({
           postId: post.postId,
-          profileImage: post.authorProfileImageUrl ?? "/default-profile.png",
+          profileImage: post.authorProfileImageUrl ?? '/default-profile.png',
           profileName: post.authorNickname,
-          date: (post.createdAt || "").split("T")[0],
+          date: (post.createdAt || '').split('T')[0],
           title: post.title,
           description: post.content,
           imageSrc: post.mainImageUrl,
@@ -125,11 +124,11 @@ const IndividualRecordPage = () => {
         setTotalPages(totalPages);
       } catch (err: any) {
         console.error(
-          "[getAllPosts error]",
+          '[getAllPosts error]',
           err.response?.status,
-          err.response?.data || err.message
+          err.response?.data || err.message,
         );
-        alert(err.response?.data?.message || "게시글을 불러오지 못했습니다.");
+        alert(err.response?.data?.message || '게시글을 불러오지 못했습니다.');
       }
     };
 
@@ -153,18 +152,18 @@ const IndividualRecordPage = () => {
     }
     const pageNumbers = Array.from(
       { length: end - start + 1 },
-      (_, i) => start + i
+      (_, i) => start + i,
     );
 
     return (
       <PaginationWrapper>
         <PageButton
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage((prev) => prev - 1)}
+          onClick={() => setCurrentPage(prev => prev - 1)}
         >
           ‹
         </PageButton>
-        {pageNumbers.map((page) => (
+        {pageNumbers.map(page => (
           <PageNumber
             key={page}
             active={page === currentPage}
@@ -175,7 +174,7 @@ const IndividualRecordPage = () => {
         ))}
         <PageButton
           disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((prev) => prev + 1)}
+          onClick={() => setCurrentPage(prev => prev + 1)}
         >
           ›
         </PageButton>
@@ -192,15 +191,15 @@ const IndividualRecordPage = () => {
       <Header>
         <TopSection>
           <DateText typo="H4">
-            {eventLoading ? "로딩 중..." : startedAtLabel || "-"}
+            {eventLoading ? '로딩 중...' : startedAtLabel || '-'}
           </DateText>
           <BackButton>
             <BackIcon />
-            {artistName ? `${artistName} 데크로 돌아가기` : "뒤로가기"}
+            {artistName ? `${artistName} 데크로 돌아가기` : '뒤로가기'}
           </BackButton>
         </TopSection>
         <TitleText typo="H1">
-          {eventLoading ? "불러오는 중..." : scheduleName || ""}
+          {eventLoading ? '불러오는 중...' : scheduleName || ''}
         </TitleText>
       </Header>
 
@@ -208,18 +207,18 @@ const IndividualRecordPage = () => {
         <ToggleWrapper>
           <ToggleButtonGroup>
             <ToggleButton
-              selected={selected === "LATEST"}
+              selected={selected === 'LATEST'}
               onClick={() => {
-                setSelected("LATEST");
+                setSelected('LATEST');
                 setCurrentPage(1);
               }}
             >
               최신순
             </ToggleButton>
             <ToggleButton
-              selected={selected === "HOTTEST"}
+              selected={selected === 'HOTTEST'}
               onClick={() => {
-                setSelected("HOTTEST");
+                setSelected('HOTTEST');
                 setCurrentPage(1);
               }}
             >
@@ -230,7 +229,7 @@ const IndividualRecordPage = () => {
 
         <AddRecordButton
           variant="able"
-          onClick={() => router.push("/record-add")}
+          onClick={() => router.push('/record-add')}
         >
           마이타일 추가
         </AddRecordButton>
@@ -239,11 +238,11 @@ const IndividualRecordPage = () => {
       {records.length > 0 ? (
         <>
           <CardGrid>
-            {records.map((record) => (
+            {records.map(record => (
               <Link
                 key={record.postId}
                 href={`/record-post/${record.postId}`}
-                style={{ textDecoration: "none" }}
+                style={{ textDecoration: 'none' }}
               >
                 <RecordCardMedium {...record} />
               </Link>
@@ -256,7 +255,7 @@ const IndividualRecordPage = () => {
           <Text typo="Body_2">첫 번째 기록을 추가해보세요.</Text>
           <AddRecordButton
             variant="able"
-            onClick={() => router.push("/record-add")}
+            onClick={() => router.push('/record-add')}
           >
             마이타일 추가
           </AddRecordButton>
@@ -334,14 +333,16 @@ const ToggleButtonGroup = styled.div`
 
 const ToggleButton = styled.button<{ selected: boolean }>`
   border: none;
-  background-color: ${({ selected }) => (selected ? "#C3DBFF" : "transparent")};
-  color: ${({ selected }) => (selected ? "#0D2364" : "#000")};
+  background-color: ${({ selected }) => (selected ? '#C3DBFF' : 'transparent')};
+  color: ${({ selected }) => (selected ? '#0D2364' : '#000')};
   font-weight: 500;
   font-size: 14px;
   padding: 6px 12px;
   border-radius: 20px;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 `;
 
 const AddRecordButton = styled(RawAddRecordButton)<{ $variant?: string }>`
@@ -397,9 +398,9 @@ const PageNumber = styled.button<{ active: boolean }>`
   height: 24px;
   border: none;
   border-radius: 50%;
-  background: ${({ active }) => (active ? "#C3DBFF" : "transparent")};
-  color: ${({ active }) => (active ? "#0D2364" : "#666")};
-  font-weight: ${({ active }) => (active ? "bold" : "normal")};
+  background: ${({ active }) => (active ? '#C3DBFF' : 'transparent')};
+  color: ${({ active }) => (active ? '#0D2364' : '#666')};
+  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
   cursor: pointer;
   font-size: 14px;
 `;

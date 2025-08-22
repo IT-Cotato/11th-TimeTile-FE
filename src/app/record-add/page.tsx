@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import React, { useState, useRef } from "react";
-import styled from "styled-components";
-import { Text } from "@/components/atoms/Text";
-import { ImageIcon } from "@/assets/icons/ImageIcon";
-import { GlobeIcon } from "@/assets/icons/GlobeIcon";
-import { LockIcon } from "@/assets/icons/LockIcon";
-import MediaThumbnail from "@/components/atoms/MediaThumbnail";
-import { LeftArrowIcon } from "@/assets/icons/LeftArrowIcon";
-import { RightArrowIcon } from "@/assets/icons/RightArrowIcon";
-import { AddRecordButton as RawAddRecordButton } from "@/components/atoms/AddRecordButton";
-import { postApi } from "@/apis/postApi";
-import type { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
-import { theme } from "@/styles/theme";
+import React, { useState, useRef } from 'react';
+import styled from 'styled-components';
+import { Text } from '@/components/atoms/Text';
+import { ImageIcon } from '@/assets/icons/ImageIcon';
+import { GlobeIcon } from '@/assets/icons/GlobeIcon';
+import { LockIcon } from '@/assets/icons/LockIcon';
+import MediaThumbnail from '@/components/atoms/MediaThumbnail';
+import { LeftArrowIcon } from '@/assets/icons/LeftArrowIcon';
+import { RightArrowIcon } from '@/assets/icons/RightArrowIcon';
+import { AddRecordButton as RawAddRecordButton } from '@/components/atoms/AddRecordButton';
+import { postApi } from '@/apis/postApi';
+import type { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
+import { theme } from '@/styles/theme';
 
 const MAX_FILE_COUNT = 10;
 const MAX_BODY_LENGTH = 500;
 
 interface FileItem {
   url: string;
-  type: "image" | "video";
+  type: 'image' | 'video';
   file: File;
 }
 
@@ -30,12 +30,12 @@ const getErrorMessage = (err: unknown) => {
     const ax = err as AxiosError<any>;
     const status = ax.response?.status;
     const code = ax.response?.data?.code ?? ax.code;
-    const msg = ax.response?.data?.message || ax.message || "요청 실패";
+    const msg = ax.response?.data?.message || ax.message || '요청 실패';
     const details: string[] = Array.isArray(ax.response?.data?.errors)
       ? ax.response!.data!.errors.map((e: any) => e?.message || e).slice(0, 3)
       : [];
-    const head = `[${status ?? "NETWORK"}${code ? `/${code}` : ""}] ${msg}`;
-    return details.length ? `${head}\n- ${details.join("\n- ")}` : head;
+    const head = `[${status ?? 'NETWORK'}${code ? `/${code}` : ''}] ${msg}`;
+    return details.length ? `${head}\n- ${details.join('\n- ')}` : head;
   }
   if (err instanceof Error) return err.message;
   try {
@@ -46,26 +46,26 @@ const getErrorMessage = (err: unknown) => {
 };
 
 const getExt = (f: File) => {
-  const byName = f.name.split(".").pop()?.toLowerCase();
+  const byName = f.name.split('.').pop()?.toLowerCase();
   if (byName) return byName;
   const map: Record<string, string> = {
-    "image/jpeg": "jpg",
-    "image/png": "png",
-    "image/webp": "webp",
-    "image/gif": "gif",
-    "video/mp4": "mp4",
-    "video/quicktime": "mov",
-    "video/webm": "webm",
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+    'video/mp4': 'mp4',
+    'video/quicktime': 'mov',
+    'video/webm': 'webm',
   };
-  return map[f.type] ?? "bin";
+  return map[f.type] ?? 'bin';
 };
 /* ─────────── */
 
 const IndividualRecordPage = () => {
   const router = useRouter();
 
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
   const [files, setFiles] = useState<FileItem[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isPublic, setIsPublic] = useState(true);
@@ -74,7 +74,7 @@ const IndividualRecordPage = () => {
 
   const handleSubmit = async () => {
     if (!title || !body || body.length > MAX_BODY_LENGTH) {
-      alert("제목과 본문을 확인해주세요.");
+      alert('제목과 본문을 확인해주세요.');
       return;
     }
     setIsSubmitting(true);
@@ -84,7 +84,7 @@ const IndividualRecordPage = () => {
 
       // 1) 파일이 있으면 presigned 발급 → PUT 업로드
       if (files.length > 0) {
-        const extensions = files.map((f) => getExt(f.file));
+        const extensions = files.map(f => getExt(f.file));
 
         // presigned 발급: 서버 스펙에 맞춰 uploadInfo 사용
         type UploadInfo = {
@@ -103,7 +103,7 @@ const IndividualRecordPage = () => {
           return;
         }
         if (!uploadInfo.length) {
-          alert("[업로드 URL 발급 실패]\n응답에 uploadInfo가 없습니다.");
+          alert('[업로드 URL 발급 실패]\n응답에 uploadInfo가 없습니다.');
           setIsSubmitting(false);
           return;
         }
@@ -112,25 +112,25 @@ const IndividualRecordPage = () => {
           await Promise.all(
             uploadInfo.map(async (p, i) => {
               const headers: HeadersInit = new Headers();
-              if (p.contentType) headers.set("Content-Type", p.contentType);
+              if (p.contentType) headers.set('Content-Type', p.contentType);
               if (p.headers)
                 Object.entries(p.headers).forEach(([k, v]) =>
-                  headers.set(k, String(v))
+                  headers.set(k, String(v)),
                 );
               const res = await fetch(p.url, {
-                method: "PUT",
+                method: 'PUT',
                 body: files[i].file,
                 headers,
               });
               if (!res.ok) {
-                const text = await res.text().catch(() => "");
+                const text = await res.text().catch(() => '');
                 throw new Error(
                   `PUT ${res.status} ${res.statusText}${
-                    text ? `\n${text}` : ""
-                  }`
+                    text ? `\n${text}` : ''
+                  }`,
                 );
               }
-            })
+            }),
           );
         } catch (err) {
           alert(`[파일 업로드 실패]\n${getErrorMessage(err)}`);
@@ -138,16 +138,16 @@ const IndividualRecordPage = () => {
           return;
         }
 
-        mediaKeys = uploadInfo.map((p) => p.key);
+        mediaKeys = uploadInfo.map(p => p.key);
       }
 
       // 2) 게시글 생성
       try {
         await postApi.createPost({
-          groupId: "0da701ad-79e3-4309-9167-16172dfc0b04",
+          groupId: 'df596e5b-f827-49e7-8555-101e26267d9f',
           title,
           content: body,
-          visibility: isPublic ? "PUBLIC" : "PRIVATE",
+          visibility: isPublic ? 'PUBLIC' : 'PRIVATE',
           mediaKeys,
           mainImageIndex: files.length > 0 ? selectedIndex : null,
         });
@@ -157,12 +157,12 @@ const IndividualRecordPage = () => {
         return;
       }
 
-      alert("기록이 등록되었습니다.");
-      files.forEach((f) => URL.revokeObjectURL(f.url));
-      router.push("/record-list");
+      alert('기록이 등록되었습니다.');
+      files.forEach(f => URL.revokeObjectURL(f.url));
+      router.push('/record-list');
 
-      setTitle("");
-      setBody("");
+      setTitle('');
+      setBody('');
       setFiles([]);
       setSelectedIndex(0);
       setIsPublic(true);
@@ -173,10 +173,10 @@ const IndividualRecordPage = () => {
     }
   };
 
-  const handleScroll = (dir: "left" | "right") =>
+  const handleScroll = (dir: 'left' | 'right') =>
     mediaListRef.current?.scrollBy({
-      left: dir === "left" ? -200 : 200,
-      behavior: "smooth",
+      left: dir === 'left' ? -200 : 200,
+      behavior: 'smooth',
     });
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -184,18 +184,18 @@ const IndividualRecordPage = () => {
     if (!selectedFiles) return;
     const newFileArray = Array.from(selectedFiles).slice(
       0,
-      MAX_FILE_COUNT - files.length
+      MAX_FILE_COUNT - files.length,
     );
-    const newItems: FileItem[] = newFileArray.map((file) => ({
+    const newItems: FileItem[] = newFileArray.map(file => ({
       url: URL.createObjectURL(file),
-      type: file.type.startsWith("video") ? "video" : "image",
+      type: file.type.startsWith('video') ? 'video' : 'image',
       file,
     }));
-    setFiles((prev) => [...prev, ...newItems]);
+    setFiles(prev => [...prev, ...newItems]);
   };
 
   const handleDelete = (index: number) => {
-    setFiles((prev) => {
+    setFiles(prev => {
       const updated = [...prev.slice(0, index), ...prev.slice(index + 1)];
       if (selectedIndex >= updated.length) setSelectedIndex(0);
       return updated;
@@ -206,25 +206,23 @@ const IndividualRecordPage = () => {
     <PageWrapper>
       <Header>
         <TopSection>
-          <DateText typo="H4">2025년 2월 17일</DateText>
-          <BackButton>에스파 대표로 돌아가기</BackButton>
+          <DateText typo="H4">2022년 9월 24일</DateText>
+          <BackButton>IVE 대표로 돌아가기</BackButton>
         </TopSection>
-        <TitleText typo="H1">
-          멜론뮤직어워드(<strong>MMA</strong>) 참석
-        </TitleText>
+        <TitleText typo="H1">연세대학교 AKARAKA 축제 무대</TitleText>
       </Header>
 
       <MainForm>
         <TitleInput
           placeholder="제목을 입력해주세요"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={e => setTitle(e.target.value)}
         />
         <BodyContainer>
           <BodyTextarea
             placeholder="본문을 입력해주세요"
             value={body}
-            onChange={(e) => setBody(e.target.value)}
+            onChange={e => setBody(e.target.value)}
             maxLength={MAX_BODY_LENGTH + 50}
           />
         </BodyContainer>
@@ -244,10 +242,10 @@ const IndividualRecordPage = () => {
           </MediaList>
 
           <ArrowGroup>
-            <ArrowBtn onClick={() => handleScroll("left")}>
+            <ArrowBtn onClick={() => handleScroll('left')}>
               <LeftArrowIcon />
             </ArrowBtn>
-            <ArrowBtn onClick={() => handleScroll("right")}>
+            <ArrowBtn onClick={() => handleScroll('right')}>
               <RightArrowIcon />
             </ArrowBtn>
           </ArrowGroup>
@@ -266,7 +264,7 @@ const IndividualRecordPage = () => {
               hidden
               onChange={handleFileSelect}
             />
-            <VisibilityToggle onClick={() => setIsPublic((p) => !p)}>
+            <VisibilityToggle onClick={() => setIsPublic(p => !p)}>
               {isPublic ? (
                 <>
                   <GlobeIcon />
@@ -288,7 +286,7 @@ const IndividualRecordPage = () => {
 
       <AddRecordButtonWrapper>
         <AddRecordButton variant="able" onClick={handleSubmit}>
-          {isSubmitting ? "등록 중…" : "마이타일 추가"}
+          {isSubmitting ? '등록 중…' : '마이타일 추가'}
         </AddRecordButton>
       </AddRecordButtonWrapper>
     </PageWrapper>
@@ -365,9 +363,9 @@ const BodyTextarea = styled.textarea`
   outline: none;
 `;
 const CharCount = styled.div.withConfig({
-  shouldForwardProp: (p) => p !== "exceeded",
+  shouldForwardProp: p => p !== 'exceeded',
 })<{ exceeded: boolean }>`
-  color: ${({ exceeded }) => (exceeded ? "red" : "#999")};
+  color: ${({ exceeded }) => (exceeded ? 'red' : '#999')};
   font-size: 14px;
   text-align: right;
 `;
