@@ -1,25 +1,25 @@
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import { ArtistListHeader } from "./ArtistListHeader";
-import PaginationComponent from "./PaginationComponent";
-import { MyTileComponent } from "./MyTileComponent";
-import { usersApi } from "@/apis/usersApi";
-import { theme } from "@/styles/theme";
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { ArtistListHeader } from './ArtistListHeader';
+import PaginationComponent from './PaginationComponent';
+import { MyTileComponent } from './MyTileComponent';
+import { usersApi } from '@/apis/usersApi';
+import { theme } from '@/styles/theme';
 
 const MOCK_ARTIST = [
   {
     isSuccess: true,
-    code: "COMMON001",
-    message: "요청 성공",
+    code: 'COMMON001',
+    message: '요청 성공',
     data: {
       artists: [
         {
-          id: "6YVMFz59CuY7ngCxTxjpxE",
-          name: "aespa",
+          id: '6YVMFz59CuY7ngCxTxjpxE',
+          name: 'aespa',
         },
         {
-          id: "0du5cEVh5yTK9QJze8zA0C",
-          name: "Bruno Mars",
+          id: '0du5cEVh5yTK9QJze8zA0C',
+          name: 'Bruno Mars',
         },
       ],
     },
@@ -29,45 +29,45 @@ const MOCK_ARTIST = [
 const MOCK_DATA = [
   {
     isSuccess: true,
-    code: "COMMON001",
-    message: "요청 성공",
+    code: 'COMMON001',
+    message: '요청 성공',
     data: {
       events: [
         {
           eventId: 14,
-          groupId: "ec8ccd19-1423-47ee-916e-edcc92c6858c",
-          name: "Legacy Directives Orchestrator",
+          groupId: 'df596e5b-f827-49e7-8555-101e26267d9f',
+          name: '연세대학교 AKARAKA 축제 무대',
           description:
-            "Provident delinquo tener curiositas volva caecus tracto denego.",
-          source: "https://jagged-subexpression.us/",
+            'Provident delinquo tener curiositas volva caecus tracto denego.',
+          source: 'https://jagged-subexpression.us/',
           relatedEvents: [
             {
-              groupId: "8ba5b9bf-e82c-4bac-bdbe-ec0e53fc02d2",
-              name: "Faker 1112",
+              groupId: '8ba5b9bf-e82c-4bac-bdbe-ec0e53fc02d2',
+              name: 'Faker 1112',
             },
             {
-              groupId: "781a8ce4-3897-409b-8500-5a9c084f68ec",
-              name: "Prem Customer Division Associate",
+              groupId: '781a8ce4-3897-409b-8500-5a9c084f68ec',
+              name: 'Prem Customer Division Associate',
             },
           ],
           relatedArtists: [
             {
-              id: "6HvZYsbFfjnjFrWF950C9d",
-              name: "NewJeans",
+              id: '6HvZYsbFfjnjFrWF950C9d',
+              name: 'NewJeans',
               imageUrl:
-                "https://i.scdn.co/image/ab6761610000e5eb80668ba2b15094d083780ea9",
+                'https://i.scdn.co/image/ab6761610000e5eb80668ba2b15094d083780ea9',
             },
             {
-              id: "6YVMFz59CuY7ngCxTxjpxE",
-              name: "aespa",
+              id: '6YVMFz59CuY7ngCxTxjpxE',
+              name: 'aespa',
               imageUrl:
-                "https://i.scdn.co/image/ab6761610000e5eb927f1260251e32135287e032",
+                'https://i.scdn.co/image/ab6761610000e5eb927f1260251e32135287e032',
             },
           ],
-          activityTypes: ["팬사인회/기타", "팬사인회/기타"],
-          relatedMaterials: ["https://miserly-gallery.info"],
-          startedAt: "2025-04-11",
-          endedAt: "2025-04-07",
+          activityTypes: ['팬사인회/기타', '팬사인회/기타'],
+          relatedMaterials: ['https://miserly-gallery.info'],
+          startedAt: '2025-04-11',
+          endedAt: '2025-04-07',
           contributorCount: 1,
         },
       ],
@@ -172,13 +172,13 @@ export const MyArtistTimeline = () => {
           <ArtistListHeader
             artists={artists}
             selectedId={selectedArtistId}
-            onSelect={(id) => {
+            onSelect={id => {
               setSelectedArtistId(id);
               setPage(1);
             }}
           />
           <EventList>
-            {events.map((event) => (
+            {events.map(event => (
               <MyTileComponent
                 key={event.groupId}
                 groupId={event.groupId}
