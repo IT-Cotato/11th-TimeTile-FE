@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MoveLeftIcon } from "@/assets/icons/MoveLeftIcon";
 import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
 import { MainImage } from "@/assets/images/MainImage";
@@ -15,14 +15,31 @@ const images = [
 
 export const MainHeader = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startAutoSlide = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    }, 5000);
+  };
 
   const handlePrev = () => {
     if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
+    startAutoSlide();
   };
 
   const handleNext = () => {
     if (currentIndex < images.length - 1) setCurrentIndex(currentIndex + 1);
+    startAutoSlide();
   };
+
+  useEffect(() => {
+    startAutoSlide();
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   return (
     <Wrapper>
