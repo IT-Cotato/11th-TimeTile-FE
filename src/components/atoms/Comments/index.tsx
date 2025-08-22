@@ -189,7 +189,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
       const normalized = normalizeServerComments(
         Array.isArray(list) ? list : [],
       );
-      +setComments(normalized);
+      setComments(normalized);
     } catch (e) {
       console.warn('[comments refresh error]', e);
     }
@@ -741,7 +741,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
 
 export default CommentsSection;
 
-/* ===== styles ===== */
+//* ===== styles ===== */
 const Section = styled.div`
   display: flex;
   flex-direction: column;
