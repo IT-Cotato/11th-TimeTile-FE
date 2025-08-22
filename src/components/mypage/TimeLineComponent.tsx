@@ -4,12 +4,12 @@ import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { Text } from "../atoms/Text";
 import { ChatIcon } from "@/assets/icons/ChatIcon";
-import { HeartIcon } from "@/assets/icons/HeartIcon";
 import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
 import { Post } from "@/model/components/Post";
 import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
 import { ScrapIcon } from "@/assets/icons/ScrapIcon";
 import { useRouter } from "next/navigation";
+import { HeartFillIcon } from "@/assets/icons/HeartFillIcon";
 
 interface TimeLineComponentProps {
   posts: Post[];
@@ -93,7 +93,7 @@ export const TimeLineComponent = ({
                   <DetailWrap>
                     <IconWrapper>
                       <IconDiv>
-                        <HeartIcon />
+                        <HeartFillIcon />
                         <Text
                           typo="Body_3"
                           children={post.likeCount}
@@ -159,15 +159,15 @@ const EmptyText = styled.div`
 `;
 
 const TimeLineWrap = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 467px);
   gap: 16px;
   margin-top: 24px;
+  justify-content: start;
 `;
 
 const TimeLineCard = styled.div`
   display: flex;
-  width: 467px;
   flex-direction: column;
   align-items: flex-start;
 `;

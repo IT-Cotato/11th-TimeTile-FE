@@ -5,6 +5,7 @@ import { TagCategory } from "@/components/atoms/TagCategory";
 import { TagCategoryName } from "@/model/common/tagcategory";
 import { FlexBox } from "../layouts/FlexBox";
 import { Text } from "../atoms/Text";
+import { theme } from "@/styles/theme";
 
 export interface Artist {
   id: string;
@@ -95,8 +96,8 @@ const Container = styled.div`
   gap: 8px;
   flex-shrink: 0;
   border-radius: 16px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
 `;
 
 const TopWrapper = styled.div`
@@ -113,7 +114,7 @@ const BottomWrapper = styled.div`
   gap: 16px;
   align-self: stretch;
   border-radius: 10px;
-  background: var(--Primary-100, #f2f7ff);
+  background: ${theme.palette.primary_100};
 `;
 
 const ArtistInfo = styled.div`

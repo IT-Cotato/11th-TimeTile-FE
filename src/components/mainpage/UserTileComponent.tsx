@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { Text } from "../atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { MyPost } from "./LoggedInPage";
-import { HeartIcon } from "@/assets/icons/HeartIcon";
 import { ChatIcon } from "@/assets/icons/ChatIcon";
 import { HeartFillIcon } from "@/assets/icons/HeartFillIcon";
 import { useRouter } from "next/navigation";
@@ -73,8 +72,8 @@ const Container = styled.div`
   align-items: flex-start;
   gap: 10px;
   border-radius: 20px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
   cursor: pointer;
 `;
 
@@ -113,8 +112,8 @@ const PostImage = styled.img`
   flex-shrink: 0;
   object-fit: cover;
   border-radius: 16px;
-  border: 1px solid var(--Primary-200, #e6f0ff);
-  background: var(--Gray-0, #fff);
+  border: 1px solid ${theme.palette.primary_200};
+  background: ${theme.palette.gray_0};
   box-shadow: 0 4px 12px 0 rgba(159, 198, 255, 0.25);
 `;
 
