@@ -4,7 +4,7 @@ import { Text } from "../atoms/Text";
 import { BasicSymbolLogo } from "@/assets/images/BasicSymbolLogo";
 import { theme } from "@/styles/theme";
 import { MoveRightIcon } from "@/assets/icons/MoveRightIcon";
-import { HeartIcon } from "@/assets/icons/HeartIcon";
+import { HeartFillIcon } from "@/assets/icons/HeartFillIcon";
 
 interface Props {
   comments: Comment[];
@@ -56,7 +56,7 @@ export const MyCommentComponent = ({ comments, infoText }: Props) => {
                 <DetailWrap>
                   <IconWrapper>
                     <IconDiv>
-                      <HeartIcon />
+                      <HeartFillIcon />
                       <Text
                         typo="Body_3"
                         children={comment.likeCount}
@@ -170,7 +170,7 @@ const ContentDiv = styled.div`
   align-items: center;
   gap: 10px;
   border-radius: 10px;
-  border: 1px solid var(--Primary-300, #c3dbff);
+  border: 1px solid ${theme.palette.primary_300};
   flex: 1 0 0;
   align-self: stretch;
 `;

@@ -1,6 +1,7 @@
 import { Editor } from "@/assets/images/role/Editor";
 import { EditorToolTip } from "@/assets/images/role/EditorToolTip";
 import { Text } from "@/components/atoms/Text";
+import { theme } from "@/styles/theme";
 import styled from "styled-components";
 
 export const MyRoleSection = ({ data }: any) => {
@@ -99,8 +100,8 @@ const MyRoleContainer = styled.div`
   gap: 24px;
   align-self: stretch;
   border-radius: 30px;
-  border: 1.5px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1.5px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
 `;
 
@@ -113,8 +114,8 @@ const RoleWrap = styled.div`
   align-items: center;
   gap: 48px;
   border-radius: 20px;
-  border: 1.5px solid var(--Primary-300, #c3dbff);
-  background: var(--Gray-0, #fff);
+  border: 1.5px solid ${theme.palette.primary_300};
+  background: ${theme.palette.gray_0};
 `;
 
 const CurrentWrap = styled.div`
@@ -126,8 +127,8 @@ const CurrentWrap = styled.div`
   align-items: center;
   gap: 32px;
   border-radius: 20px;
-  border: 1.5px solid var(--Primary-300, #c3dbff);
-  background: var(--Gray-0, #fff);
+  border: 1.5px solid ${theme.palette.primary_300};
+  background: ${theme.palette.gray_0};
 `;
 
 const CurrentDetail = styled.div`
@@ -136,7 +137,7 @@ const CurrentDetail = styled.div`
   flex-direction: column;
   gap: 16px;
   border-radius: 10px;
-  background: var(--Primary-50, #f7faff);
+  background: ${theme.palette.primary_50};
 `;
 
 const CurrentContainer = styled.div`

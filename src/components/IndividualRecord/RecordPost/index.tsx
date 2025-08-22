@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import React, { useRef, useState } from 'react';
-import styled from 'styled-components';
-import { Text } from '@/components/atoms/Text';
-import { HeartIcon } from '@/assets/icons/HeartIcon';
-import { HeartIconFill } from '@/assets/icons/HeartIconFill';
-import { ChatIcon } from '@/assets/icons/ChatIcon';
-import { ScrapIcon1 } from '@/assets/icons/ScrapIcon1';
-import { ScrapIconFill } from '@/assets/icons/ScrapIconFill';
-import { RightArrowIcon1 } from '@/assets/icons/RightArrowIcon1';
-import { LeftArrowIcon } from '@/assets/icons/LeftArrowIcon';
-import { MoreIcon } from '@/assets/icons/MoreIcon';
-import ScrapModal from '@/components/Scrap/ScrapModal';
-import { postApi } from '@/apis/postApi';
-import { scrapApi } from '@/apis/scrapApi';
-import CommentsSection from '@/components/atoms/Comments';
-import { useRouter } from 'next/navigation';
+import React, { useRef, useState } from "react";
+import styled from "styled-components";
+import { Text } from "@/components/atoms/Text";
+import { HeartIcon } from "@/assets/icons/HeartIcon";
+import { ChatIcon } from "@/assets/icons/ChatIcon";
+import { ScrapIcon1 } from "@/assets/icons/ScrapIcon1";
+import { ScrapIconFill } from "@/assets/icons/ScrapIconFill";
+import { RightArrowIcon1 } from "@/assets/icons/RightArrowIcon1";
+import { LeftArrowIcon } from "@/assets/icons/LeftArrowIcon";
+import { MoreIcon } from "@/assets/icons/MoreIcon";
+import ScrapModal from "@/components/Scrap/ScrapModal";
+import { postApi } from "@/apis/postApi";
+import { scrapApi } from "@/apis/scrapApi";
+import CommentsSection from "@/components/atoms/Comments";
+import { useRouter } from "next/navigation";
+import { HeartFillIcon } from "@/assets/icons/HeartFillIcon";
 
 interface RecordPostProps {
   postId: number;
@@ -66,7 +66,7 @@ const RecordPost = ({
 
   // 카운트/상태
   const [commentCount, setCommentCount] = useState<number>(
-    (commentsData?.length ?? 0) || comments || 0,
+    (commentsData?.length ?? 0) || comments || 0
   );
   const [likeCount, setLikeCount] = useState(likes);
   const [liked, setLiked] = useState(false); // 상세 스펙에 isLiked 없으므로 false 시작
@@ -81,25 +81,25 @@ const RecordPost = ({
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
-  const [reportText, setReportText] = useState('');
+  const [reportText, setReportText] = useState("");
   const maxReportLen = 200;
 
-  const owned = (currentNickname ?? '') === (username ?? '');
+  const owned = (currentNickname ?? "") === (username ?? "");
   // 댓글 카운트(CommentsSection과 동기화)
 
   // 유틸
   const pick = (k: string) =>
-    (typeof window === 'undefined' ? '' : localStorage.getItem(k) || '').trim();
+    (typeof window === "undefined" ? "" : localStorage.getItem(k) || "").trim();
 
   // ✅ 현재 로그인 유저 닉네임/프로필 (댓글 낙관적 렌더용)
-  const currentUserName = pick('commenterNickname');
-  const currentUserAvatarUrl = pick('commenterProfileImageUrl');
+  const currentUserName = pick("commenterNickname");
+  const currentUserAvatarUrl = pick("commenterProfileImageUrl");
 
   // 날짜 포맷
   const formatDateYMD = (iso?: string) => {
-    if (!iso) return '';
+    if (!iso) return "";
     const d = new Date(iso);
-    const pad = (n: number) => String(n).padStart(2, '0');
+    const pad = (n: number) => String(n).padStart(2, "0");
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   };
 
@@ -114,10 +114,10 @@ const RecordPost = ({
 
         setLikeCount(Number.isFinite(+d.likeCount) ? +d.likeCount : likes);
         setCommentCount(
-          Number.isFinite(+d.commentCount) ? +d.commentCount : comments,
+          Number.isFinite(+d.commentCount) ? +d.commentCount : comments
         );
         setScrapCnt(
-          Number.isFinite(+d.scrapCount) ? +d.scrapCount : scrapCount,
+          Number.isFinite(+d.scrapCount) ? +d.scrapCount : scrapCount
         );
 
         setHeaderName(d.authorNickname ?? headerName);
@@ -129,7 +129,7 @@ const RecordPost = ({
         // ✅ 좋아요 상태를 서버 값으로 초기화
         setLiked(!!d.isLiked); // 서버 필드명에 맞게 수정
       } catch (e) {
-        console.warn('[getPostDetail failed]', e);
+        console.warn("[getPostDetail failed]", e);
       }
     })();
   }, [postId]);
@@ -158,13 +158,13 @@ const RecordPost = ({
 
   // 삭제
   const handleDelete = async () => {
-    if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
+    if (!confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
     try {
       await postApi.deletePost(postId);
-      alert('삭제되었습니다.');
+      alert("삭제되었습니다.");
       onDeleteSuccess ? onDeleteSuccess() : router.back();
     } catch (e: any) {
-      alert(e?.response?.data?.message || e?.message || '삭제 실패');
+      alert(e?.response?.data?.message || e?.message || "삭제 실패");
     } finally {
       setMenuOpen(false);
     }
@@ -179,7 +179,7 @@ const RecordPost = ({
 
     // ✅ 낙관적 반영
     setLiked(!was);
-    setLikeCount(c => (was ? Math.max(0, c - 1) : c + 1));
+    setLikeCount((c) => (was ? Math.max(0, c - 1) : c + 1));
 
     try {
       if (was) {
@@ -205,11 +205,19 @@ const RecordPost = ({
     }
   };
 
+  // 스크랩 토글은 모달에서 처리. 여기서는 아이콘 색칠만 관리
+  const handleScrapSuccess = () => {
+    if (!scrapped) {
+      setScrapped(true); // ✅ 색칠
+      setScrapCnt((c) => c + 1);
+    }
+    setScrapOpen(false);
+  };
   // 이미지 스크롤
   const scrollLeft = () =>
-    imageGridRef.current?.scrollBy({ left: -200, behavior: 'smooth' });
+    imageGridRef.current?.scrollBy({ left: -200, behavior: "smooth" });
   const scrollRight = () =>
-    imageGridRef.current?.scrollBy({ left: 200, behavior: 'smooth' });
+    imageGridRef.current?.scrollBy({ left: 200, behavior: "smooth" });
 
   // 이미지 뷰어
   const openImageViewer = (index: number) => {
@@ -222,12 +230,12 @@ const RecordPost = ({
   // 신고
   const handleReport = async () => {
     if (!reportText.trim()) {
-      alert('신고 사유를 입력해주세요.');
+      alert("신고 사유를 입력해주세요.");
       return;
     }
-    alert('신고가 접수되었습니다.');
+    alert("신고가 접수되었습니다.");
     setReportOpen(false);
-    setReportText('');
+    setReportText("");
     setMenuOpen(false);
   };
 
@@ -243,23 +251,23 @@ const RecordPost = ({
             </NameRow>
             <MetaRow>
               <Text typo="Caption_2">
-                {visibilityState === 'PUBLIC' ? '전체공개' : '나만보기'}
+                {visibilityState === "PUBLIC" ? "전체공개" : "나만보기"}
               </Text>
             </MetaRow>
           </InfoCol>
         </Left>
 
         <Right>
-          <MoreBtn onClick={() => setMenuOpen(v => !v)} aria-label="더보기">
+          <MoreBtn onClick={() => setMenuOpen((v) => !v)} aria-label="더보기">
             <MoreIcon />
           </MoreBtn>
           {menuOpen && (
-            <MenuCard onClick={e => e.stopPropagation()}>
+            <MenuCard onClick={(e) => e.stopPropagation()}>
               {owned ? (
                 <>
                   <MenuItem
                     onClick={() => {
-                      alert('수정하기는 준비 중입니다.');
+                      alert("수정하기는 준비 중입니다.");
                       setMenuOpen(false);
                     }}
                   >
@@ -317,7 +325,7 @@ const RecordPost = ({
             disabled={likeLoading}
             aria-pressed={liked}
           >
-            {liked ? <HeartIconFill /> : <HeartIcon />}
+            {liked ? <HeartFillIcon /> : <HeartIcon />}
           </IconButton>
           <Text typo="Body_3" color="Heart">
             {likeCount}
@@ -354,7 +362,7 @@ const RecordPost = ({
         onClose={() => setScrapOpen(false)}
         onSuccess={() => {
           setScrapped(true);
-          setScrapCnt(c => c + 1);
+          setScrapCnt((c) => c + 1);
           setScrapOpen(false);
         }}
       />
@@ -367,10 +375,10 @@ const RecordPost = ({
           <CloseBtn onClick={closeImageViewer}>✕</CloseBtn>
           <NavBtn
             $left
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               setCurrentImageIndex(
-                prev => (prev - 1 + imgs.length) % imgs.length,
+                (prev) => (prev - 1 + imgs.length) % imgs.length
               );
             }}
           >
@@ -378,15 +386,15 @@ const RecordPost = ({
           </NavBtn>
           <NavBtn
             $right
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
-              setCurrentImageIndex(prev => (prev + 1) % imgs.length);
+              setCurrentImageIndex((prev) => (prev + 1) % imgs.length);
             }}
           >
             ›
           </NavBtn>
 
-          <ViewerContent onClick={e => e.stopPropagation()}>
+          <ViewerContent onClick={(e) => e.stopPropagation()}>
             <ViewerImage
               src={imgs[currentImageIndex]}
               alt={`image-${currentImageIndex}`}
@@ -397,12 +405,12 @@ const RecordPost = ({
 
       {reportOpen && (
         <ReportBackdrop onClick={() => setReportOpen(false)}>
-          <ReportCard onClick={e => e.stopPropagation()}>
+          <ReportCard onClick={(e) => e.stopPropagation()}>
             <Text typo="H3">신고 사유를 작성해주세요.</Text>
             <ReportTextarea
               value={reportText}
               maxLength={maxReportLen}
-              onChange={e => setReportText(e.target.value)}
+              onChange={(e) => setReportText(e.target.value)}
               placeholder="신고 사유를 입력해주세요."
             />
             <ReportFooter>
@@ -500,7 +508,7 @@ const MenuCard = styled.div`
   overflow: hidden;
 `;
 const MenuItem = styled.button.withConfig({
-  shouldForwardProp: p => p !== '$danger',
+  shouldForwardProp: (p) => p !== "$danger",
 })<{ $danger?: boolean }>`
   width: 100%;
   text-align: left;
@@ -508,7 +516,7 @@ const MenuItem = styled.button.withConfig({
   background: #fff;
   border: none;
   cursor: pointer;
-  color: ${({ $danger }) => ($danger ? '#ef4444' : '#111827')};
+  color: ${({ $danger }) => ($danger ? "#ef4444" : "#111827")};
   &:hover {
     background: #f9fafb;
   }
@@ -565,14 +573,14 @@ const ArrowButton = styled.button`
   cursor: pointer;
   padding: 6px;
 `;
-const BlurOverlay = styled.div<{ position: 'left' | 'right' }>`
+const BlurOverlay = styled.div<{ position: "left" | "right" }>`
   position: absolute;
   top: 0;
   bottom: 0;
   width: 40px;
   ${({ position }) => position}: 0;
   background: linear-gradient(
-    to ${({ position }) => (position === 'left' ? 'right' : 'left')},
+    to ${({ position }) => (position === "left" ? "right" : "left")},
     white 0%,
     transparent 100%
   );
@@ -622,13 +630,13 @@ const CloseBtn = styled.button`
   cursor: pointer;
 `;
 const NavBtn = styled.button.withConfig({
-  shouldForwardProp: p => p !== '$left' && p !== '$right',
+  shouldForwardProp: (p) => p !== "$left" && p !== "$right",
 })<{ $left?: boolean; $right?: boolean }>`
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  ${({ $left }) => $left && 'left: 32px;'}
-  ${({ $right }) => $right && 'right: 32px;'}
+  ${({ $left }) => $left && "left: 32px;"}
+  ${({ $right }) => $right && "right: 32px;"}
   font-size: 48px;
   background: none;
   color: #fff;

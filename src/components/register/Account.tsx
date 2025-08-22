@@ -156,18 +156,20 @@ export default function Account({
             <LargeButton
               variant="google"
               children="Google로 시작하기"
-              onClick={() =>
-                (window.location.href =
-                  "https://timetile-api.click/oauth2/authorization/google")
-              }
+              onClick={() => {
+                localStorage.removeItem("loggedOut");
+                window.location.href =
+                  "https://timetile-api.click/oauth2/authorization/google";
+              }}
             />
             <LargeButton
               variant="kakao"
               children="Kakao로 시작하기"
-              onClick={() =>
-                (window.location.href =
-                  "https://timetile-api.click/oauth2/authorization/kakao")
-              }
+              onClick={() => {
+                localStorage.removeItem("loggedOut");
+                window.location.href =
+                  "https://timetile-api.click/oauth2/authorization/kakao";
+              }}
             />
           </SocialLoginContainer>
         </FlexBox>
