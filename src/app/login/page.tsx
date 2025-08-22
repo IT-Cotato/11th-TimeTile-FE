@@ -1,59 +1,59 @@
-'use client';
+"use client";
 
-import { axiosApi } from '@/apis/axios';
-import { usersApi } from '@/apis/usersApi';
-import { CloseIcon } from '@/assets/icons/CloseIcon';
-import { SymbolTextLogo } from '@/assets/images/SymbolTextLogo';
-import { LargeButton } from '@/components/atoms/LargeButton';
-import { OnboardingInput } from '@/components/atoms/OnboardingInput';
-import Svg from '@/components/atoms/Svg';
-import { Text } from '@/components/atoms/Text';
-import { FlexBox } from '@/components/layouts/FlexBox';
-import { userProfileAtom } from '@/store/UserProfileAtom';
-import { theme } from '@/styles/theme';
-import { useSetAtom } from 'jotai';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import styled from 'styled-components';
+import { axiosApi } from "@/apis/axios";
+import { usersApi } from "@/apis/usersApi";
+import { CloseIcon } from "@/assets/icons/CloseIcon";
+import { SymbolTextLogo } from "@/assets/images/SymbolTextLogo";
+import { LargeButton } from "@/components/atoms/LargeButton";
+import { OnboardingInput } from "@/components/atoms/OnboardingInput";
+import Svg from "@/components/atoms/Svg";
+import { Text } from "@/components/atoms/Text";
+import { FlexBox } from "@/components/layouts/FlexBox";
+import { userProfileAtom } from "@/store/UserProfileAtom";
+import { theme } from "@/styles/theme";
+import { useSetAtom } from "jotai";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import styled from "styled-components";
 
 export default function Login() {
   const router = useRouter();
   const setUserProfile = useSetAtom(userProfileAtom);
-  const [myNickname, setMyNickname] = useState('');
+  const [myNickname, setMyNickname] = useState("");
 
   const gotoRegister = () => {
-    router.push('/register');
+    router.push("/register");
   };
 
   const [info, setInfo] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const [isError, setIsError] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleChange = (key: 'email' | 'password', value: string) => {
-    setInfo(prev => ({
+  const handleChange = (key: "email" | "password", value: string) => {
+    setInfo((prev) => ({
       ...prev,
       [key]: value,
     }));
     setIsError(false);
-    setErrorMsg('');
+    setErrorMsg("");
   };
 
   const handleLogin = async () => {
     if (!info.email) {
       setIsError(true);
-      setErrorMsg('이메일을 입력해주세요.');
+      setErrorMsg("이메일을 입력해주세요.");
       return;
     }
     if (!info.password) {
       setIsError(true);
-      setErrorMsg('비밀번호를 입력해주세요.');
+      setErrorMsg("비밀번호를 입력해주세요.");
       return;
     }
     try {
-      const response = await axiosApi.post('/auth/login', {
+      const response = await axiosApi.post("/auth/login", {
         email: info.email,
         password: info.password,
       });
@@ -66,40 +66,42 @@ export default function Login() {
           profileRes?.data?.nickname ??
           profileRes?.data?.data?.nickname ??
           profileRes?.data?.user?.nickname ??
-          '';
-        if (nickname) localStorage.setItem('nickname', nickname);
-        localStorage.setItem('nickname', profileRes.data.nickname ?? '');
+          "";
+        if (nickname) localStorage.setItem("nickname", nickname);
+        localStorage.setItem("nickname", profileRes.data.nickname ?? "");
 
-        localStorage.removeItem('loggedOut');
-        router.push('/');
-        console.log('로그인 성공');
+        localStorage.removeItem("loggedOut");
+        router.push("/");
+        console.log("로그인 성공");
       }
     } catch (error: any) {
       if (error.response?.status === 401) {
         setIsError(true);
-        setErrorMsg('존재하지 않는 유저입니다.');
+        setErrorMsg("존재하지 않는 유저입니다.");
       } else {
         setIsError(true);
-        setErrorMsg('로그인에 실패했습니다.');
+        setErrorMsg("로그인에 실패했습니다.");
       }
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleLogin();
     }
   };
 
   const kakaoLogin = () => {
+    localStorage.removeItem("loggedOut");
     window.location.href =
-      'https://timetile-api.click/oauth2/authorization/kakao';
+      "https://timetile-api.click/oauth2/authorization/kakao";
   };
 
   const googleLogin = () => {
+    localStorage.removeItem("loggedOut");
     window.location.href =
-      'https://timetile-api.click/oauth2/authorization/google';
+      "https://timetile-api.click/oauth2/authorization/google";
   };
 
   return (
@@ -108,20 +110,20 @@ export default function Login() {
         <Svg children={<CloseIcon />} />
       </CloseIconWrapper>
       <ContentWrapper>
-        <FlexBox direction="column" gap={24} style={{ height: '100%' }}>
-          <Svg children={<SymbolTextLogo />} onClick={() => router.push('/')} />
+        <FlexBox direction="column" gap={24} style={{ height: "100%" }}>
+          <Svg children={<SymbolTextLogo />} onClick={() => router.push("/")} />
           <LoginArea>
             <OnboardingInput
               variant="default"
               value={info.email}
-              onChange={e => handleChange('email', e.target.value)}
+              onChange={(e) => handleChange("email", e.target.value)}
               label="이메일"
               placeholder="이메일을 입력해주세요"
             />
             <OnboardingInput
               variant="password"
               value={info.password}
-              onChange={e => handleChange('password', e.target.value)}
+              onChange={(e) => handleChange("password", e.target.value)}
               label="비밀번호"
               placeholder="비밀번호를 입력해주세요"
               isError={isError}
@@ -139,13 +141,13 @@ export default function Login() {
               children="로그인"
             />
           </ButtonWrapper>
-          <FlexBox gap={16} style={{ width: '100%' }}>
+          <FlexBox gap={16} style={{ width: "100%" }}>
             <Line />
             <Text
               children="SNS로 로그인하기"
               typo="Caption_1"
               color="gray_600"
-              style={{ whiteSpace: 'nowrap' }}
+              style={{ whiteSpace: "nowrap" }}
             />
             <Line />
           </FlexBox>
@@ -163,13 +165,13 @@ export default function Login() {
               onClick={kakaoLogin}
             />
           </SocialLoginContainer>
-          <FlexBox gap={16} style={{ width: '100%' }}>
+          <FlexBox gap={16} style={{ width: "100%" }}>
             <Line />
             <Text
               children="아직 계정이 없으신가요?"
               typo="Caption_1"
               color="gray_600"
-              style={{ whiteSpace: 'nowrap' }}
+              style={{ whiteSpace: "nowrap" }}
             />
             <Line />
           </FlexBox>
