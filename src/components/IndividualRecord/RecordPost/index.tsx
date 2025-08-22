@@ -104,11 +104,11 @@ const RecordPost = ({
   };
 
   // 상세 조회로 표시값/카운트 초기화
+  // 상세 조회로 표시값/카운트 초기화
   React.useEffect(() => {
     if (!postId) return;
     (async () => {
       try {
-        // ⬇️ 반환 모양이 AxiosResponse든, 이미 벗긴 DTO든 모두 커버
         const raw: any = await postApi.getPostDetail(postId);
         const d: any = raw?.data?.data ?? raw?.data ?? raw;
 
@@ -120,17 +120,18 @@ const RecordPost = ({
           Number.isFinite(+d.scrapCount) ? +d.scrapCount : scrapCount
         );
 
-        // 헤더/본문/이미지/공개범위 동기화 (여기 변수명은 현재 파일의 state에 맞춰 사용)
         setHeaderName(d.authorNickname ?? headerName);
         setHeaderProfile(d.authorProfileImageUrl ?? headerProfile);
         setTheDate(formatDateYMD(d.createdAt ?? theDate));
         setImgs(Array.isArray(d.mediaUrls) ? d.mediaUrls : imgs);
         setVisibilityState(d.visibility ?? visibilityState);
+
+        // ✅ 좋아요 상태를 서버 값으로 초기화
+        setLiked(!!d.isLiked); // 서버 필드명에 맞게 수정
       } catch (e) {
         console.warn("[getPostDetail failed]", e);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
 
   // 현재 스크랩 여부(아이콘 색칠) 조회
@@ -169,24 +170,36 @@ const RecordPost = ({
     }
   };
 
-  // ✅ 좋아요(낙관적 → API → 실패 롤백)
   const toggleLike = async () => {
     if (likeLoading) return;
     setLikeLoading(true);
-    const was = liked;
 
-    // 낙관적 반영
+    const was = liked;
+    const id = Number(postId);
+
+    // ✅ 낙관적 반영
     setLiked(!was);
     setLikeCount((c) => (was ? Math.max(0, c - 1) : c + 1));
 
     try {
-      if (was) await postApi.unlikePost(postId);
-      else await postApi.likePost(postId);
-    } catch (e) {
-      // 실패 롤백
-      setLiked(was);
-      setLikeCount((c) => (was ? c + 1 : Math.max(0, c - 1)));
-      alert("좋아요 처리에 실패했습니다.");
+      if (was) {
+        await postApi.unlikePost(id);
+      } else {
+        await postApi.likePost(id);
+      }
+    } catch (e: any) {
+      const msg = e?.response?.data?.message || '';
+      const stat = e?.response?.status;
+
+      // “이미 처리됨” 같은 경우는 성공 취급
+      const alreadyProcessed = msg.includes('이미 처리됨') || stat === 409;
+
+      if (!alreadyProcessed) {
+        // ⚠️ 진짜 에러만 롤백
+        setLiked(was);
+        setLikeCount(c => (was ? c + 1 : Math.max(0, c - 1)));
+        alert(msg || e?.message || '좋아요 처리에 실패했습니다.');
+      }
     } finally {
       setLikeLoading(false);
     }
@@ -200,7 +213,6 @@ const RecordPost = ({
     }
     setScrapOpen(false);
   };
-
   // 이미지 스크롤
   const scrollLeft = () =>
     imageGridRef.current?.scrollBy({ left: -200, behavior: "smooth" });

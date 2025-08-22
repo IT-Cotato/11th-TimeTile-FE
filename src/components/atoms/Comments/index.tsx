@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Text } from '@/components/atoms/Text';
 import { commentsApi, unwrap } from '@/apis/commentApi';
 import { MoreIcon } from '@/assets/icons/MoreIcon';
-import { HeartIconG } from '@/assets/icons/HeartIconG';
+import { HeartIconG, HeartIconGFill } from '@/assets/icons/HeartIconG';
 import { ChatIconG } from '@/assets/icons/ChatIconG';
 
 /* ========= Types ========= */
@@ -608,7 +608,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
                 data-active={c.liked ? 'true' : 'false'}
                 onClick={() => toggleCommentLike(c.id)}
               >
-                <HeartIconG /> {c.likes}
+                {c.liked ? <HeartIconGFill /> : <HeartIconG />} {c.likes}
               </CapsuleBtn>
               <CapsuleBtn onClick={() => toggleReplyOpen(c.id)}>
                 <ChatIconG /> {c.replies?.length ?? 0}
