@@ -91,13 +91,6 @@ export default function Login() {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleLogin();
-    }
-  };
-
   const kakaoLogin = () => {
     window.location.href =
       'https://timetile-api.click/oauth2/authorization/kakao';
