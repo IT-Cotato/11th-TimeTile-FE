@@ -70,6 +70,7 @@ export default function Login() {
         if (nickname) localStorage.setItem('nickname', nickname);
         localStorage.setItem('nickname', profileRes.data.nickname ?? '');
 
+        localStorage.removeItem('loggedOut');
         router.push('/');
         console.log('로그인 성공');
       }
