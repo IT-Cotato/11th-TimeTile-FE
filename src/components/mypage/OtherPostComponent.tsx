@@ -38,7 +38,13 @@ export const OtherPostComponent = ({
 }: OtherPostComponentProps) => {
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
-    return date.toISOString().slice(0, 10).replace(/-/g, ".");
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    return `${year}.${month.toString().padStart(2, "0")}.${day
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const isEmpty = posts.length === 0;
