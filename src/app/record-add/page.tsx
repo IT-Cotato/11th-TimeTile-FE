@@ -4,12 +4,15 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Text } from '@/components/atoms/Text';
 import { ImageIcon } from '@/assets/icons/ImageIcon';
+import { GlobeIcon } from '@/assets/icons/GlobeIcon';
+import { LockIcon } from '@/assets/icons/LockIcon';
 import MediaThumbnail from '@/components/atoms/MediaThumbnail';
 import { LeftArrowIcon } from '@/assets/icons/LeftArrowIcon';
 import { RightArrowIcon } from '@/assets/icons/RightArrowIcon';
 import { AddRecordButton as RawAddRecordButton } from '@/components/atoms/AddRecordButton';
 import { postApi } from '@/apis/postApi';
 import type { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 
 const MAX_FILE_COUNT = 10;
 const MAX_BODY_LENGTH = 500;
@@ -58,6 +61,8 @@ const getExt = (f: File) => {
 /* ─────────── */
 
 const IndividualRecordPage = () => {
+  const router = useRouter();
+
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [files, setFiles] = useState<FileItem[]>([]);
@@ -151,6 +156,8 @@ const IndividualRecordPage = () => {
 
       alert('기록이 등록되었습니다.');
       files.forEach(f => URL.revokeObjectURL(f.url));
+      router.push('/record-list');
+
       setTitle('');
       setBody('');
       setFiles([]);
@@ -257,7 +264,17 @@ const IndividualRecordPage = () => {
               onChange={handleFileSelect}
             />
             <VisibilityToggle onClick={() => setIsPublic(p => !p)}>
-              {isPublic ? '전체공개' : '나만보기'}
+              {isPublic ? (
+                <>
+                  <GlobeIcon />
+                  전체공개
+                </>
+              ) : (
+                <>
+                  <LockIcon />
+                  나만보기
+                </>
+              )}
             </VisibilityToggle>
           </BottomLeft>
           <CharCount exceeded={body.length > MAX_BODY_LENGTH}>
@@ -391,12 +408,27 @@ const UploadLabel = styled.label`
   cursor: pointer;
 `;
 const VisibilityToggle = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border-radius: 14px;
-  padding: 4px 8px;
+  padding: 5px 10px;
   font-size: 14px;
+  background: #fff;
+
+  cursor: pointer;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
 `;
+
 const AddRecordButtonWrapper = styled.div`
-  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
 `;
 const AddRecordButton = styled(RawAddRecordButton)`
   margin-top: 24px;

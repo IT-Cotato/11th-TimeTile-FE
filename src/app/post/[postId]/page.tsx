@@ -56,8 +56,6 @@ export default function IndividualRecordDetailPage() {
     <PageWrapper>
       <RecordPost
         postId={Number(postId)}
-        isMine={isMine}
-        roleImageUrl={undefined} // 있으면 전달
         profileImage={post.authorProfileImageUrl}
         username={post.authorNickname}
         visibility={post.visibility === 'PUBLIC' ? '전체공개' : '나만보기'}

@@ -1,7 +1,7 @@
-import styled from 'styled-components'
-import { theme } from '@/styles/theme'
-import { Text } from '@/components/atoms/Text'
-import { Tag } from '@/components/atoms/Tag'
+import styled from 'styled-components';
+import { theme } from '@/styles/theme';
+import { Text } from '@/components/atoms/Text';
+import { Tag } from '@/components/atoms/Tag';
 interface TileCardProps {
   selected?: boolean;
   schedules: Schedule[];
@@ -9,7 +9,7 @@ interface TileCardProps {
 interface Schedule {
   title: string;
   date: string;
-  tags: ("tile" | "deck" | "song")[];
+  tags: ('tile' | 'deck' | 'song')[];
   description: string;
   thumbnails: string[];
   thumbnailLabels: string[];
@@ -30,16 +30,21 @@ export const TileCard = ({ selected = false, schedules }: TileCardProps) => {
         <CollapsedContent schedules={schedules} />
       )}
     </CardWrapper>
-  )
-}
+  );
+};
 
 const CollapsedContent = ({ schedules }: { schedules: Schedule[] }) => {
-  const titles = schedules.slice(0, 2).map((s) => s.title).join(', ');
+  const titles = schedules
+    .slice(0, 2)
+    .map(s => s.title)
+    .join(', ');
 
   return (
     <>
       <HeaderRow>
-        <Text typo="H4" color="gray_1000">대표 스케줄</Text>
+        <Text typo="H4" color="gray_1000">
+          대표 스케줄
+        </Text>
         <TileOpenWrapper>
           <Text typo="Caption_2" color="gray_1000">
             {schedules.length}개의 타일 더 보기
@@ -48,7 +53,9 @@ const CollapsedContent = ({ schedules }: { schedules: Schedule[] }) => {
       </HeaderRow>
 
       <MainSchedulesRow>
-        <Text typo="Body_3" color="gray_1000">{titles}</Text>
+        <Text typo="Body_3" color="gray_1000">
+          {titles}
+        </Text>
       </MainSchedulesRow>
     </>
   );
@@ -62,8 +69,12 @@ const ExpandedContent = ({ schedules }: { schedules: Schedule[] }) => {
   return (
     <ExpandedSchedule>
       <Header>
-        <Text typo="Body_1" color="gray_700">{getDayFromDate(schedule.date)}</Text>
-        <Text typo="H4" color="gray_1000">{schedule.title}</Text>
+        <Text typo="Body_1" color="gray_700">
+          {getDayFromDate(schedule.date)}
+        </Text>
+        <Text typo="H4" color="gray_1000">
+          {schedule.title}
+        </Text>
       </Header>
 
       <TagWrapper>
@@ -73,15 +84,16 @@ const ExpandedContent = ({ schedules }: { schedules: Schedule[] }) => {
       </TagWrapper>
 
       <TextWrapper>
-        <Text typo="Body_3" color="gray_1000">{schedule.description}</Text>
+        <Text typo="Body_3" color="gray_1000">
+          {schedule.description}
+        </Text>
       </TextWrapper>
 
       <PhotoWrapper>
-  {schedule.thumbnails.map((src, i) => (
-    <ThumbnailImage key={i} src={src} />
-  ))}
-</PhotoWrapper>
-
+        {schedule.thumbnails.map((src, i) => (
+          <ThumbnailImage key={i} src={src} />
+        ))}
+      </PhotoWrapper>
 
       {schedule.participants && (
         <ParticipantWrapper>
@@ -126,33 +138,32 @@ const MainSchedulesRow = styled.div`
 `;
 
 const Header = styled.div`
-display: flex;
-align-items: flex-start;
-gap: 8px;
-align-self: stretch;
-`
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+`;
 const TagWrapper = styled.div`
-display: flex;
-width: 769px;
-align-items: center;
-gap: 8px;
-`
+  display: flex;
+  width: 769px;
+  align-items: center;
+  gap: 8px;
+`;
 const TextWrapper = styled.div`
-height: 48px;
-align-self: stretch;
-`
+  height: 48px;
+  align-self: stretch;
+`;
 const PhotoWrapper = styled.div`
-display: flex;              
-  gap: 8px;                 
-  align-items: flex-start;    
-`
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+`;
 const ThumbnailImage = styled.div<{ src: string }>`
   width: 168px;
   height: 142px;
   border-radius: 10px;
   border: 1px solid ${theme.palette.gray_400};
-  background: ${({ src }) =>
-    `url(${src}) lightgray 50% / cover no-repeat`};
+  background: ${({ src }) => `url(${src}) lightgray 50% / cover no-repeat`};
 `;
 
 const ExpandedSchedule = styled.div`
@@ -161,11 +172,11 @@ const ExpandedSchedule = styled.div`
   gap: 16px;
   align-self: stretch;
   margin-bottom: 32px;
-`
+`;
 
 const ParticipantWrapper = styled.div`
   display: flex;
-justify-content: flex-end;
-align-items: center;
-gap: 7px;
-`
+  justify-content: flex-end;
+  align-items: center;
+  gap: 7px;
+`;

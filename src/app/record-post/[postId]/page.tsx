@@ -6,13 +6,10 @@ import RecordPost from '@/components/IndividualRecord/RecordPost';
 import { useParams, useRouter } from 'next/navigation';
 import { postApi, type PostDetailDTO } from '@/apis/postApi';
 
-type Detail = PostDetailDTO;
-
 export default function IndividualRecordDetailPage() {
   const { postId } = useParams<{ postId: string }>();
   const router = useRouter();
-  const [post, setPost] = useState<Detail | null>(null);
-  const [isMine, setIsMine] = useState(false);
+  const [post, setPost] = useState<PostDetailDTO | null>(null);
 
   useEffect(() => {
     if (!postId) return;
@@ -20,8 +17,8 @@ export default function IndividualRecordDetailPage() {
       try {
         const d = await postApi.getPostDetail(postId);
         setPost({
-          authorId: Number(d.authorId ?? 0),
-          authorNickname: d.authorNickname ?? '',
+          authorId: Number(d.authorId),
+          authorNickname: d.authorNickname ?? '닉네임 불러오는 중',
           authorProfileImageUrl:
             d.authorProfileImageUrl ?? '/profile-default.png',
           title: d.title ?? '',
@@ -40,26 +37,19 @@ export default function IndividualRecordDetailPage() {
     })();
   }, [postId]);
 
-  useEffect(() => {
-    if (!post) return;
-    try {
-      const me = Number(localStorage.getItem('userId') || '0');
-      setIsMine(Boolean(me) && me === post.authorId);
-    } catch {
-      setIsMine(false);
-    }
-  }, [post]);
-
   if (!post) return null;
+
+  // 로그인 시 보관한 내 닉네임(키는 프로젝트에 맞게 교체 가능)
+  const myNickname =
+    typeof window !== 'undefined' ? localStorage.getItem('nickname') || '' : '';
 
   return (
     <PageWrapper>
       <RecordPost
         postId={Number(postId)}
-        isMine={isMine}
-        roleImageUrl={undefined} // 있으면 전달
         profileImage={post.authorProfileImageUrl}
-        username={post.authorNickname}
+        username={post.authorNickname} // 작성자 닉네임
+        currentNickname={myNickname} // 내 닉네임
         visibility={post.visibility === 'PUBLIC' ? '전체공개' : '나만보기'}
         date={(post.createdAt || '').split('T')[0]}
         title={post.title}

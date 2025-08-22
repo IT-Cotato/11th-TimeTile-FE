@@ -1,46 +1,47 @@
-"use client";
+'use client';
 
-import React, { useRef, useState } from "react";
-import styled from "styled-components";
-import { Text } from "@/components/atoms/Text";
-import { HeartIcon } from "@/assets/icons/HeartIcon";
-import { ChatIcon } from "@/assets/icons/ChatIcon";
-import { ScrapIcon1 } from "@/assets/icons/ScrapIcon1";
-import { RightArrowIcon1 } from "@/assets/icons/RightArrowIcon1";
-import { LeftArrowIcon } from "@/assets/icons/LeftArrowIcon";
-import { MoreIcon } from "@/assets/icons/MoreIcon";
-import ScrapModal from "@/components/Scrap/ScrapModal";
-import { postApi } from "@/apis/postApi";
-import CommentsSection, { Comment } from "@/components/atoms/Comments";
-import { useRouter } from "next/navigation";
+import React, { useRef, useState } from 'react';
+import styled from 'styled-components';
+import { Text } from '@/components/atoms/Text';
+import { HeartIcon } from '@/assets/icons/HeartIcon';
+import { HeartIconFill } from '@/assets/icons/HeartIconFill';
+import { ChatIcon } from '@/assets/icons/ChatIcon';
+import { ScrapIcon1 } from '@/assets/icons/ScrapIcon1';
+import { ScrapIconFill } from '@/assets/icons/ScrapIconFill';
+import { RightArrowIcon1 } from '@/assets/icons/RightArrowIcon1';
+import { LeftArrowIcon } from '@/assets/icons/LeftArrowIcon';
+import { MoreIcon } from '@/assets/icons/MoreIcon';
+import ScrapModal from '@/components/Scrap/ScrapModal';
+import { postApi } from '@/apis/postApi';
+import { scrapApi } from '@/apis/scrapApi';
+import CommentsSection from '@/components/atoms/Comments';
+import { useRouter } from 'next/navigation';
 
 interface RecordPostProps {
   postId: number;
-  authorId?: number;
-  isMine?: boolean;
-  roleImageUrl?: string; // 유저 등급/뱃지 이미지
   profileImage: string;
-  username: string;
-  visibility: string; // '전체공개' 등
-  date: string; // 작성일(YYYY-MM-DD)
+  username: string; // 작성자 닉네임(authorNickname)
+  currentNickname?: string; // 내 닉네임(nickname)
+  roleImageUrl?: string;
+  visibility: string;
+  date: string; // YYYY-MM-DD
   title: string;
   content: string;
   images: string[];
   likes: number;
   comments: number;
   scrapCount?: number;
-  commentsData: Comment[];
+  commentsData?: any[]; // 외부에서 주입 시 사용 (없어도 됨)
   onImageClick?: (index: number) => void;
-  onDeleteSuccess?: () => void; // 삭제 후 콜백(선택)
+  onDeleteSuccess?: () => void;
 }
 
 const RecordPost = ({
   postId,
-  isMine = false,
-  authorId,
-  roleImageUrl,
   profileImage,
   username,
+  currentNickname,
+  roleImageUrl,
   visibility,
   date,
   title,
@@ -55,21 +56,47 @@ const RecordPost = ({
 }: RecordPostProps) => {
   const router = useRouter();
   const imageGridRef = useRef<HTMLDivElement>(null);
+
+  // 상세 데이터(표시용) 상태
+  const [headerName, setHeaderName] = useState(username);
+  const [headerProfile, setHeaderProfile] = useState(profileImage);
+  const [theDate, setTheDate] = useState(date);
+  const [imgs, setImgs] = useState(images);
+  const [visibilityState, setVisibilityState] = useState(visibility);
+
+  // 카운트/상태
+  const [commentCount, setCommentCount] = useState<number>(
+    (commentsData?.length ?? 0) || comments || 0,
+  );
+  const [likeCount, setLikeCount] = useState(likes);
+  const [liked, setLiked] = useState(false); // 상세 스펙에 isLiked 없으므로 false 시작
+  const [likeLoading, setLikeLoading] = useState(false);
+
+  const [scrapped, setScrapped] = useState(false); // 내 스크랩 여부(아이콘 색칠)
+  const [scrapCnt, setScrapCnt] = useState(scrapCount);
+  const [scrapOpen, setScrapOpen] = useState(false);
+
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // 더보기 메뉴/신고 모달
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportText, setReportText] = useState("");
   const maxReportLen = 200;
 
+  const owned = (currentNickname ?? '') === (username ?? '');
   // 댓글 카운트(CommentsSection과 동기화)
   const [commentCount, setCommentCount] = useState<number>(
     commentsData.length || comments || 0
   );
 
-  const [scrapOpen, setScrapOpen] = React.useState(false);
+  // 유틸
+  const pick = (k: string) =>
+    (typeof window === 'undefined' ? '' : localStorage.getItem(k) || '').trim();
+
+  // ✅ 현재 로그인 유저 닉네임/프로필 (댓글 낙관적 렌더용)
+  const currentUserName = pick('commenterNickname');
+  const currentUserAvatarUrl = pick('commenterProfileImageUrl');
 
   // 이미지 스크롤
   const scrollLeft = () =>
@@ -77,13 +104,65 @@ const RecordPost = ({
   const scrollRight = () =>
     imageGridRef.current?.scrollBy({ left: 200, behavior: "smooth" });
 
-  // 이미지 뷰어
-  const openImageViewer = (index: number) => {
-    if (onImageClick) return onImageClick(index);
-    setCurrentImageIndex(index);
-    setIsImageViewerOpen(true);
+  // 날짜 포맷
+  const formatDateYMD = (iso?: string) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   };
-  const closeImageViewer = () => setIsImageViewerOpen(false);
+
+  // 상세 조회로 표시값/카운트 초기화
+  React.useEffect(() => {
+    if (!postId) return;
+    (async () => {
+      try {
+        // ⬇️ 반환 모양이 AxiosResponse든, 이미 벗긴 DTO든 모두 커버
+        const raw: any = await postApi.getPostDetail(postId);
+        const d: any = raw?.data?.data ?? raw?.data ?? raw;
+
+        setLikeCount(Number.isFinite(+d.likeCount) ? +d.likeCount : likes);
+        setCommentCount(
+          Number.isFinite(+d.commentCount) ? +d.commentCount : comments,
+        );
+        setScrapCnt(
+          Number.isFinite(+d.scrapCount) ? +d.scrapCount : scrapCount,
+        );
+
+        // 헤더/본문/이미지/공개범위 동기화 (여기 변수명은 현재 파일의 state에 맞춰 사용)
+        setHeaderName(d.authorNickname ?? headerName);
+        setHeaderProfile(d.authorProfileImageUrl ?? headerProfile);
+        setTheDate(formatDateYMD(d.createdAt ?? theDate));
+        setImgs(Array.isArray(d.mediaUrls) ? d.mediaUrls : imgs);
+        setVisibilityState(d.visibility ?? visibilityState);
+      } catch (e) {
+        console.warn('[getPostDetail failed]', e);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postId]);
+
+  // 현재 스크랩 여부(아이콘 색칠) 조회
+  React.useEffect(() => {
+    if (!postId) return;
+    (async () => {
+      try {
+        const st = await scrapApi.getScrapStatus(postId);
+        const body = st?.data?.data ?? st?.data ?? {};
+        const preset: number[] =
+          body?.scrapFolderIds ??
+          body?.folderIds ??
+          (Array.isArray(body?.scrapFolders)
+            ? body.scrapFolders.map((f: any) => Number(f?.id))
+            : []) ??
+          [];
+        setScrapped(Array.isArray(preset) && preset.length > 0);
+      } catch {
+        // 조회 실패 시 기본 false 유지
+        setScrapped(false);
+      }
+    })();
+  }, [postId]);
 
   // 삭제
   const handleDelete = async () => {
@@ -93,15 +172,57 @@ const RecordPost = ({
       alert("삭제되었습니다.");
       onDeleteSuccess ? onDeleteSuccess() : router.back();
     } catch (e: any) {
-      alert(
-        `삭제에 실패했습니다.\n${
-          e?.response?.data?.message || e?.message || ""
-        }`
-      );
+      alert(e?.response?.data?.message || e?.message || '삭제 실패');
     } finally {
       setMenuOpen(false);
     }
   };
+
+  // ✅ 좋아요(낙관적 → API → 실패 롤백)
+  const toggleLike = async () => {
+    if (likeLoading) return;
+    setLikeLoading(true);
+    const was = liked;
+
+    // 낙관적 반영
+    setLiked(!was);
+    setLikeCount(c => (was ? Math.max(0, c - 1) : c + 1));
+
+    try {
+      if (was) await postApi.unlikePost(postId);
+      else await postApi.likePost(postId);
+    } catch (e) {
+      // 실패 롤백
+      setLiked(was);
+      setLikeCount(c => (was ? c + 1 : Math.max(0, c - 1)));
+      alert('좋아요 처리에 실패했습니다.');
+    } finally {
+      setLikeLoading(false);
+    }
+  };
+
+  // 스크랩 토글은 모달에서 처리. 여기서는 아이콘 색칠만 관리
+  const handleScrapSuccess = () => {
+    if (!scrapped) {
+      setScrapped(true); // ✅ 색칠
+      setScrapCnt(c => c + 1);
+    }
+    setScrapOpen(false);
+  };
+
+  // 이미지 스크롤
+  const scrollLeft = () =>
+    imageGridRef.current?.scrollBy({ left: -200, behavior: 'smooth' });
+  const scrollRight = () =>
+    imageGridRef.current?.scrollBy({ left: 200, behavior: 'smooth' });
+
+  // 이미지 뷰어
+  const openImageViewer = (index: number) => {
+    if (onImageClick) return onImageClick(index);
+    setCurrentImageIndex(index);
+    setIsImageViewerOpen(true);
+  };
+  const closeImageViewer = () => setIsImageViewerOpen(false);
 
   // 신고
   const handleReport = async () => {
@@ -109,53 +230,26 @@ const RecordPost = ({
       alert("신고 사유를 입력해주세요.");
       return;
     }
-    // TODO: 신고 API 연동 (예: postApi.reportPost(postId, { reason: reportText }))
-    alert("신고가 접수되었습니다.");
+    alert('신고가 접수되었습니다.');
     setReportOpen(false);
     setReportText("");
     setMenuOpen(false);
   };
 
-  // 컴포넌트 상단에서 owned 계산 (isMine이 undefined면 로컬스토리지로 보정)
-  const getStoredMyId = () => {
-    if (typeof window === "undefined") return undefined;
-    const keys = ["userId", "id", "memberId", "authorId"];
-    for (const k of keys) {
-      const raw = localStorage.getItem(k);
-      if (!raw) continue;
-      try {
-        const parsed = JSON.parse(raw);
-        const n = Number(parsed ?? raw);
-        if (Number.isFinite(n)) return n;
-      } catch {
-        const n = Number(raw);
-        if (Number.isFinite(n)) return n;
-      }
-    }
-    return undefined;
-  };
-
-  const myId = getStoredMyId();
-  const owned =
-    typeof isMine === "boolean"
-      ? isMine
-      : authorId !== undefined &&
-        myId !== undefined &&
-        Number(authorId) === Number(myId);
-
   return (
     <Wrapper>
-      {/* 헤더 : 좌(프로필/이름/등급/공개상태) - 우(더보기) */}
       <Header>
         <Left>
-          <Avatar src={profileImage} alt="profile" />
+          <Avatar src={headerProfile} alt="profile" />
           <InfoCol>
             <NameRow>
-              <Text typo="Body_3">{username}</Text>
+              <Text typo="Body_3">{headerName}</Text>
               {roleImageUrl && <RoleImg src={roleImageUrl} alt="role" />}
             </NameRow>
             <MetaRow>
-              <Text typo="Caption_2">{visibility}</Text>
+              <Text typo="Caption_2">
+                {visibilityState === 'PUBLIC' ? '전체공개' : '나만보기'}
+              </Text>
             </MetaRow>
           </InfoCol>
         </Left>
@@ -190,18 +284,16 @@ const RecordPost = ({
         </Right>
       </Header>
 
-      {/* 본문 */}
       <Title typo="H4">{title}</Title>
       <Content typo="Body_3">{content}</Content>
 
-      {/* 미디어 */}
-      {images.length > 0 && (
+      {imgs.length > 0 && (
         <ImageContainer>
           <ImageWrapper>
             <BlurOverlay position="left" />
             <BlurOverlay position="right" />
             <ImageGrid ref={imageGridRef}>
-              {images.map((img, index) => (
+              {imgs.map((img, index) => (
                 <PostImage
                   key={index}
                   src={img}
@@ -223,48 +315,58 @@ const RecordPost = ({
         </ImageContainer>
       )}
 
-      {/* 하단 아이콘 바 + 작성일 */}
       <MetaBar>
         <IconRow>
-          <HeartIcon />
+          <IconButton
+            onClick={toggleLike}
+            disabled={likeLoading}
+            aria-pressed={liked}
+          >
+            {liked ? <HeartIconFill /> : <HeartIcon />}
+          </IconButton>
           <Text typo="Body_3" color="Heart">
-            {likes}
+            {likeCount}
           </Text>
         </IconRow>
+
         <IconRow>
           <ChatIcon />
           <Text typo="Body_3" color="primary_500">
             {commentCount}
           </Text>
         </IconRow>
+
         <IconRow>
-          <CapsuleBtn onClick={() => setScrapOpen(true)}>
-            <ScrapIcon1 />
-          </CapsuleBtn>
+          <IconButton
+            onClick={() => setScrapOpen(true)}
+            aria-label="스크랩"
+            aria-pressed={scrapped}
+          >
+            {scrapped ? <ScrapIconFill /> : <ScrapIcon1 />}
+          </IconButton>
           <Text typo="Body_3" color="gray_700">
-            {scrapCount}
+            {scrapCnt}
           </Text>
         </IconRow>
+
         <BarSpacer />
-        <DateText typo="Caption_2">{date}</DateText>
+        <DateText typo="Caption_2">{theDate}</DateText>
       </MetaBar>
 
       <ScrapModal
         postId={postId}
         open={scrapOpen}
         onClose={() => setScrapOpen(false)}
+        onSuccess={() => {
+          setScrapped(true);
+          setScrapCnt(c => c + 1);
+          setScrapOpen(false);
+        }}
       />
       <DividerHr />
 
-      {/* 댓글 섹션 */}
-      <CommentsSection
-        postId={postId}
-        commentsData={[]}
-        currentUserName={username}
-        onCountChange={setCommentCount}
-      />
+      <CommentsSection postId={postId} currentUserName={currentUserName} />
 
-      {/* 내부 이미지 뷰어 */}
       {isImageViewerOpen && !onImageClick && (
         <ImageViewerModal onClick={closeImageViewer}>
           <CloseBtn onClick={closeImageViewer}>✕</CloseBtn>
@@ -273,7 +375,8 @@ const RecordPost = ({
             onClick={(e) => {
               e.stopPropagation();
               setCurrentImageIndex(
-                (prev) => (prev - 1 + images.length) % images.length
+                prev => (prev - 1 + imgs.length) % imgs.length,
+
               );
             }}
           >
@@ -283,7 +386,7 @@ const RecordPost = ({
             $right
             onClick={(e) => {
               e.stopPropagation();
-              setCurrentImageIndex((prev) => (prev + 1) % images.length);
+              setCurrentImageIndex(prev => (prev + 1) % imgs.length);
             }}
           >
             ›
@@ -291,14 +394,13 @@ const RecordPost = ({
 
           <ViewerContent onClick={(e) => e.stopPropagation()}>
             <ViewerImage
-              src={images[currentImageIndex]}
+              src={imgs[currentImageIndex]}
               alt={`image-${currentImageIndex}`}
             />
           </ViewerContent>
         </ImageViewerModal>
       )}
 
-      {/* 신고 모달 */}
       {reportOpen && (
         <ReportBackdrop onClick={() => setReportOpen(false)}>
           <ReportCard onClick={(e) => e.stopPropagation()}>
@@ -354,7 +456,7 @@ const Left = styled.div`
 
 const Right = styled.div`
   position: relative;
-  margin-left: auto; /* 가장 오른쪽 정렬 */
+  margin-left: auto;
 `;
 
 const Avatar = styled.img`
@@ -363,10 +465,9 @@ const Avatar = styled.img`
   border-radius: 50%;
   object-fit: cover;
 `;
-
 const InfoCol = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  gap: 8px;
 `;
 const NameRow = styled.div`
   display: flex;
@@ -382,11 +483,10 @@ const RoleImg = styled.img`
 const MetaRow = styled.div`
   display: flex;
   align-items: center;
+  color: #87898c;
   gap: 8px;
-  margin-top: 2px;
+  margin-top: 5px;
 `;
-
-const CapsuleBtn = styled.div``;
 
 const MoreBtn = styled.button`
   all: unset;
@@ -476,7 +576,7 @@ const BlurOverlay = styled.div<{ position: "left" | "right" }>`
   top: 0;
   bottom: 0;
   width: 40px;
-  ${({ position }) => position}:0;
+  ${({ position }) => position}: 0;
   background: linear-gradient(
     to ${({ position }) => (position === "left" ? "right" : "left")},
     white 0%,
@@ -533,8 +633,8 @@ const NavBtn = styled.button.withConfig({
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  ${({ $left }) => $left && "left: 32px;"}
-  ${({ $right }) => $right && "right: 32px;"}
+  ${({ $left }) => $left && 'left: 32px;'}
+  ${({ $right }) => $right && 'right: 32px;'}
   font-size: 48px;
   background: none;
   color: #fff;
@@ -553,19 +653,6 @@ const ViewerImage = styled.img`
   border-radius: 12px;
 `;
 
-/* 간단 북마크 아이콘 */
-const BookmarkIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"
-      stroke="#3a5caa"
-      strokeWidth="1.6"
-      fill="none"
-    />
-  </svg>
-);
-
-/* 신고 모달 */
 const ReportBackdrop = styled.div`
   position: fixed;
   inset: 0;
@@ -619,4 +706,24 @@ const PrimaryBtn = styled.button`
   background: #e9f1ff;
   color: #1f3e9a;
   cursor: pointer;
+`;
+
+const IconButton = styled.button`
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 0;
+  padding: 4px;
+  border-radius: 6px;
+  &:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.2);
+    outline-offset: 2px;
+  }
+  &[disabled] {
+    opacity: 0.6;
+    cursor: default;
+    pointer-events: none;
+  }
 `;

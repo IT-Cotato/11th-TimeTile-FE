@@ -4,9 +4,19 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { scrapApi, ScrapFolder } from '@/apis/scrapApi';
 
-type Props = { postId: number | string; open: boolean; onClose: () => void };
+type Props = {
+  postId: number | string;
+  open: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+};
 
-export default function ScrapModal({ postId, open, onClose }: Props) {
+export default function ScrapModal({
+  postId,
+  open,
+  onClose,
+  onSuccess,
+}: Props) {
   const [folders, setFolders] = useState<ScrapFolder[]>([]);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [showNew, setShowNew] = useState(false);
@@ -60,10 +70,10 @@ export default function ScrapModal({ postId, open, onClose }: Props) {
     try {
       await scrapApi.scrapPost(postId, selected);
       alert('스크랩 되었습니다.');
+      onSuccess?.();
       onClose();
     } catch (e) {
       console.warn('[scrap save failed]', e);
-      alert('스크랩(가상) 완료');
       onClose();
     }
   };
@@ -100,16 +110,19 @@ export default function ScrapModal({ postId, open, onClose }: Props) {
           {folders.length === 0 && (
             <Empty>폴더가 없습니다. 먼저 폴더를 추가해 주세요.</Empty>
           )}
-          {folders.map(f => (
-            <Row key={f.id} onClick={() => toggle(f.id)}>
-              <input
-                type="checkbox"
-                checked={!!checked[f.id]}
-                onChange={() => toggle(f.id)}
-              />
-              <span>{f.name}</span>
-            </Row>
-          ))}
+          {folders.map(f => {
+            const isChecked = !!checked[f.id];
+            return (
+              <Row key={f.id} $checked={isChecked}>
+                <Checkbox
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={() => toggle(f.id)}
+                />
+                <span>{f.name}</span>
+              </Row>
+            );
+          })}
         </List>
 
         <Footer>
@@ -153,13 +166,12 @@ const Dim = styled.div`
   z-index: 9999;
 `;
 const Panel = styled.div`
-  width: 360px;
-  max-height: 70vh;
+  width: 400px;
   overflow: hidden;
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  padding: 16px;
+  background: #f7faff;
+  box-shadow: 1px solid var(--Primary-400, #a6c6fa);
+  padding: 32px;
   position: relative;
 `;
 const Header = styled.div`
@@ -191,12 +203,34 @@ const Empty = styled.div`
   color: #9ca3af;
   font-size: 14px;
 `;
-const Row = styled.label`
+// 기존 Row 교체
+const Row = styled.label.withConfig({
+  shouldForwardProp: p => p !== '$checked',
+})<{ $checked?: boolean }>`
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: ${({ $checked }) => ($checked ? '#1f3e9a' : '#111827')};
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: ${({ $checked }) => ($checked ? '#e3edff' : '#f9fafb')};
+  }
+
+  span {
+    line-height: 1.2;
+  }
 `;
+
+// 새로 추가
+const Checkbox = styled.input``;
+
 const Footer = styled.div`
   display: flex;
   gap: 12px;
