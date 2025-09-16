@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 import { searchApi } from "@/apis/searchApi";
-import { RecentSearchDropdown } from "./RecentSearchDropDown";
+import { RecentSearchDropdown } from "./RecentSearchDropdown";
 import { SuggestDropdown } from "./SuggestDropdown";
 
 export const Search = () => {
