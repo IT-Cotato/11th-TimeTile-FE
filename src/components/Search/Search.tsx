@@ -75,7 +75,7 @@ export const Search = () => {
     const newKeywords = [
       keyword,
       ...recentKeywords.filter((k) => k !== keyword),
-    ].slice(0, 5);
+    ].slice(0, 10);
     setRecentKeywords(newKeywords);
 
     router.push(`/search?query=${encodeURIComponent(keyword)}`);
@@ -104,7 +104,7 @@ export const Search = () => {
   return (
     <SearchInputWrapper ref={wrapperRef}>
       <SearchIconStyled>
-        {value.trim() ? <SearchIconFill /> : <SearchIcon />}
+        {value.trim() || isFocused ? <SearchIconFill /> : <SearchIcon />}
       </SearchIconStyled>
       <SearchInput
         type="text"
