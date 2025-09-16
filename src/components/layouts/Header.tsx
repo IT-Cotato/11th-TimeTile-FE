@@ -11,6 +11,7 @@ import { theme } from "@/styles/theme";
 import { SearchIcon } from "@/assets/icons/SearchIcon";
 import { Text } from "../atoms/Text";
 import { authApi } from "@/apis/authApi";
+import { Search } from "../Search/Search";
 
 export const Header = () => {
   const [userProfile, setUserProfile] = useAtom(userProfileAtom);
@@ -58,26 +59,7 @@ export const Header = () => {
           <SymbolTextLogo width={150} height={30} />
         </LogoDiv>
         <Nav>
-          <SearchInputWrapper>
-            <SearchIconStyled>
-              <SearchIcon />
-            </SearchIconStyled>
-            <SearchInput
-              type="text"
-              id="searchinput"
-              name="searchinput"
-              placeholder="문서를 검색해보세요."
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const target = e.target as HTMLInputElement;
-                  const keyword = target.value.trim();
-                  if (keyword) {
-                    router.push(`/search?query=${encodeURIComponent(keyword)}`);
-                  }
-                }
-              }}
-            />
-          </SearchInputWrapper>
+          <Search />
           <AlarmButton aria-label="알림">
             <AlarmIcon />
           </AlarmButton>
