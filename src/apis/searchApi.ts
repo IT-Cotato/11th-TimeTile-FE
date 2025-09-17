@@ -7,14 +7,23 @@ export const searchApi = {
     });
     return res.data;
   },
+
   getRecent: async () => {
     const res = await authAxios.get("/search/recent");
     return res.data;
   },
+
   deleteRecent: async (keyword: string) => {
-    const response = await authAxios.delete(
+    const res = await authAxios.delete(
       `/search/recent/${encodeURIComponent(keyword)}`
     );
-    return response.data;
+    return res.data;
+  },
+
+  searchAll: async (query: string) => {
+    const res = await authAxios.get("/search", {
+      params: { query },
+    });
+    return res.data;
   },
 };
