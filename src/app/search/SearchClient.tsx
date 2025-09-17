@@ -5,12 +5,11 @@ import { searchApi } from "@/apis/searchApi";
 import styled from "styled-components";
 import { SearchEvent, SearchPost } from "@/model/components/SearchType";
 import { theme } from "@/styles/theme";
+import { useSearchParams } from "next/navigation";
 
-interface SearchProps {
-  query: string;
-}
-
-const SearchClient = ({ query }: SearchProps) => {
+const SearchClient = () => {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query") || "";
   const [results, setResults] = useState<SearchPost[]>([]);
   const [events, setEvents] = useState<SearchEvent[]>([]);
   const [loading, setLoading] = useState(false);

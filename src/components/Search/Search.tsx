@@ -78,6 +78,8 @@ export const Search = () => {
     ].slice(0, 10);
     setRecentKeywords(newKeywords);
 
+    setIsFocused(false);
+
     router.push(`/search?query=${encodeURIComponent(keyword)}`);
   };
 
