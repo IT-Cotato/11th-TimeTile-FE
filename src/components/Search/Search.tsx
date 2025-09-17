@@ -78,7 +78,7 @@ export const Search = () => {
     ].slice(0, 10);
     setRecentKeywords(newKeywords);
 
-    window.location.href = `/search?query=${encodeURIComponent(keyword)}`;
+    router.push(`/search?query=${encodeURIComponent(keyword)}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
