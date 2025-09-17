@@ -125,7 +125,11 @@ export const Search = () => {
         />
       )}
       {isFocused && value.trim() && (
-        <SuggestDropdown keyword={value} suggestions={suggestions} />
+        <SuggestDropdown
+          keyword={value}
+          suggestions={suggestions}
+          onTagClick={handleTagClick}
+        />
       )}
     </SearchInputWrapper>
   );

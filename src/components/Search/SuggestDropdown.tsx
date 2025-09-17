@@ -4,16 +4,19 @@ import { theme } from "@/styles/theme";
 interface Props {
   keyword: string;
   suggestions: string[];
+  onTagClick: (keyword: string) => void;
 }
 
-export const SuggestDropdown = ({ suggestions }: Props) => {
+export const SuggestDropdown = ({ suggestions, onTagClick }: Props) => {
   return (
     <DropdownWrapper>
       <Divider />
       <DropDiv>
         {suggestions.length > 0 ? (
           suggestions.map((item, idx) => (
-            <DropdownItem key={idx}>{item}</DropdownItem>
+            <DropdownItem key={idx} onClick={() => onTagClick(item)}>
+              {item}
+            </DropdownItem>
           ))
         ) : (
           <NoSuggestion>추천 검색어가 없습니다</NoSuggestion>
