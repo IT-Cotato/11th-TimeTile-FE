@@ -116,6 +116,7 @@ export const Search = () => {
         onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         $isDropdownOpen={isFocused}
+        spellCheck="false"
       />
       {isFocused && !value.trim() && (
         <RecentSearchDropdown
@@ -163,6 +164,7 @@ const SearchInput = styled.input<{ $isDropdownOpen: boolean }>`
   border-bottom: ${({ $isDropdownOpen }) =>
     $isDropdownOpen ? "none" : `1px solid ${theme.palette.gray_400}`};
   outline: none;
+  appearance: none;
   font-family: "Pretendard-Regular";
   font-size: 16px;
   line-height: 150%;
