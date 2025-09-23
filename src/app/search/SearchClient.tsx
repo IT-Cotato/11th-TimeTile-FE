@@ -15,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import { SearchHeader } from "@/components/Search/SearchResult/SearchHeader";
 import { DeckResult } from "@/components/Search/SearchResult/DeckResult";
 import { UserResult } from "@/components/Search/SearchResult/UserResult";
+import { MyTileResult } from "@/components/Search/SearchResult/MyTileResult";
 
 const SearchClient = () => {
   const searchParams = useSearchParams();
@@ -74,6 +75,7 @@ const SearchClient = () => {
             <SearchHeader searchCount={searchCount} />
             <DeckResult artistCount={response.artistCount} artists={artists} />
             <UserResult userCount={response.userCount} users={users} />
+            <MyTileResult postCount={response.postCount} posts={results} />
           </>
         )}
       </Wrapper>
