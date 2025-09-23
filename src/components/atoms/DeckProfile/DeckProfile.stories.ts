@@ -11,8 +11,8 @@ const meta = {
       description: {
         component: `
 - 아티스트(덱) 프로필 컴포넌트입니다.
-- name은 아티스트 이름입니다.
-- imageUrl은 아티스트 프로필이미지입니다.
+- name은 아티스트의 이름입니다.
+- imageUrl은 아티스트의 프로필이미지입니다.
 `,
       },
     },

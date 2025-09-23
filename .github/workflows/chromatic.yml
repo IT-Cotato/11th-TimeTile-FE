@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [develop]
     paths: ["src/components/atoms/**"]
+  push:
+    branches: [develop]
+    paths: ["src/components/atoms/**"]
 
 jobs:
   storybook:
