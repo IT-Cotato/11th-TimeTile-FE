@@ -6,7 +6,6 @@ const meta = {
   component: UserProfileCard,
   tags: ["autodocs"],
   parameters: {
-    componentSubtitle: "UserProfileCard 컴포넌트",
     docs: {
       description: {
         component: `
