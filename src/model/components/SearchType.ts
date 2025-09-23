@@ -24,13 +24,13 @@ export interface SearchEvent {
 
 export interface SearchResponse {
   artistCount: number;
-  artists: string[];
+  artists: SearchArtist[];
   userCount: number;
-  users: string[];
+  users: SearchUser[];
   postCount: number;
   posts: SearchPost[];
   eventCount: number;
-  events: Event[];
+  events: SearchEvent[];
 }
 
 export interface SearchArtist {

@@ -7,10 +7,13 @@ import {
   SearchArtist,
   SearchEvent,
   SearchPost,
+  SearchResponse,
   SearchUser,
 } from "@/model/components/SearchType";
 import { theme } from "@/styles/theme";
 import { useSearchParams } from "next/navigation";
+import { SearchHeader } from "@/components/Search/SearchResult/SearchHeader";
+import { DeckResult } from "@/components/Search/SearchResult/DeckResult";
 
 const SearchClient = () => {
   const searchParams = useSearchParams();
@@ -20,6 +23,14 @@ const SearchClient = () => {
   const [results, setResults] = useState<SearchPost[]>([]);
   const [events, setEvents] = useState<SearchEvent[]>([]);
   const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState<SearchResponse | null>(null);
+
+  const searchCount = response
+    ? response.artistCount +
+      response.userCount +
+      response.postCount +
+      response.eventCount
+    : 0;
 
   useEffect(() => {
     if (!query) return;
@@ -29,6 +40,7 @@ const SearchClient = () => {
       try {
         const res = await searchApi.searchAll(query);
         if (res.isSuccess && res.data) {
+          setResponse(res.data);
           setResults(res.data.posts);
           setEvents(res.data.events);
           setArtists(res.data.artists);
@@ -59,30 +71,12 @@ const SearchClient = () => {
         {!loading && results.length === 0 && events.length === 0 && (
           <p>검색 결과가 없습니다.</p>
         )}
-        {!loading &&
-          results.map((post) => (
-            <ResultItem key={post.postId}>
-              <img src={post.mainImageUrl} alt={post.title} width={200} />
-              <h3>{post.title}</h3>
-              <p>{post.content}</p>
-              <p>작성자: {post.authorNickname}</p>
-            </ResultItem>
-          ))}
-        {!loading &&
-          events.map((event) => (
-            <EventItem key={event.groupId}>
-              <img
-                src={event.artistImageUrl}
-                alt={event.artistName}
-                width={200}
-              />
-              <h3>{event.name}</h3>
-              <p>아티스트: {event.artistName}</p>
-              <p>활동 유형: {event.activityTypes.join(", ")}</p>
-              <p>{event.description}</p>
-              <p>시작일: {event.startedAt}</p>
-            </EventItem>
-          ))}
+        {!loading && response && (
+          <>
+            <SearchHeader searchCount={searchCount} />
+            <DeckResult artistCount={response.artistCount} artists={artists} />
+          </>
+        )}
       </Wrapper>
     </Container>
   );
@@ -98,9 +92,11 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
+  display: flex;
   width: 1200px;
-  margin: 0 auto;
-  margin-bottom: 150px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
 `;
 
 const ResultItem = styled.div`
