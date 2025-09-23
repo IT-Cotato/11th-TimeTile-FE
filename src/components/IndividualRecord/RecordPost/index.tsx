@@ -8,32 +8,31 @@ import { ChatIcon } from "@/assets/icons/ChatIcon";
 import { ScrapIcon1 } from "@/assets/icons/ScrapIcon1";
 import { ScrapIconFill } from "@/assets/icons/ScrapIconFill";
 import { RightArrowIcon1 } from "@/assets/icons/RightArrowIcon1";
-import { LeftArrowIcon } from "@/assets/icons/LeftArrowIcon";
 import { MoreIcon } from "@/assets/icons/MoreIcon";
 import ScrapModal from "@/components/Scrap/ScrapModal";
 import { postApi } from "@/apis/postApi";
 import { scrapApi } from "@/apis/scrapApi";
 import CommentsSection from "@/components/atoms/Comments";
-import { useRouter } from "next/navigation";
 import { HeartFillIcon } from "@/assets/icons/HeartFillIcon";
+import { LeftArrowIcon } from "@/assets/icons/LeftArrowIcon";
 
 interface RecordPostProps {
   postId: number;
   profileImage: string;
-  username: string; // 작성자 닉네임(authorNickname)
-  currentNickname?: string; // 내 닉네임(nickname)
+  username: string;
+  currentNickname?: string;
   roleImageUrl?: string;
   visibility: string;
-  date: string; // YYYY-MM-DD
+  date: string;
   title: string;
   content: string;
   images: string[];
   likes: number;
   comments: number;
   scrapCount?: number;
-  commentsData?: any[]; // 외부에서 주입 시 사용 (없어도 됨)
+  commentsData?: any[];
   onImageClick?: (index: number) => void;
-  onDeleteSuccess?: () => void;
+  onDeleteSuccess?: () => void; // 삭제 콜백
 }
 
 const RecordPost = ({
@@ -54,25 +53,22 @@ const RecordPost = ({
   onImageClick,
   onDeleteSuccess,
 }: RecordPostProps) => {
-  const router = useRouter();
   const imageGridRef = useRef<HTMLDivElement>(null);
 
-  // 상세 데이터(표시용) 상태
   const [headerName, setHeaderName] = useState(username);
   const [headerProfile, setHeaderProfile] = useState(profileImage);
   const [theDate, setTheDate] = useState(date);
   const [imgs, setImgs] = useState(images);
   const [visibilityState, setVisibilityState] = useState(visibility);
 
-  // 카운트/상태
-  const [commentCount, setCommentCount] = useState<number>(
+  const [commentCount, setCommentCount] = useState(
     (commentsData?.length ?? 0) || comments || 0
   );
   const [likeCount, setLikeCount] = useState(likes);
-  const [liked, setLiked] = useState(false); // 상세 스펙에 isLiked 없으므로 false 시작
+  const [liked, setLiked] = useState(false);
   const [likeLoading, setLikeLoading] = useState(false);
 
-  const [scrapped, setScrapped] = useState(false); // 내 스크랩 여부(아이콘 색칠)
+  const [scrapped, setScrapped] = useState(false);
   const [scrapCnt, setScrapCnt] = useState(scrapCount);
   const [scrapOpen, setScrapOpen] = useState(false);
 
@@ -85,17 +81,13 @@ const RecordPost = ({
   const maxReportLen = 200;
 
   const owned = (currentNickname ?? "") === (username ?? "");
-  // 댓글 카운트(CommentsSection과 동기화)
 
-  // 유틸
   const pick = (k: string) =>
     (typeof window === "undefined" ? "" : localStorage.getItem(k) || "").trim();
 
-  // ✅ 현재 로그인 유저 닉네임/프로필 (댓글 낙관적 렌더용)
   const currentUserName = pick("commenterNickname");
   const currentUserAvatarUrl = pick("commenterProfileImageUrl");
 
-  // 날짜 포맷
   const formatDateYMD = (iso?: string) => {
     if (!iso) return "";
     const d = new Date(iso);
@@ -103,66 +95,13 @@ const RecordPost = ({
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   };
 
-  // 상세 조회로 표시값/카운트 초기화
-  // 상세 조회로 표시값/카운트 초기화
-  React.useEffect(() => {
-    if (!postId) return;
-    (async () => {
-      try {
-        const raw: any = await postApi.getPostDetail(postId);
-        const d: any = raw?.data?.data ?? raw?.data ?? raw;
-
-        setLikeCount(Number.isFinite(+d.likeCount) ? +d.likeCount : likes);
-        setCommentCount(
-          Number.isFinite(+d.commentCount) ? +d.commentCount : comments
-        );
-        setScrapCnt(
-          Number.isFinite(+d.scrapCount) ? +d.scrapCount : scrapCount
-        );
-
-        setHeaderName(d.authorNickname ?? headerName);
-        setHeaderProfile(d.authorProfileImageUrl ?? headerProfile);
-        setTheDate(formatDateYMD(d.createdAt ?? theDate));
-        setImgs(Array.isArray(d.mediaUrls) ? d.mediaUrls : imgs);
-        setVisibilityState(d.visibility ?? visibilityState);
-
-        // ✅ 좋아요 상태를 서버 값으로 초기화
-        setLiked(!!d.isLiked); // 서버 필드명에 맞게 수정
-      } catch (e) {
-        console.warn("[getPostDetail failed]", e);
-      }
-    })();
-  }, [postId]);
-
-  // 현재 스크랩 여부(아이콘 색칠) 조회
-  React.useEffect(() => {
-    if (!postId) return;
-    (async () => {
-      try {
-        const st = await scrapApi.getScrapStatus(postId);
-        const body = st?.data?.data ?? st?.data ?? {};
-        const preset: number[] =
-          body?.scrapFolderIds ??
-          body?.folderIds ??
-          (Array.isArray(body?.scrapFolders)
-            ? body.scrapFolders.map((f: any) => Number(f?.id))
-            : []) ??
-          [];
-        setScrapped(Array.isArray(preset) && preset.length > 0);
-      } catch {
-        // 조회 실패 시 기본 false 유지
-        setScrapped(false);
-      }
-    })();
-  }, [postId]);
-
   // 삭제
   const handleDelete = async () => {
     if (!confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
     try {
       await postApi.deletePost(postId);
       alert("삭제되었습니다.");
-      onDeleteSuccess ? onDeleteSuccess() : router.back();
+      onDeleteSuccess?.(); // 라우팅은 부모 컴포넌트에서 처리
     } catch (e: any) {
       alert(e?.response?.data?.message || e?.message || "삭제 실패");
     } finally {
@@ -170,56 +109,45 @@ const RecordPost = ({
     }
   };
 
+  // 좋아요 토글
   const toggleLike = async () => {
     if (likeLoading) return;
     setLikeLoading(true);
 
     const was = liked;
-    const id = Number(postId);
 
-    // ✅ 낙관적 반영
     setLiked(!was);
     setLikeCount((c) => (was ? Math.max(0, c - 1) : c + 1));
 
     try {
-      if (was) {
-        await postApi.unlikePost(id);
-      } else {
-        await postApi.likePost(id);
-      }
+      if (was) await postApi.unlikePost(postId);
+      else await postApi.likePost(postId);
     } catch (e: any) {
-      const msg = e?.response?.data?.message || '';
-      const stat = e?.response?.status;
-
-      // “이미 처리됨” 같은 경우는 성공 취급
-      const alreadyProcessed = msg.includes('이미 처리됨') || stat === 409;
-
-      if (!alreadyProcessed) {
-        // ⚠️ 진짜 에러만 롤백
-        setLiked(was);
-        setLikeCount(c => (was ? c + 1 : Math.max(0, c - 1)));
-        alert(msg || e?.message || '좋아요 처리에 실패했습니다.');
-      }
+      setLiked(was);
+      setLikeCount((c) => (was ? c + 1 : Math.max(0, c - 1)));
+      alert(
+        e?.response?.data?.message ||
+          e?.message ||
+          "좋아요 처리에 실패했습니다."
+      );
     } finally {
       setLikeLoading(false);
     }
   };
 
-  // 스크랩 토글은 모달에서 처리. 여기서는 아이콘 색칠만 관리
   const handleScrapSuccess = () => {
     if (!scrapped) {
-      setScrapped(true); // ✅ 색칠
+      setScrapped(true);
       setScrapCnt((c) => c + 1);
     }
     setScrapOpen(false);
   };
-  // 이미지 스크롤
+
   const scrollLeft = () =>
     imageGridRef.current?.scrollBy({ left: -200, behavior: "smooth" });
   const scrollRight = () =>
     imageGridRef.current?.scrollBy({ left: 200, behavior: "smooth" });
 
-  // 이미지 뷰어
   const openImageViewer = (index: number) => {
     if (onImageClick) return onImageClick(index);
     setCurrentImageIndex(index);
@@ -227,7 +155,6 @@ const RecordPost = ({
   };
   const closeImageViewer = () => setIsImageViewerOpen(false);
 
-  // 신고
   const handleReport = async () => {
     if (!reportText.trim()) {
       alert("신고 사유를 입력해주세요.");

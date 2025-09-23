@@ -12,9 +12,6 @@ interface PropsType {
 }
 
 export const Tag = ({ variant, onClick, children, ...props }: PropsType) => {
-  const tagChildren =
-    variant === "tile" ? "타일" : variant === "deck" ? "데크" : "";
-
   const renderTag = () => {
     if (variant === "song") {
       return (
@@ -27,7 +24,7 @@ export const Tag = ({ variant, onClick, children, ...props }: PropsType) => {
     return (
       <FlexBox>
         <StyledTag variant={variant}>
-          <Text typo="Caption_1">관련{tagChildren}</Text>
+          <Text typo="Caption_1">{children}</Text>
         </StyledTag>
       </FlexBox>
     );

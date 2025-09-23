@@ -10,7 +10,8 @@ const meta: Meta<typeof Tag> = {
     docs: {
       description: {
         component: `
-- variant 값으로 "tile" | "deck" | "song" 중 하나를 선택할 수 있습니다.`,
+- variant 값으로 "tile" | "deck" | "song" 중 하나를 선택할 수 있습니다.
+- children으로 태그에 표시할 텍스트를 전달합니다.`,
       },
     },
   },
@@ -19,6 +20,10 @@ const meta: Meta<typeof Tag> = {
       control: "select",
       options: ["tile", "deck", "song"],
       description: "Tag 종류",
+    },
+    children: {
+      control: "text",
+      description: "태그에 표시할 텍스트",
     },
   },
 };
@@ -29,17 +34,20 @@ type Story = StoryObj<typeof Tag>;
 export const TileTag: Story = {
   args: {
     variant: "tile",
+    children: "250913 뮤직뱅크",
   },
 };
 
 export const DeckTag: Story = {
   args: {
     variant: "deck",
+    children: "NewJeans",
   },
 };
 
 export const SongTag: Story = {
   args: {
     variant: "song",
+    children: "좋은 노래",
   },
 };
