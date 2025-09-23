@@ -25,21 +25,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Clean Storybook build
-        run: rm -rf storybook-static
-
-      - name: Build Storybook
-        run: pnpm build-storybook
-
       - name: Publish to Chromatic
         id: chromatic
-        env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          echo "Deploying Storybook to Chromatic..."
-          URL=$(pnpm exec chromatic --project-token=$CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes)
-          echo "storybookUrl=$URL" >> $GITHUB_OUTPUT
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Comment PR with Storybook URL
         uses: thollander/actions-comment-pull-request@v2
