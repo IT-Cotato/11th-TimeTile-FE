@@ -1,3 +1,14 @@
+export interface RelatedArtist {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
+export interface RelatedEvent {
+  groupId: string;
+  name: string;
+}
+
 export interface SearchPost {
   postId: number;
   groupId: string;
@@ -20,6 +31,8 @@ export interface SearchEvent {
   artistName: string;
   description: string;
   startedAt: string;
+  relatedArtists?: RelatedArtist[];
+  relatedEvents?: RelatedEvent[];
 }
 
 export interface SearchResponse {

@@ -16,6 +16,7 @@ import { SearchHeader } from "@/components/Search/SearchResult/SearchHeader";
 import { DeckResult } from "@/components/Search/SearchResult/DeckResult";
 import { UserResult } from "@/components/Search/SearchResult/UserResult";
 import { MyTileResult } from "@/components/Search/SearchResult/MyTileResult";
+import { TimeTileResult } from "@/components/Search/SearchResult/TimeTileResult";
 
 const SearchClient = () => {
   const searchParams = useSearchParams();
@@ -80,6 +81,11 @@ const SearchClient = () => {
               posts={results}
               highlightWord={query}
             />
+            <TimeTileResult
+              eventCount={response.eventCount}
+              events={events}
+              highlightWord={query}
+            />
           </>
         )}
       </Wrapper>
@@ -94,10 +100,12 @@ const Container = styled.div`
   overflow-x: auto;
   min-height: 100vh;
   padding: 0 119px;
+  margin-bottom: 83px;
 `;
 
 const Wrapper = styled.div`
   display: flex;
+  margin: 0 auto;
   width: 1200px;
   flex-direction: column;
   align-items: flex-start;
