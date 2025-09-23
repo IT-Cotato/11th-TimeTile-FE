@@ -1,7 +1,7 @@
-import styled from 'styled-components';
-import { theme } from '@/styles/theme';
-import { Text } from '@/components/atoms/Text';
-import { Tag } from '@/components/atoms/Tag';
+import styled from "styled-components";
+import { theme } from "@/styles/theme";
+import { Text } from "@/components/atoms/Text";
+import { Tag } from "@/components/atoms/Tag";
 interface TileCardProps {
   selected?: boolean;
   schedules: Schedule[];
@@ -9,7 +9,9 @@ interface TileCardProps {
 interface Schedule {
   title: string;
   date: string;
-  tags: ('tile' | 'deck' | 'song')[];
+  tags: ("tile" | "deck" | "song")[];
+  relatedEvents?: { name: string }[];
+  relatedArtists?: { name: string }[];
   description: string;
   thumbnails: string[];
   thumbnailLabels: string[];
@@ -17,7 +19,7 @@ interface Schedule {
 }
 
 const getDayFromDate = (date: string) => {
-  const day = date.split('.')[2];
+  const day = date.split(".")[2];
   return `${parseInt(day, 10)}일`;
 };
 
@@ -36,8 +38,8 @@ export const TileCard = ({ selected = false, schedules }: TileCardProps) => {
 const CollapsedContent = ({ schedules }: { schedules: Schedule[] }) => {
   const titles = schedules
     .slice(0, 2)
-    .map(s => s.title)
-    .join(', ');
+    .map((s) => s.title)
+    .join(", ");
 
   return (
     <>
@@ -76,13 +78,14 @@ const ExpandedContent = ({ schedules }: { schedules: Schedule[] }) => {
           {schedule.title}
         </Text>
       </Header>
-
       <TagWrapper>
-        {schedule.tags.map((tag, i) => (
-          <Tag key={i} variant={tag} />
+        {schedule.relatedEvents?.map((event, i) => (
+          <Tag key={`event-${i}`} variant="tile" children={event.name} />
+        ))}
+        {schedule.relatedArtists?.map((artist, i) => (
+          <Tag key={`artist-${i}`} variant="deck" children={artist.name} />
         ))}
       </TagWrapper>
-
       <TextWrapper>
         <Text typo="Body_3" color="gray_1000">
           {schedule.description}
@@ -109,7 +112,7 @@ const ExpandedContent = ({ schedules }: { schedules: Schedule[] }) => {
 const CardWrapper = styled.div<{ selected: boolean }>`
   display: flex;
   width: 818px;
-  padding: ${({ selected }) => (selected ? '24px 24px 16px 24px' : '24px')};
+  padding: ${({ selected }) => (selected ? "24px 24px 16px 24px" : "24px")};
   flex-direction: column;
   align-items: flex-start;
   gap: 24px;
