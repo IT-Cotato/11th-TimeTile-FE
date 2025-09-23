@@ -75,7 +75,11 @@ const SearchClient = () => {
             <SearchHeader searchCount={searchCount} />
             <DeckResult artistCount={response.artistCount} artists={artists} />
             <UserResult userCount={response.userCount} users={users} />
-            <MyTileResult postCount={response.postCount} posts={results} />
+            <MyTileResult
+              postCount={response.postCount}
+              posts={results}
+              highlightWord={query}
+            />
           </>
         )}
       </Wrapper>

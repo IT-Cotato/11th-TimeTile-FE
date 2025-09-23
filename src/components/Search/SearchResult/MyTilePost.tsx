@@ -5,14 +5,14 @@ import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { SearchPost } from "@/model/components/SearchType";
 import { theme } from "@/styles/theme";
-import { useEffect } from "react";
 import styled from "styled-components";
 
 interface MyTilePostProps {
   posts: SearchPost[];
+  highlightWord?: string;
 }
 
-export const MyTilePost = ({ posts }: MyTilePostProps) => {
+export const MyTilePost = ({ posts, highlightWord }: MyTilePostProps) => {
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
     const year = date.getFullYear();
@@ -22,6 +22,19 @@ export const MyTilePost = ({ posts }: MyTilePostProps) => {
     return `${year}.${month.toString().padStart(2, "0")}.${day
       .toString()
       .padStart(2, "0")}`;
+  };
+
+  const highlightText = (text: string, word?: string) => {
+    if (!word) return text;
+    const regex = new RegExp(`(${word})`, "gi");
+    const parts = text.split(regex);
+    return parts.map((part, idx) =>
+      part.toLowerCase() === word.toLowerCase() ? (
+        <Highlight key={idx}>{part}</Highlight>
+      ) : (
+        part
+      )
+    );
   };
 
   return (
@@ -39,7 +52,6 @@ export const MyTilePost = ({ posts }: MyTilePostProps) => {
                       alt="게시물 작성자 프로필 이미지"
                     />
                   )}
-
                   <TitleWrap>
                     <Text typo="Body_3">{post.authorNickname}</Text>
                   </TitleWrap>
@@ -51,11 +63,15 @@ export const MyTilePost = ({ posts }: MyTilePostProps) => {
                 />
               </CardContent>
               <TitleWrap>
-                <Text typo="H4">{post.title}</Text>
+                <Text typo="H4">
+                  {highlightText(post.title, highlightWord)}
+                </Text>
               </TitleWrap>
               <PostContent>
                 <Wrap $hasImage={hasimage}>
-                  <Text typo="Body_3">{post.content}</Text>
+                  <Text typo="Body_3">
+                    {highlightText(post.content, highlightWord)}
+                  </Text>
                 </Wrap>
                 {post.mainImageUrl && (
                   <Image src={post.mainImageUrl} alt="게시물 이미지" />
@@ -80,7 +96,6 @@ export const MyTilePost = ({ posts }: MyTilePostProps) => {
                     />
                   </IconDiv>
                 </IconWrapper>
-
                 <ViewButton
                   onClick={() =>
                     (window.location.href = `/record-post/${post.postId}`)
@@ -217,4 +232,8 @@ const ViewButton = styled.button`
   justify-content: center;
   cursor: pointer;
   color: ${theme.palette.primary_700};
+`;
+
+const Highlight = styled.span`
+  color: ${theme.palette.primary_600};
 `;

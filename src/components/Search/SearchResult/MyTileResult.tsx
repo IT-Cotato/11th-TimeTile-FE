@@ -9,9 +9,14 @@ import { RightArrow } from "./../../../assets/icons/RightArrow";
 interface MyTileResultProps {
   posts: SearchPost[];
   postCount: number;
+  highlightWord?: string;
 }
 
-export const MyTileResult = ({ posts, postCount }: MyTileResultProps) => {
+export const MyTileResult = ({
+  posts,
+  postCount,
+  highlightWord,
+}: MyTileResultProps) => {
   const displayPosts = posts.slice(0, 3);
   const showOverlay = posts.length >= 3;
 
@@ -30,7 +35,7 @@ export const MyTileResult = ({ posts, postCount }: MyTileResultProps) => {
       </InfoText>
       <InnerWrapper>
         <ProfileRow>
-          <MyTilePost posts={displayPosts} />
+          <MyTilePost posts={displayPosts} highlightWord={highlightWord} />
         </ProfileRow>
         {showOverlay && <MoreOverlay />}
       </InnerWrapper>
