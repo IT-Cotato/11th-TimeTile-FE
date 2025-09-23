@@ -10,10 +10,10 @@ const meta = {
     docs: {
       description: {
         component: `
-- 유저 프로필 컴포넌트입니다.
-- name은 유저 이름입니다.
-- imageUrl은 유저 프로필이미지입니다.
-- introduction은 유저 한줄소개입니다.
+- 검색 화면에서 쓰이는 유저 프로필 컴포넌트입니다.
+- name은 유저의 이름입니다.
+- imageUrl은 유저의 프로필이미지입니다.
+- introduction은 유저의 한줄소개입니다.
 `,
       },
     },
