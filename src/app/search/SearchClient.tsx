@@ -14,6 +14,7 @@ import { theme } from "@/styles/theme";
 import { useSearchParams } from "next/navigation";
 import { SearchHeader } from "@/components/Search/SearchResult/SearchHeader";
 import { DeckResult } from "@/components/Search/SearchResult/DeckResult";
+import { UserResult } from "@/components/Search/SearchResult/UserResult";
 
 const SearchClient = () => {
   const searchParams = useSearchParams();
@@ -68,13 +69,11 @@ const SearchClient = () => {
     <Container>
       <Wrapper>
         {loading && <p>로딩 중...</p>}
-        {!loading && results.length === 0 && events.length === 0 && (
-          <p>검색 결과가 없습니다.</p>
-        )}
         {!loading && response && (
           <>
             <SearchHeader searchCount={searchCount} />
             <DeckResult artistCount={response.artistCount} artists={artists} />
+            <UserResult userCount={response.userCount} users={users} />
           </>
         )}
       </Wrapper>
