@@ -20,17 +20,23 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 10.12.4
+          version: 10.17.1
 
       - name: Install dependencies
         run: pnpm install
 
+      - name: Clean Storybook build
+        run: rm -rf storybook-static
+
+      - name: Build Storybook
+        run: pnpm build-storybook
+
       - name: Publish to Chromatic
         id: chromatic
-        uses: chromaui/action@v1
-        with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          token: ${{ secrets.GH_TOKEN }}
+        run: |
+          # Chromatic에 배포하고 URL 받기
+          URL=$(pnpm exec chromatic --project-token=$CHROMATIC_PROJECT_TOKEN)
+          echo "storybookUrl=$URL" >> $GITHUB_OUTPUT
 
       - name: Comment PR with Storybook URL
         uses: thollander/actions-comment-pull-request@v2
