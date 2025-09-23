@@ -3,13 +3,20 @@
 import { useEffect, useState } from "react";
 import { searchApi } from "@/apis/searchApi";
 import styled from "styled-components";
-import { SearchEvent, SearchPost } from "@/model/components/SearchType";
+import {
+  SearchArtist,
+  SearchEvent,
+  SearchPost,
+  SearchUser,
+} from "@/model/components/SearchType";
 import { theme } from "@/styles/theme";
 import { useSearchParams } from "next/navigation";
 
 const SearchClient = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
+  const [artists, setArtists] = useState<SearchArtist[]>([]);
+  const [users, setUsers] = useState<SearchUser[]>([]);
   const [results, setResults] = useState<SearchPost[]>([]);
   const [events, setEvents] = useState<SearchEvent[]>([]);
   const [loading, setLoading] = useState(false);
@@ -24,9 +31,14 @@ const SearchClient = () => {
         if (res.isSuccess && res.data) {
           setResults(res.data.posts);
           setEvents(res.data.events);
+          setArtists(res.data.artists);
+          setUsers(res.data.users);
+          console.log(res.data);
         } else {
           setResults([]);
           setEvents([]);
+          setArtists([]);
+          setUsers([]);
         }
       } catch (error) {
         console.error(error);

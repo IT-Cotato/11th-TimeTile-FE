@@ -32,3 +32,15 @@ export interface SearchResponse {
   eventCount: number;
   events: Event[];
 }
+
+export interface SearchArtist {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
+export interface SearchUser {
+  nickname: string;
+  introduction: string | null;
+  imageUrl: string;
+}
