@@ -145,6 +145,12 @@ const TimeLineCard = styled.div`
   border-radius: 20px;
   border: 1px solid ${theme.palette.primary_300};
   background: ${theme.palette.gray_0};
+
+  &:hover {
+    background-color: ${theme.palette.primary_100};
+    border-radius: 20px;
+    border: 1.5px solid ${theme.palette.primary_400};
+  }
 `;
 
 const CardContent = styled.div`
