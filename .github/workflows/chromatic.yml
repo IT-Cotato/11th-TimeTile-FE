@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [develop]
     paths: ["src/components/atoms/**"]
+  push:
+    branches: [develop]
+    paths: ["src/components/atoms/**"]
 
 jobs:
   storybook:
@@ -20,7 +23,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 10.12.4
+          version: 10.17.1
 
       - name: Install dependencies
         run: pnpm install
@@ -33,6 +36,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
 
       - name: Comment PR with Storybook URL
+        if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

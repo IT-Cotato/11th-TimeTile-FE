@@ -3,16 +3,37 @@
 import { useEffect, useState } from "react";
 import { searchApi } from "@/apis/searchApi";
 import styled from "styled-components";
-import { SearchEvent, SearchPost } from "@/model/components/SearchType";
+import {
+  SearchArtist,
+  SearchEvent,
+  SearchPost,
+  SearchResponse,
+  SearchUser,
+} from "@/model/components/SearchType";
 import { theme } from "@/styles/theme";
 import { useSearchParams } from "next/navigation";
+import { SearchHeader } from "@/components/Search/SearchResult/SearchHeader";
+import { DeckResult } from "@/components/Search/SearchResult/DeckResult";
+import { UserResult } from "@/components/Search/SearchResult/UserResult";
+import { MyTileResult } from "@/components/Search/SearchResult/MyTileResult";
+import { TimeTileResult } from "@/components/Search/SearchResult/TimeTileResult";
 
 const SearchClient = () => {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
+  const [artists, setArtists] = useState<SearchArtist[]>([]);
+  const [users, setUsers] = useState<SearchUser[]>([]);
   const [results, setResults] = useState<SearchPost[]>([]);
   const [events, setEvents] = useState<SearchEvent[]>([]);
   const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState<SearchResponse | null>(null);
+
+  const searchCount = response
+    ? response.artistCount +
+      response.userCount +
+      response.postCount +
+      response.eventCount
+    : 0;
 
   useEffect(() => {
     if (!query) return;
@@ -22,11 +43,17 @@ const SearchClient = () => {
       try {
         const res = await searchApi.searchAll(query);
         if (res.isSuccess && res.data) {
+          setResponse(res.data);
           setResults(res.data.posts);
           setEvents(res.data.events);
+          setArtists(res.data.artists);
+          setUsers(res.data.users);
+          console.log(res.data);
         } else {
           setResults([]);
           setEvents([]);
+          setArtists([]);
+          setUsers([]);
         }
       } catch (error) {
         console.error(error);
@@ -44,33 +71,23 @@ const SearchClient = () => {
     <Container>
       <Wrapper>
         {loading && <p>로딩 중...</p>}
-        {!loading && results.length === 0 && events.length === 0 && (
-          <p>검색 결과가 없습니다.</p>
+        {!loading && response && (
+          <>
+            <SearchHeader searchCount={searchCount} />
+            <DeckResult artistCount={response.artistCount} artists={artists} />
+            <UserResult userCount={response.userCount} users={users} />
+            <MyTileResult
+              postCount={response.postCount}
+              posts={results}
+              highlightWord={query}
+            />
+            <TimeTileResult
+              eventCount={response.eventCount}
+              events={events}
+              highlightWord={query}
+            />
+          </>
         )}
-        {!loading &&
-          results.map((post) => (
-            <ResultItem key={post.postId}>
-              <img src={post.mainImageUrl} alt={post.title} width={200} />
-              <h3>{post.title}</h3>
-              <p>{post.content}</p>
-              <p>작성자: {post.authorNickname}</p>
-            </ResultItem>
-          ))}
-        {!loading &&
-          events.map((event) => (
-            <EventItem key={event.groupId}>
-              <img
-                src={event.artistImageUrl}
-                alt={event.artistName}
-                width={200}
-              />
-              <h3>{event.name}</h3>
-              <p>아티스트: {event.artistName}</p>
-              <p>활동 유형: {event.activityTypes.join(", ")}</p>
-              <p>{event.description}</p>
-              <p>시작일: {event.startedAt}</p>
-            </EventItem>
-          ))}
       </Wrapper>
     </Container>
   );
@@ -83,12 +100,16 @@ const Container = styled.div`
   overflow-x: auto;
   min-height: 100vh;
   padding: 0 119px;
+  margin-bottom: 83px;
 `;
 
 const Wrapper = styled.div`
-  width: 1200px;
+  display: flex;
   margin: 0 auto;
-  margin-bottom: 150px;
+  width: 1200px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
 `;
 
 const ResultItem = styled.div`
