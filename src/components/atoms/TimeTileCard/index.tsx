@@ -99,8 +99,8 @@ const ArtistWrapper = styled.div`
   gap: 10px;
   flex-shrink: 0;
   border-radius: 20px;
-  border: 1.5px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-100, #f2f7ff);
+  border: 1.5px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_100};
 `;
 
 const ArtistDiv = styled.div`
@@ -146,13 +146,13 @@ const TileWrapper = styled.div`
   align-items: flex-start;
   flex-shrink: 0;
   border-radius: 16px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Gray-0, #fff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.gray_0};
 
   &:hover {
     border-radius: 16px;
-    border: 1px solid var(--Primary-300, #c3dbff);
-    background: var(--Primary-100, #f2f7ff);
+    border: 1px solid ${theme.palette.primary_300};
+    background: ${theme.palette.primary_100};
   }
 `;
 

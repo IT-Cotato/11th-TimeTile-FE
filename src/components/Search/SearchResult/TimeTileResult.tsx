@@ -4,6 +4,7 @@ import { Text } from "@/components/atoms/Text";
 import { TimeTileCard } from "@/components/atoms/TimeTileCard";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { SearchEvent } from "@/model/components/SearchType";
+import { theme } from "@/styles/theme";
 import styled from "styled-components";
 
 interface TimeTileResultProps {
@@ -65,8 +66,8 @@ const Container = styled.div`
   gap: 32px;
   align-self: stretch;
   border-radius: 20px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
 `;
 
 const Wrapper = styled.div`
