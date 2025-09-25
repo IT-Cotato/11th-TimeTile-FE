@@ -60,7 +60,6 @@ export default function RecordPost(props: RecordPostProps) {
     onDeleteSuccess,
   } = props;
 
-  const router = useRouter();
   const imageGridRef = useRef<HTMLDivElement>(null);
 
   // SSR-safe localStorage pick
@@ -120,13 +119,13 @@ export default function RecordPost(props: RecordPostProps) {
     try {
       await detail.deletePost();
       alert("삭제되었습니다.");
-      onDeleteSuccess ? onDeleteSuccess() : router.back();
+      onDeleteSuccess?.();
     } catch (e: any) {
       alert(e?.response?.data?.message || e?.message || "삭제 실패");
     } finally {
       setMenuOpen(false);
     }
-  }, [detail, onDeleteSuccess, router]);
+  }, [detail, onDeleteSuccess]);
 
   // 이미지 뷰어
   const openImageViewer = useCallback(

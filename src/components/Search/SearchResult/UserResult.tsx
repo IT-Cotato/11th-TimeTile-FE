@@ -1,7 +1,9 @@
 import { RightArrow } from "@/assets/icons/RightArrow";
+import { BlankSearchTile } from "@/components/atoms/BlankSearchTile";
 import { Text } from "@/components/atoms/Text";
 import { UserProfileCard } from "@/components/atoms/UserProfileCard";
 import { FlexBox } from "@/components/layouts/FlexBox";
+import { theme } from "@/styles/theme";
 import styled from "styled-components";
 
 interface User {
@@ -29,19 +31,23 @@ export const UserResult = ({ userCount, users }: UserResultProps) => {
           </FlexBox>
         </div>
       </InfoText>
-      <InnerWrapper>
-        <ProfileRow>
-          {users.slice(0, 5).map((user, index) => (
-            <UserProfileCard
-              key={index}
-              name={user.nickname}
-              imageUrl={user.imageUrl}
-              introduction={user.introduction}
-            />
-          ))}
-        </ProfileRow>
-        {users.length >= 5 && <MoreOverlay />}
-      </InnerWrapper>
+      {users.length === 0 ? (
+        <BlankSearchTile />
+      ) : (
+        <InnerWrapper>
+          <ProfileRow>
+            {users.slice(0, 5).map((user, index) => (
+              <UserProfileCard
+                key={index}
+                name={user.nickname}
+                imageUrl={user.imageUrl}
+                introduction={user.introduction}
+              />
+            ))}
+          </ProfileRow>
+          {users.length >= 5 && <MoreOverlay />}
+        </InnerWrapper>
+      )}
     </Container>
   );
 };
@@ -61,8 +67,8 @@ const Container = styled.div`
   align-items: flex-start;
   gap: 32px;
   border-radius: 20px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
   position: relative;
 `;
 

@@ -5,6 +5,7 @@ import { theme } from "@/styles/theme";
 import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { RightArrow } from "./../../../assets/icons/RightArrow";
+import { BlankSearchTile } from "@/components/atoms/BlankSearchTile";
 
 interface MyTileResultProps {
   posts: SearchPost[];
@@ -33,12 +34,16 @@ export const MyTileResult = ({
           </FlexBox>
         </div>
       </InfoText>
-      <InnerWrapper>
-        <ProfileRow>
-          <MyTilePost posts={displayPosts} highlightWord={highlightWord} />
-        </ProfileRow>
-        {showOverlay && <MoreOverlay />}
-      </InnerWrapper>
+      {posts.length === 0 ? (
+        <BlankSearchTile />
+      ) : (
+        <InnerWrapper>
+          <ProfileRow>
+            <MyTilePost posts={displayPosts} highlightWord={highlightWord} />
+          </ProfileRow>
+          {showOverlay && <MoreOverlay />}
+        </InnerWrapper>
+      )}
     </Container>
   );
 };
@@ -59,8 +64,8 @@ const Container = styled.div`
   align-items: flex-start;
   gap: 32px;
   border-radius: 20px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
   position: relative;
 `;
 

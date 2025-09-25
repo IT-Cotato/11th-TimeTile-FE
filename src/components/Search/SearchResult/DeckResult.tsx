@@ -1,7 +1,9 @@
 import { RightArrow } from "@/assets/icons/RightArrow";
+import { BlankSearchTile } from "@/components/atoms/BlankSearchTile";
 import { DeckProfile } from "@/components/atoms/DeckProfile";
 import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
+import { theme } from "@/styles/theme";
 import styled from "styled-components";
 
 interface Artist {
@@ -29,18 +31,22 @@ export const DeckResult = ({ artistCount, artists }: DeckResultProps) => {
           </FlexBox>
         </div>
       </InfoText>
-      <InnerWrapper>
-        <ProfileRow>
-          {artists.slice(0, 7).map((artist) => (
-            <DeckProfile
-              key={artist.id}
-              name={artist.name}
-              imageUrl={artist.imageUrl}
-            />
-          ))}
-        </ProfileRow>
-        {artists.length >= 7 && <MoreOverlay />}
-      </InnerWrapper>
+      {artists.length === 0 ? (
+        <BlankSearchTile />
+      ) : (
+        <InnerWrapper>
+          <ProfileRow>
+            {artists.slice(0, 7).map((artist) => (
+              <DeckProfile
+                key={artist.id}
+                name={artist.name}
+                imageUrl={artist.imageUrl}
+              />
+            ))}
+          </ProfileRow>
+          {artists.length >= 7 && <MoreOverlay />}
+        </InnerWrapper>
+      )}
     </Container>
   );
 };
@@ -60,8 +66,8 @@ const Container = styled.div`
   align-items: flex-start;
   gap: 32px;
   border-radius: 20px;
-  border: 1px solid var(--Primary-300, #c3dbff);
-  background: var(--Primary-20, #fbfdff);
+  border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
   position: relative;
 `;
 

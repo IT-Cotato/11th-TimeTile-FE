@@ -177,8 +177,8 @@ const Image = styled.img`
   justify-content: flex-end;
   align-items: center;
   border-radius: 16px;
-  border: 1px solid var(--Primary-200, #e6f0ff);
-  background: var(--Gray-0, #fff);
+  border: 1px solid ${theme.palette.primary_200};
+  background: ${theme.palette.gray_0};
   box-shadow: 0 4px 12px 0 rgba(159, 198, 255, 0.25);
   object-fit: cover;
 `;
@@ -188,7 +188,7 @@ const TitleWrap = styled.div`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   overflow: hidden;
-  color: var(--Gray-1000, #000);
+  color: ${theme.palette.gray_1000};
   text-overflow: ellipsis;
 
   /* Body 3 */
