@@ -1,4 +1,5 @@
 import { RightArrow } from "@/assets/icons/RightArrow";
+import { BlankSearchTile } from "@/components/atoms/BlankSearchTile";
 import { DeckProfile } from "@/components/atoms/DeckProfile";
 import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
@@ -29,18 +30,22 @@ export const DeckResult = ({ artistCount, artists }: DeckResultProps) => {
           </FlexBox>
         </div>
       </InfoText>
-      <InnerWrapper>
-        <ProfileRow>
-          {artists.slice(0, 7).map((artist) => (
-            <DeckProfile
-              key={artist.id}
-              name={artist.name}
-              imageUrl={artist.imageUrl}
-            />
-          ))}
-        </ProfileRow>
-        {artists.length >= 7 && <MoreOverlay />}
-      </InnerWrapper>
+      {artists.length === 0 ? (
+        <BlankSearchTile />
+      ) : (
+        <InnerWrapper>
+          <ProfileRow>
+            {artists.slice(0, 7).map((artist) => (
+              <DeckProfile
+                key={artist.id}
+                name={artist.name}
+                imageUrl={artist.imageUrl}
+              />
+            ))}
+          </ProfileRow>
+          {artists.length >= 7 && <MoreOverlay />}
+        </InnerWrapper>
+      )}
     </Container>
   );
 };

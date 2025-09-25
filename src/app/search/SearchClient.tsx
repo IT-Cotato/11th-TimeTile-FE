@@ -100,7 +100,7 @@ const Container = styled.div`
   overflow-x: auto;
   min-height: 100vh;
   padding: 0 119px;
-  margin-bottom: 83px;
+  padding-bottom: 83px;
 `;
 
 const Wrapper = styled.div`
@@ -120,5 +120,3 @@ const ResultItem = styled.div`
   margin-bottom: 24px;
   background: ${theme.palette.primary_20};
 `;
-
-const EventItem = styled(ResultItem)``;

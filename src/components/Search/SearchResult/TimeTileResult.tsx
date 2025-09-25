@@ -1,4 +1,5 @@
 import { RightArrow } from "@/assets/icons/RightArrow";
+import { BlankSearchTile } from "@/components/atoms/BlankSearchTile";
 import { Text } from "@/components/atoms/Text";
 import { TimeTileCard } from "@/components/atoms/TimeTileCard";
 import { FlexBox } from "@/components/layouts/FlexBox";
@@ -31,15 +32,19 @@ export const TimeTileResult = ({
           </FlexBox>
         </div>
       </InfoText>
-      <Wrapper>
-        {displayEvents.map((event) => (
-          <TimeTileCard
-            key={event.groupId}
-            event={event}
-            highlightWord={highlightWord}
-          />
-        ))}
-      </Wrapper>
+      {events.length === 0 ? (
+        <BlankSearchTile />
+      ) : (
+        <Wrapper>
+          {displayEvents.map((event) => (
+            <TimeTileCard
+              key={event.groupId}
+              event={event}
+              highlightWord={highlightWord}
+            />
+          ))}
+        </Wrapper>
+      )}
     </Container>
   );
 };
