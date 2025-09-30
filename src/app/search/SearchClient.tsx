@@ -80,6 +80,7 @@ const SearchClient = () => {
               postCount={response.postCount}
               posts={results}
               highlightWord={query}
+              query={query}
             />
             <TimeTileResult
               eventCount={response.eventCount}
