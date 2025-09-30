@@ -6,20 +6,28 @@ import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { RightArrow } from "./../../../assets/icons/RightArrow";
 import { BlankSearchTile } from "@/components/atoms/BlankSearchTile";
+import { useRouter } from "next/navigation";
 
 interface MyTileResultProps {
   posts: SearchPost[];
   postCount: number;
   highlightWord?: string;
+  query: string;
 }
 
 export const MyTileResult = ({
   posts,
   postCount,
   highlightWord,
+  query,
 }: MyTileResultProps) => {
+  const router = useRouter();
   const displayPosts = posts.slice(0, 3);
   const showOverlay = posts.length >= 3;
+
+  const handleViewAll = () => {
+    router.push(`/search/mytile?query=${encodeURIComponent(query)}`);
+  };
 
   return (
     <Container>
@@ -27,7 +35,7 @@ export const MyTileResult = ({
         <Text typo="H3" color="primary_800">
           마이타일({postCount})
         </Text>
-        <div style={{ cursor: "pointer" }}>
+        <div style={{ cursor: "pointer" }} onClick={handleViewAll}>
           <FlexBox gap={4}>
             <Text typo="Body_3" color="primary_800" children="전체보기" />
             <RightArrow />
