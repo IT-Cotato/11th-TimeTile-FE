@@ -57,3 +57,14 @@ export interface SearchUser {
   introduction: string | null;
   imageUrl: string;
 }
+
+export interface SearchPostResponse {
+  posts: SearchPost[];
+  page: number;
+  size: number;
+  totalPages: number;
+  totalElements: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+  isLast: boolean;
+}

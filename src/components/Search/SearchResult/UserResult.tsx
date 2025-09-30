@@ -4,6 +4,7 @@ import { Text } from "@/components/atoms/Text";
 import { UserProfileCard } from "@/components/atoms/UserProfileCard";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { theme } from "@/styles/theme";
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
 
 interface User {
@@ -15,16 +16,23 @@ interface User {
 interface UserResultProps {
   userCount: number;
   users: User[];
+  query: string;
 }
 
-export const UserResult = ({ userCount, users }: UserResultProps) => {
+export const UserResult = ({ userCount, users, query }: UserResultProps) => {
+  const router = useRouter();
+
+  const handleViewAll = () => {
+    router.push(`/search/user?query=${encodeURIComponent(query)}`);
+  };
+
   return (
     <Container>
       <InfoText>
         <Text typo="H3" color="primary_800">
           유저({userCount})
         </Text>
-        <div style={{ cursor: "pointer" }}>
+        <div style={{ cursor: "pointer" }} onClick={handleViewAll}>
           <FlexBox gap={4}>
             <Text typo="Body_3" color="primary_800" children="전체보기" />
             <RightArrow />

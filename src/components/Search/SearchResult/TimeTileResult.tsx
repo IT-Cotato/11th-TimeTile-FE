@@ -5,20 +5,28 @@ import { TimeTileCard } from "@/components/atoms/TimeTileCard";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { SearchEvent } from "@/model/components/SearchType";
 import { theme } from "@/styles/theme";
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
 
 interface TimeTileResultProps {
   eventCount: number;
   events: SearchEvent[];
   highlightWord?: string;
+  query: string;
 }
 
 export const TimeTileResult = ({
   eventCount,
   events,
   highlightWord,
+  query,
 }: TimeTileResultProps) => {
   const displayEvents = events.slice(0, 5);
+  const router = useRouter();
+
+  const handleViewAll = () => {
+    router.push(`/search/timetile?query=${encodeURIComponent(query)}`);
+  };
 
   return (
     <Container>
@@ -26,7 +34,7 @@ export const TimeTileResult = ({
         <Text typo="H3" color="primary_800">
           타임타일({eventCount})
         </Text>
-        <div style={{ cursor: "pointer" }}>
+        <div style={{ cursor: "pointer" }} onClick={handleViewAll}>
           <FlexBox gap={4}>
             <Text typo="Body_3" color="primary_800" children="전체보기" />
             <RightArrow />

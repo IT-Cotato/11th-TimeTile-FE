@@ -10,9 +10,14 @@ import styled from "styled-components";
 interface MyTilePostProps {
   posts: SearchPost[];
   highlightWord?: string;
+  gridMode?: boolean;
 }
 
-export const MyTilePost = ({ posts, highlightWord }: MyTilePostProps) => {
+export const MyTilePost = ({
+  posts,
+  highlightWord,
+  gridMode,
+}: MyTilePostProps) => {
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
     const year = date.getFullYear();
@@ -39,11 +44,11 @@ export const MyTilePost = ({ posts, highlightWord }: MyTilePostProps) => {
 
   return (
     <Wrapper>
-      <TimeLineWrap>
+      <TimeLineWrap gridmode={gridMode}>
         {posts.map((post) => {
           const hasimage = !!post.mainImageUrl;
           return (
-            <TimeLineCard key={post.postId}>
+            <TimeLineCard key={post.postId} gridmode={gridMode}>
               <CardContent>
                 <FlexBox gap={10}>
                   {post.authorProfileImageUrl && (
@@ -128,13 +133,22 @@ const ProfileImage = styled.img`
   border-radius: 16px;
 `;
 
-const TimeLineWrap = styled.div`
-  display: inline-flex;
-  align-items: center;
+const TimeLineWrap = styled("div").withConfig({
+  shouldForwardProp: (prop) => prop !== "gridmode",
+})<{ gridmode?: boolean }>`
+  display: ${({ gridmode }) => (gridmode ? "grid" : "inline-flex")};
   gap: 16px;
+  ${({ gridmode }) =>
+    gridmode &&
+    `
+      grid-template-columns: repeat(2, 560px);
+      justify-content: center;
+    `}
 `;
 
-const TimeLineCard = styled.div`
+const TimeLineCard = styled("div").withConfig({
+  shouldForwardProp: (prop) => prop !== "gridmode",
+})<{ gridmode?: boolean }>`
   display: flex;
   width: 467px;
   height: 320px;
@@ -151,6 +165,12 @@ const TimeLineCard = styled.div`
     border-radius: 20px;
     border: 1.5px solid ${theme.palette.primary_400};
   }
+
+  ${({ gridmode }) =>
+    gridmode &&
+    `
+      width: 560px;
+    `}
 `;
 
 const CardContent = styled.div`

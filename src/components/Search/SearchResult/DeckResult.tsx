@@ -4,6 +4,7 @@ import { DeckProfile } from "@/components/atoms/DeckProfile";
 import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "@/components/layouts/FlexBox";
 import { theme } from "@/styles/theme";
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
 
 interface Artist {
@@ -15,16 +16,26 @@ interface Artist {
 interface DeckResultProps {
   artistCount: number;
   artists: Artist[];
+  query: string;
 }
 
-export const DeckResult = ({ artistCount, artists }: DeckResultProps) => {
+export const DeckResult = ({
+  artistCount,
+  artists,
+  query,
+}: DeckResultProps) => {
+  const router = useRouter();
+  const handleViewAll = () => {
+    router.push(`/search/deck?query=${encodeURIComponent(query)}`);
+  };
+
   return (
     <Container>
       <InfoText>
         <Text typo="H3" color="primary_800">
           데크({artistCount})
         </Text>
-        <div style={{ cursor: "pointer" }}>
+        <div style={{ cursor: "pointer" }} onClick={handleViewAll}>
           <FlexBox gap={4}>
             <Text typo="Body_3" color="primary_800" children="전체보기" />
             <RightArrow />
