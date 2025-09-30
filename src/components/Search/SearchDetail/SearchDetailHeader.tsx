@@ -1,5 +1,6 @@
 import { MoveLeftIcon } from "@/assets/icons/MoveLeftIcon";
 import { Text } from "@/components/atoms/Text";
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
 
 interface SearchDetailHeaderProps {
@@ -10,10 +11,14 @@ export const SearchDetailHeader = ({
   children,
   searchCount,
 }: SearchDetailHeaderProps) => {
+  const router = useRouter();
+
   return (
     <Container>
       <Wrapper>
-        <MoveLeftIcon />
+        <div onClick={() => router.back()}>
+          <MoveLeftIcon />
+        </div>
         <TextWrapper>
           <Text typo="H1" color="primary_700" children={children} />
           <Text typo="Body_3" color="gray_1000">

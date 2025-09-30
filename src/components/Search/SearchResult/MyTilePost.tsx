@@ -133,7 +133,9 @@ const ProfileImage = styled.img`
   border-radius: 16px;
 `;
 
-const TimeLineWrap = styled.div<{ gridmode?: boolean }>`
+const TimeLineWrap = styled("div").withConfig({
+  shouldForwardProp: (prop) => prop !== "gridmode",
+})<{ gridmode?: boolean }>`
   display: ${({ gridmode }) => (gridmode ? "grid" : "inline-flex")};
   gap: 16px;
   ${({ gridmode }) =>
@@ -144,7 +146,9 @@ const TimeLineWrap = styled.div<{ gridmode?: boolean }>`
     `}
 `;
 
-const TimeLineCard = styled.div<{ gridmode?: boolean }>`
+const TimeLineCard = styled("div").withConfig({
+  shouldForwardProp: (prop) => prop !== "gridmode",
+})<{ gridmode?: boolean }>`
   display: flex;
   width: 467px;
   height: 320px;

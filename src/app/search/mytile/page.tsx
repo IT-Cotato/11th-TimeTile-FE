@@ -56,7 +56,6 @@ export default function SearchMyTilePage() {
         <PostWrapper>
           <MyTilePost posts={posts} highlightWord={query} gridMode={true} />
         </PostWrapper>
-
         {totalPages > 0 && (
           <PaginationComponent
             page={page}
