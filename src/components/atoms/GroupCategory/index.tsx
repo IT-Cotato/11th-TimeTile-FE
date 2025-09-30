@@ -24,7 +24,7 @@ const SECOND_LINE: TagCategoryName[] = [
 const THIRD_LINE: TagCategoryName[] = [
   "화보/인터뷰",
   "광고/모델",
-  "콜라보",
+  "/콜라보",
   "라이브 방송",
   "기타",
 ];

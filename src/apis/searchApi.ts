@@ -41,4 +41,11 @@ export const searchApi = {
     });
     return res.data;
   },
+
+  searchUsers: async (query: string, page: number) => {
+    const res = await authAxios.get("/search/users", {
+      params: { query, page },
+    });
+    return res.data;
+  },
 };

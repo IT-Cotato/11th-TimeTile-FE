@@ -11,7 +11,7 @@ type TagStyle = {
   };
 };
 
-export const TAG_CATEGORY_STYLE_MAP: Record<TagCategoryName, TagStyle> = {
+export const TAG_CATEGORY_STYLE_MAP: Record<`${TagCategoryName}`, TagStyle> = {
   // 보라
   "팬사인회/기타": {
     default: { color: "#9D56BB", background: "#FAEFFF" },
@@ -67,7 +67,7 @@ export const TAG_CATEGORY_STYLE_MAP: Record<TagCategoryName, TagStyle> = {
     default: { color: "#EA8F35", background: "#FFF6EC" },
     select: { color: "#EA8F35", background: "#FFE5CC" },
   },
-  콜라보: {
+  "/콜라보": {
     default: { color: "#EA8F35", background: "#FFF6EC" },
     select: { color: "#EA8F35", background: "#FFE5CC" },
   },
