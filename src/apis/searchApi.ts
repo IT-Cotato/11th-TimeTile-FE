@@ -34,4 +34,11 @@ export const searchApi = {
     });
     return res.data;
   },
+
+  searchEvents: async (query: string, page: number) => {
+    const res = await authAxios.get("/search/events", {
+      params: { query, page },
+    });
+    return res.data;
+  },
 };
