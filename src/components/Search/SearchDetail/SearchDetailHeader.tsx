@@ -16,7 +16,7 @@ export const SearchDetailHeader = ({
   return (
     <Container>
       <Wrapper>
-        <div onClick={() => router.back()}>
+        <div style={{ cursor: "pointer" }} onClick={() => router.back()}>
           <MoveLeftIcon />
         </div>
         <TextWrapper>
