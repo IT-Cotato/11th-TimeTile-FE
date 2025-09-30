@@ -21,6 +21,7 @@ export const DeckProfile = ({ name, imageUrl }: DeckProfileProps) => {
 
 const Container = styled.div`
   display: inline-flex;
+  width: 152px;
   padding: 16px;
   flex-direction: column;
   align-items: flex-start;
