@@ -37,6 +37,7 @@ const Container = styled.div`
   gap: 32px;
   align-self: stretch;
   padding-top: 26px;
+  padding-bottom: 8px;
 `;
 
 const Wrapper = styled.div`
