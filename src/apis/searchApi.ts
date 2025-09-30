@@ -48,4 +48,11 @@ export const searchApi = {
     });
     return res.data;
   },
+
+  searchDecks: async (query: string, page: number) => {
+    const res = await authAxios.get("/search/artists", {
+      params: { query, page },
+    });
+    return res.data;
+  },
 };
