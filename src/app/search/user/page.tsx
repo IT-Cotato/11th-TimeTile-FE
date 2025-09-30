@@ -1,12 +1,9 @@
 "use client";
 
 import { searchApi } from "@/apis/searchApi";
-import { TimeTileCard } from "@/components/atoms/TimeTileCard";
 import { UserProfileCard } from "@/components/atoms/UserProfileCard";
 import PaginationComponent from "@/components/mypage/PaginationComponent";
 import { SearchDetailHeader } from "@/components/Search/SearchDetail/SearchDetailHeader";
-import { UserResult } from "@/components/Search/SearchResult/UserResult";
-import { SearchEvent } from "@/model/components/SearchType";
 import { theme } from "@/styles/theme";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -62,14 +59,16 @@ export default function SearchUserPage() {
       <Wrapper>
         <SearchDetailHeader children="유저" searchCount={totalCount} />
         <PostWrapper>
-          {users.map((user, idx) => (
-            <UserProfileCard
-              key={idx}
-              name={user.nickname}
-              imageUrl={user.imageUrl}
-              introduction={user.introduction}
-            />
-          ))}
+          <ProfileRow>
+            {users.map((user, idx) => (
+              <UserProfileCard
+                key={idx}
+                name={user.nickname}
+                imageUrl={user.imageUrl}
+                introduction={user.introduction}
+              />
+            ))}
+          </ProfileRow>
         </PostWrapper>
         {totalPages > 0 && (
           <PaginationComponent
@@ -102,15 +101,18 @@ const PostWrapper = styled.div`
   display: flex;
   padding: 32px;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 32px;
   align-self: stretch;
   border-radius: 20px;
   border: 1px solid ${theme.palette.primary_300};
   background: ${theme.palette.primary_20};
 `;
+
 const ProfileRow = styled.div`
+  width: 1136px;
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 14px;
+  justify-content: flex-start;
 `;
