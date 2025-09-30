@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import styled from "styled-components";
 import { searchApi } from "@/apis/searchApi";
-import { SearchDetailHeader } from "@/components/Search/SearchDetail/SearchDetailHeader";
-import { SearchPost } from "@/model/components/SearchType";
+import { TimeTileCard } from "@/components/atoms/TimeTileCard";
 import PaginationComponent from "@/components/mypage/PaginationComponent";
-import { MyTilePost } from "@/components/Search/SearchResult/MyTilePost";
+import { SearchDetailHeader } from "@/components/Search/SearchDetail/SearchDetailHeader";
+import { SearchEvent } from "@/model/components/SearchType";
 import { theme } from "@/styles/theme";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
 
-export default function SearchMyTilePage() {
+export default function SearchTimeTilePage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
 
-  const [posts, setPosts] = useState<SearchPost[]>([]);
+  const [events, setEvents] = useState<SearchEvent[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -22,27 +22,27 @@ export default function SearchMyTilePage() {
   useEffect(() => {
     if (!query) return;
 
-    const fetchPosts = async () => {
+    const fetchEvents = async () => {
       try {
-        const res = await searchApi.searchPosts(query, page);
+        const res = await searchApi.searchEvents(query, page);
         if (res.isSuccess && res.data) {
-          setPosts(res.data.posts);
+          setEvents(res.data.events);
           setTotalCount(res.data.totalElements);
           setTotalPages(res.data.totalPages);
         } else {
-          setPosts([]);
+          setEvents([]);
           setTotalCount(0);
           setTotalPages(1);
         }
       } catch (err) {
         console.error(err);
-        setPosts([]);
+        setEvents([]);
         setTotalCount(0);
         setTotalPages(1);
       }
     };
 
-    fetchPosts();
+    fetchEvents();
   }, [query, page]);
 
   const handlePageChange = (newPage: number) => {
@@ -52,9 +52,15 @@ export default function SearchMyTilePage() {
   return (
     <Container>
       <Wrapper>
-        <SearchDetailHeader children="마이타일" searchCount={totalCount} />
+        <SearchDetailHeader children="타임타일" searchCount={totalCount} />
         <PostWrapper>
-          <MyTilePost posts={posts} highlightWord={query} gridMode={true} />
+          {events.map((event) => (
+            <TimeTileCard
+              key={event.groupId}
+              event={event}
+              highlightWord={query}
+            />
+          ))}
         </PostWrapper>
         {totalPages > 0 && (
           <PaginationComponent

@@ -74,8 +74,16 @@ const SearchClient = () => {
         {!loading && response && (
           <>
             <SearchHeader searchCount={searchCount} />
-            <DeckResult artistCount={response.artistCount} artists={artists} />
-            <UserResult userCount={response.userCount} users={users} />
+            <DeckResult
+              artistCount={response.artistCount}
+              artists={artists}
+              query={query}
+            />
+            <UserResult
+              userCount={response.userCount}
+              users={users}
+              query={query}
+            />
             <MyTileResult
               postCount={response.postCount}
               posts={results}
@@ -86,6 +94,7 @@ const SearchClient = () => {
               eventCount={response.eventCount}
               events={events}
               highlightWord={query}
+              query={query}
             />
           </>
         )}
