@@ -6,11 +6,15 @@ import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { MainImage2 } from "@/assets/images/MainImage2";
 import { MainImage3 } from "@/assets/images/MainImage3";
+import { MainImage4 } from "@/assets/images/MainImage4";
+import { MainImage5 } from "@/assets/images/MainImage5";
 
 const images = [
   <MainImage key={0} />,
   <MainImage2 key={1} />,
   <MainImage3 key={2} />,
+  <MainImage4 key={3} />,
+  <MainImage5 key={4} />,
 ];
 
 export const MainHeader = () => {
