@@ -11,7 +11,7 @@ const meta: Meta<typeof ToggleButton> = {
       description: {
         component: `
 - variant 값으로 토글 값 중 하나를 선택할 수 있습니다.
-- children으로 태그에 표시할 텍스트를 전달합니다.`,
+- onChange로 토글 상태를 변경합니다.`,
       },
     },
   },
