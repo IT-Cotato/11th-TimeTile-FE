@@ -17,6 +17,7 @@ import { DeckResult } from "@/components/Search/SearchResult/DeckResult";
 import { UserResult } from "@/components/Search/SearchResult/UserResult";
 import { MyTileResult } from "@/components/Search/SearchResult/MyTileResult";
 import { TimeTileResult } from "@/components/Search/SearchResult/TimeTileResult";
+import { BlankResearch } from "@/components/Search/SearchResult/BlankResearch";
 
 const SearchClient = () => {
   const router = useRouter();
@@ -125,6 +126,7 @@ const SearchClient = () => {
             }
           />
         )}
+        {!loading && searchCount === 0 && <BlankResearch />}
       </Wrapper>
     </Container>
   );
