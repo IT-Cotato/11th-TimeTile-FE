@@ -11,14 +11,16 @@ import {
   SearchUser,
 } from "@/model/components/SearchType";
 import { theme } from "@/styles/theme";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SearchHeader } from "@/components/Search/SearchResult/SearchHeader";
 import { DeckResult } from "@/components/Search/SearchResult/DeckResult";
 import { UserResult } from "@/components/Search/SearchResult/UserResult";
 import { MyTileResult } from "@/components/Search/SearchResult/MyTileResult";
 import { TimeTileResult } from "@/components/Search/SearchResult/TimeTileResult";
+import { BlankResearch } from "@/components/Search/SearchResult/BlankResearch";
 
 const SearchClient = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
   const [artists, setArtists] = useState<SearchArtist[]>([]);
@@ -27,6 +29,7 @@ const SearchClient = () => {
   const [events, setEvents] = useState<SearchEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<SearchResponse | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const searchCount = response
     ? response.artistCount +
@@ -48,17 +51,33 @@ const SearchClient = () => {
           setEvents(res.data.events);
           setArtists(res.data.artists);
           setUsers(res.data.users);
-          console.log(res.data);
+
+          const total =
+            res.data.artistCount +
+            res.data.userCount +
+            res.data.postCount +
+            res.data.eventCount;
+          if (total === 0) {
+            const suggestRes = await searchApi.getSuggestions(query);
+            if (suggestRes.isSuccess) {
+              setSuggestions(suggestRes.data.suggestions);
+            }
+          } else {
+            setSuggestions([]);
+          }
         } else {
+          setResponse(null);
           setResults([]);
           setEvents([]);
           setArtists([]);
           setUsers([]);
+          setSuggestions([]);
         }
       } catch (error) {
         console.error(error);
         setResults([]);
         setEvents([]);
+        setSuggestions([]);
       } finally {
         setLoading(false);
       }
@@ -71,7 +90,7 @@ const SearchClient = () => {
     <Container>
       <Wrapper>
         {loading && <p>로딩 중...</p>}
-        {!loading && response && (
+        {!loading && response && searchCount > 0 && (
           <>
             <SearchHeader searchCount={searchCount} />
             <DeckResult
@@ -98,6 +117,16 @@ const SearchClient = () => {
             />
           </>
         )}
+        {!loading && searchCount === 0 && suggestions.length > 0 && (
+          <SearchHeader
+            searchCount={searchCount}
+            suggestion={suggestions[1]}
+            onClickSuggestion={(word) =>
+              router.push(`/search?query=${encodeURIComponent(word)}`)
+            }
+          />
+        )}
+        {!loading && searchCount === 0 && <BlankResearch />}
       </Wrapper>
     </Container>
   );
@@ -120,13 +149,4 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 24px;
-`;
-
-const ResultItem = styled.div`
-  width: 100%;
-  padding: 32px;
-  border: 1px solid ${theme.palette.primary_300};
-  border-radius: 20px;
-  margin-bottom: 24px;
-  background: ${theme.palette.primary_20};
 `;

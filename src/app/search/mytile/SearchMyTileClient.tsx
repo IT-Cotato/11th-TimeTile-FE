@@ -52,7 +52,11 @@ export default function SearchMyTileClient() {
   return (
     <Container>
       <Wrapper>
-        <SearchDetailHeader children="마이타일" searchCount={totalCount} />
+        <SearchDetailHeader
+          children="마이타일"
+          searchCount={totalCount}
+          isMyTile={true}
+        />
         <PostWrapper>
           <MyTilePost posts={posts} highlightWord={query} gridMode={true} />
         </PostWrapper>
