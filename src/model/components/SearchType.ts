@@ -68,3 +68,20 @@ export interface SearchPostResponse {
   hasPrevious: boolean;
   isLast: boolean;
 }
+
+export interface ImageSearchPost {
+  id: number;
+  title: string;
+  imageUrl: string;
+}
+
+export interface ImageSearchResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  data: {
+    posts: ImageSearchPost[];
+    hasNext: boolean;
+    lastPostId: number;
+  };
+}
