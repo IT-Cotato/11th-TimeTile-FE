@@ -54,13 +54,17 @@ export default function SearchTimeTileClient() {
       <Wrapper>
         <SearchDetailHeader children="타임타일" searchCount={totalCount} />
         <PostWrapper>
-          {events.map((event) => (
-            <TimeTileCard
-              key={event.groupId}
-              event={event}
-              highlightWord={query}
-            />
-          ))}
+          {events.length === 0 ? (
+            <EmptyText>검색 결과가 없습니다.</EmptyText>
+          ) : (
+            events.map((event) => (
+              <TimeTileCard
+                key={event.groupId}
+                event={event}
+                highlightWord={query}
+              />
+            ))
+          )}
         </PostWrapper>
         {totalPages > 0 && (
           <PaginationComponent
@@ -98,5 +102,18 @@ const PostWrapper = styled.div`
   align-self: stretch;
   border-radius: 20px;
   border: 1px solid ${theme.palette.primary_300};
+  background: ${theme.palette.primary_20};
+`;
+
+const EmptyText = styled.div`
+  display: flex;
+  width: 1136px;
+  height: 88px;
+  padding: 24px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  border-radius: 20px;
   background: ${theme.palette.primary_20};
 `;

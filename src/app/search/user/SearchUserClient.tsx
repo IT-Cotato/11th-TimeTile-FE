@@ -59,16 +59,20 @@ export default function SearchUserClient() {
       <Wrapper>
         <SearchDetailHeader children="유저" searchCount={totalCount} />
         <PostWrapper>
-          <ProfileRow>
-            {users.map((user, idx) => (
-              <UserProfileCard
-                key={idx}
-                name={user.nickname}
-                imageUrl={user.imageUrl}
-                introduction={user.introduction}
-              />
-            ))}
-          </ProfileRow>
+          {users.length === 0 ? (
+            <EmptyText>검색 결과가 없습니다.</EmptyText>
+          ) : (
+            <ProfileRow>
+              {users.map((user, idx) => (
+                <UserProfileCard
+                  key={idx}
+                  name={user.nickname}
+                  imageUrl={user.imageUrl}
+                  introduction={user.introduction}
+                />
+              ))}
+            </ProfileRow>
+          )}
         </PostWrapper>
         {totalPages > 0 && (
           <PaginationComponent
@@ -115,4 +119,17 @@ const ProfileRow = styled.div`
   flex-wrap: wrap;
   gap: 14px;
   justify-content: flex-start;
+`;
+
+const EmptyText = styled.div`
+  display: flex;
+  width: 1136px;
+  height: 88px;
+  padding: 24px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  border-radius: 20px;
+  background: ${theme.palette.primary_20};
 `;

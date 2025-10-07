@@ -10,15 +10,18 @@ interface SearchDetailHeaderProps {
   children: string;
   searchCount: number;
   isMyTile?: boolean;
+  variant?: "default" | "images";
+  onChange?: (value: "default" | "images") => void;
 }
 
 export const SearchDetailHeader = ({
   children,
   searchCount,
   isMyTile,
+  variant = "default",
+  onChange,
 }: SearchDetailHeaderProps) => {
-  const router = useRouter();
-  const [variant, setVariant] = useState<"default" | "images">("default");
+  const router = useRouter();;
 
   return (
     <TopContainer>
@@ -35,7 +38,9 @@ export const SearchDetailHeader = ({
           </TextWrapper>
         </Wrapper>
       </Container>
-      {isMyTile && <ToggleButton variant={variant} onChange={setVariant} />}
+     {isMyTile && onChange && (
+        <ToggleButton variant={variant} onChange={onChange} />
+      )}
     </TopContainer>
   );
 };

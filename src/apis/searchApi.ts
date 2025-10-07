@@ -55,4 +55,11 @@ export const searchApi = {
     });
     return res.data;
   },
+
+  searchImage: async (query: string, lastPostId?: number) => {
+    const res = await authAxios.get("/search/posts/images", {
+      params: { query, lastPostId },
+    });
+    return res.data;
+  },
 };
