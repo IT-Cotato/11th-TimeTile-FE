@@ -59,17 +59,21 @@ export default function SearchDeckClient() {
       <Wrapper>
         <SearchDetailHeader children="데크" searchCount={totalCount} />
         <PostWrapper>
-          <ProfileRow>
-            {artists.map((artist) => (
-              <DeckProfile
-                key={artist.id}
-                name={artist.name}
-                imageUrl={artist.imageUrl}
-              />
-            ))}
-          </ProfileRow>
+          {artists.length === 0 ? (
+            <EmptyText>검색 결과가 없습니다.</EmptyText>
+          ) : (
+            <ProfileRow>
+              {artists.map((artist) => (
+                <DeckProfile
+                  key={artist.id}
+                  name={artist.name}
+                  imageUrl={artist.imageUrl}
+                />
+              ))}
+            </ProfileRow>
+          )}
         </PostWrapper>
-        {totalPages > 0 && (
+        {totalPages > 0 && artists.length > 0 && (
           <PaginationComponent
             page={page}
             totalPages={totalPages}
@@ -116,4 +120,17 @@ const ProfileRow = styled.div`
   gap: 16px 12px;
   align-self: stretch;
   flex-wrap: wrap;
+`;
+
+const EmptyText = styled.div`
+  display: flex;
+  width: 1136px;
+  height: 88px;
+  padding: 24px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  border-radius: 20px;
+  background: ${theme.palette.primary_20};
 `;
