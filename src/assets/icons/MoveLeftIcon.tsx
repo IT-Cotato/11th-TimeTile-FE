@@ -1,11 +1,16 @@
-export const MoveLeftIcon = () => {
+type MoveLeftIconProps = React.SVGProps<SVGSVGElement> & {
+  size?: number;
+};
+
+export const MoveLeftIcon = ({ size = 24, ...props }: MoveLeftIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
+      {...props}
     >
       <path
         d="M15 18L9 12L15 6"
@@ -15,5 +20,5 @@ export const MoveLeftIcon = () => {
         strokeLinejoin="round"
       />
     </svg>
-  )
-}
+  );
+};

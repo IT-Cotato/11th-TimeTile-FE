@@ -52,7 +52,7 @@ export default function TimelineSection({
   );
 }
 
-const Row = styled.section``;
+const Row = styled.div``;
 
 const MonthCol = styled.div``;
 
