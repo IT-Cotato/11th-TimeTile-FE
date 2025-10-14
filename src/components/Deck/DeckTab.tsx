@@ -30,8 +30,7 @@ export const DeckTab = ({ activeTab, onTabChange }: DeckTabProps) => {
 
 const TabWrapper = styled.div`
   display: flex;
-  flex-direction: row;
-  gap: 0;
+  width: 950px;
   position: relative;
 `;
 
@@ -39,6 +38,7 @@ const Tab = styled.div<{ selected: boolean; $isLeft?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 490px;
   gap: 10px;
   border-radius: 20px 20px 0 0;
   position: relative;
