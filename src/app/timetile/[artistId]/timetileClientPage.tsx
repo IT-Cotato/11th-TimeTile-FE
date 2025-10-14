@@ -5,7 +5,9 @@ import { useParams } from "next/navigation";
 import { ArtistProfileCard } from "@/components/atoms/ArtistProfileCard";
 import styled from "styled-components";
 import { deckApi } from "@/apis/deckApi";
-import { YearScheduleDeckSection } from "@/components/Deck/YearScheduleSection";
+import { TimetileDeck } from "@/components/Deck/TimetileDeck";
+import { DeckTab } from "@/components/Deck/DeckTab";
+import { MyTileDeck } from "@/components/Deck/MyTileDeck";
 
 interface ArtistData {
   artistName: string;
@@ -13,6 +15,7 @@ interface ArtistData {
   followerCount: number;
 }
 
+//목데이터 몇개 넣어둠!
 const mockYears = [2030, 2029, 2028, 2027, 2026, 2025, 2024, 2023, 2022, 2021];
 
 const mockYearSchedules: Record<number, string[]> = {
@@ -55,6 +58,7 @@ export default function ArtistPage() {
   const [followLoading, setFollowLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<"timeTile" | "myTile">("timeTile");
 
   useEffect(() => {
     if (!artistId) return;
@@ -71,6 +75,25 @@ export default function ArtistPage() {
 
         setYears(mockYears);
         setYearSchedules(mockYearSchedules);
+        {
+          /* 지금은 목데이터로 확인중이라 위에 두줄 쓰고 실제 데이터는 아래
+                const activeYears = await deckApi.getArtistActiveYears(
+                  artistId
+                );
+                const sortedYears = Object.keys(activeYears)
+                  .map((y) => parseInt(y))
+                  .sort((a, b) => a - b);
+                setYears(sortedYears);
+                setYearSchedules(
+                  Object.fromEntries(
+                    Object.entries(activeYears).map(([year, schedules]) => [
+                      parseInt(year),
+                      schedules as string[],
+                    ])
+                  )
+                );
+                     */
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -116,11 +139,14 @@ export default function ArtistPage() {
           onUnfollowClick={handleFollowClick}
           onYearSelect={setSelectedYear}
         />
-        {selectedYear && (
-          <YearScheduleDeckSection
-            year={selectedYear}
-            schedules={mockYearSchedules[selectedYear]}
-          />
+        {selectedYear && artistId && (
+          <div>
+            <DeckTab activeTab={activeTab} onTabChange={setActiveTab} />
+            {activeTab === "timeTile" && (
+              <TimetileDeck year={selectedYear} artistId={artistId} />
+            )}
+            {activeTab === "myTile" && <MyTileDeck />}
+          </div>
         )}
       </Wrapper>
     </Container>
