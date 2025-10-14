@@ -30,7 +30,7 @@ export default function TimelineSection({
 
 /* ---------------- styled ---------------- */
 
-const Row = styled.section`
+const Row = styled.div`
   display: grid;
   grid-template-columns: 64px 1fr;
   align-items: start;

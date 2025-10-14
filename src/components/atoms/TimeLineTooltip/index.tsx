@@ -72,7 +72,7 @@ export const TimeLineTooltip = ({
   };
 
   return (
-    <Container noMargin = {noMargin}>
+    <Container $noMargin = {noMargin}>
       {visible && (
         <Fixing>
           <StyledTooltip variant={variant}>

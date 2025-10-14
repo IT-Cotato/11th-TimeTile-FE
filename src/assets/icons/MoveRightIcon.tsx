@@ -1,8 +1,7 @@
-type MoveRightIconProps = {
+type MoveRightIconProps = React.SVGProps<SVGSVGElement> & {
   size?: number;
 };
-
-export const MoveRightIcon = ({ size = 24 }: MoveRightIconProps) => {
+export const MoveRightIcon = ({ size = 24, ...props }: MoveRightIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,6 +9,7 @@ export const MoveRightIcon = ({ size = 24 }: MoveRightIconProps) => {
       height={size}
       viewBox="0 0 24 24"
       fill="none"
+      {...props}
     >
       <path
         d="M9 18L15 12L9 6"

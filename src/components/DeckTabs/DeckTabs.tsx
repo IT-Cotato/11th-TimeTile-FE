@@ -3,19 +3,24 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
+import TimelineSection from "@/components/TimeLineSection/TimeLineSection";
+import MyTileSection, {
+  Schedule,
+} from "@/components/MyTileSection/MyTileSection";
+import { TileCard } from "@/components/Timeline/TileCard";
 
 type TabValue = "timeline" | "mytile";
 
 interface DeckTabsProps {
   defaultValue?: TabValue;
-  timelineSlot: React.ReactNode;
-  mytileSlot: React.ReactNode;
+  timelineData: Record<number, Schedule[]>; // month: schedules
+  mytileData: Record<number, Schedule[]>;
 }
 
 export default function DeckTabs({
   defaultValue = "timeline",
-  timelineSlot,
-  mytileSlot,
+  timelineData,
+  mytileData,
 }: DeckTabsProps) {
   const [value, setValue] = useState<TabValue>(defaultValue);
   const [cap, setCap] = useState<{ x: number; w: number }>({ x: 0, w: 0 });
@@ -48,26 +53,38 @@ export default function DeckTabs({
       window.removeEventListener("resize", onResize);
       ro?.disconnect?.();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   useEffect(() => {
     const raf = requestAnimationFrame(measure);
     return () => cancelAnimationFrame(raf);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** 내부에서 TimelineSection/TileCard 생성 */
+  const renderTimeline = () =>
+    Object.entries(timelineData).map(([month, schedules]) => (
+      <TimelineSection key={month} month={Number(month)}>
+        {schedules.map((s, i) => (
+          <TileCard key={i} selected={false} schedules={[s]} />
+        ))}
+      </TimelineSection>
+    ));
+
+  const renderMyTile = () =>
+    Object.entries(mytileData).map(([month, schedules]) => (
+      <MyTileSection
+        key={month}
+        month={Number(month)}
+        tiles={schedules.map((s) => ({ selected: false, schedules: [s] }))}
+      />
+    ));
 
   return (
     <Container>
       <HeaderWrap ref={wrapRef}>
-        {/* 활성 탭 캡: 위만 둥근, 하단 보더 없음, 배경 = primary_20 */}
         <ActiveCap
-          style={{
-            width: cap.w || "50%",
-            transform: `translateX(${cap.x}px)`,
-          }}
+          style={{ width: cap.w || "50%", transform: `translateX(${cap.x}px)` }}
         />
-
         <TabButton
           ref={leftRef}
           $active={value === "timeline"}
@@ -84,17 +101,18 @@ export default function DeckTabs({
         </TabButton>
       </HeaderWrap>
 
-      {/* 패널 영역 배경도 선택 상태에 맞춰 primary_20 */}
       <PanelArea>
         {value === "timeline" ? (
-          <Panel>{timelineSlot}</Panel>
+          <Panel>{renderTimeline()}</Panel>
         ) : (
-          <Panel>{mytileSlot}</Panel>
+          <Panel>{renderMyTile()}</Panel>
         )}
       </PanelArea>
     </Container>
   );
 }
+
+/* ================= styled ================= */
 
 const Container = styled.section`
   margin: 0 120px;
@@ -114,11 +132,11 @@ const HeaderWrap = styled.div`
 const ActiveCap = styled.div`
   position: absolute;
   top: 0;
-  bottom: -1px; /* 기준선 완전히 덮기 */
+  bottom: -1px;
   left: 0;
   transform: translateX(0);
   border: 1px solid ${theme.palette.primary_200};
-  border-bottom: none; /* 하단 보더 없음 */
+  border-bottom: none;
   border-radius: 16px 16px 0 0;
   background: ${theme.palette.primary_20};
   transition: transform 220ms ease, width 220ms ease;
