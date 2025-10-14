@@ -1,16 +1,8 @@
-import styled from 'styled-components';
-import { FollowButton } from '@/components/atoms/FollowButton';
-import { theme } from '@/styles/theme';
-import { Text } from '@/components/atoms/Text';
-import { MoveLeftIcon } from '@/assets/icons/MoveLeftIcon';
-import { MoveRightIcon } from '@/assets/icons/MoveRightIcon';
-import { TimeLineTooltip } from '@/components/atoms/TimeLineTooltip/index';
-import { useState } from 'react';
-import type {
-  Role,
-  Mode,
-  TooltipProps,
-} from '@/components/atoms/TimeLineTooltip/index';
+import styled from "styled-components";
+import { FollowButton } from "@/components/atoms/FollowButton";
+import { theme } from "@/styles/theme";
+import { Text } from "@/components/atoms/Text";
+import { YearScroller } from "@/components/Deck/YearScroller";
 
 interface ArtistProfileCardProps {
   artistName: string;
@@ -18,8 +10,13 @@ interface ArtistProfileCardProps {
   imageUrl: string;
   years?: number[];
   yearSchedules?: Record<number, string[]>;
-  role?: 'watcher' | 'linker' | 'editor';
-  mode?: 'view' | 'edit' | 'waiting';
+  role?: "watcher" | "linker" | "editor";
+  mode?: "view" | "edit" | "waiting";
+  isFollowing?: boolean;
+  followLoading?: boolean;
+  onFollowClick?: () => void;
+  onUnfollowClick?: () => void;
+  onYearSelect?: (year: number | null) => void;
 }
 
 export const ArtistProfileCard = ({
@@ -28,189 +25,92 @@ export const ArtistProfileCard = ({
   imageUrl,
   years = [],
   yearSchedules = {},
-  role = 'watcher',
-  mode = 'view',
+  role = "watcher",
+  mode = "view",
+  isFollowing,
+  followLoading,
+  onFollowClick,
+  onUnfollowClick,
+  onYearSelect,
 }: ArtistProfileCardProps) => {
-  const [selectedYear, setSelectedYear] = useState<number>(
-    years[0] ?? years[0]!,
-  );
-  const [isFollowing, setIsFollowing] = useState<boolean>(false);
-
-  const handleFollowClick = () => setIsFollowing(v => !v);
-  const handleUnfollowClick = () => setIsFollowing(false);
-
-  const isAtFirst = selectedYear === years[0];
-  const isAtLast = selectedYear === years[years.length - 1];
-
-  const movePrev = () => {
-    const currentIndex = years.indexOf(selectedYear);
-    if (currentIndex > 0) setSelectedYear(years[currentIndex - 1]);
-  };
-  const moveNext = () => {
-    const currentIndex = years.indexOf(selectedYear);
-    if (currentIndex < years.length - 1)
-      setSelectedYear(years[currentIndex + 1]);
-  };
-
-  const getTopTooltipProps = (r: Role, m: Mode): TooltipProps =>
-    m === 'edit' && r !== 'watcher'
-      ? { variant: 'watch', role: r, mode: m }
-      : { variant: 'edit', role: r, mode: 'view' };
-
-  const getBottomTooltipProps = (r: Role, m: Mode): TooltipProps => {
-    if (m === 'edit' && r !== 'watcher')
-      return { variant: 'clock', role: r, mode: m };
-    if (m === 'waiting' && r !== 'watcher')
-      return { variant: 'watch', role: r, mode: m };
-    throw new Error('Bottom tooltip should not render in view mode');
-  };
-
   return (
     <CardWrapper>
       <ImageWrapper $imageUrl={imageUrl} />
-
-      <ArtistInfoWrapper>
-        <TopContentWrapper>
-          <TopWrapper>
-            <TopSection>
-              <TopRow>
+      <Container>
+        <TopWrapper>
+          <Info>
+            <TopRow>
+              <ArtistInfo>
                 <Text typo="H1" color="gray_1000">
                   {artistName}
                 </Text>
-                <FollowButton
-                  variant={isFollowing ? 'unfollow' : 'follow'}
-                  onClick={handleFollowClick}
-                  onUnfollowClick={handleUnfollowClick}
-                />
-              </TopRow>
-              <Text typo="Caption_1" color="gray_1000">
-                팔로워 {followerCount.toLocaleString()}명
-              </Text>
-            </TopSection>
-          </TopWrapper>
-
-          {isFollowing && (
-            <TimeLineTooltipWrapper>
-              {/* Top Tooltip */}
-              <TooltipItem $role={role}>
-                <TimeLineTooltip {...getTopTooltipProps(role, mode)} noMargin />
-              </TooltipItem>
-
-              {/* Bottom Tooltip (edit/waiting) */}
-              {mode !== 'view' && (
-                <TooltipItem $role={role}>
-                  <TimeLineTooltip
-                    {...getBottomTooltipProps(role, mode)}
-                    noMargin
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "8px",
+                    flexDirection: "column",
+                    width: "115px",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <FollowButton
+                    variant={isFollowing ? "unfollow" : "follow"}
+                    isLoading={followLoading}
+                    onClick={onFollowClick}
+                    onUnfollowClick={onUnfollowClick}
+                    width={68}
                   />
-                </TooltipItem>
-              )}
-            </TimeLineTooltipWrapper>
-          )}
-        </TopContentWrapper>
-
-        <BottomSection>
-          <YearLinks>
-            <IconButton
-              onClick={movePrev}
-              $color={
-                isAtFirst ? theme.palette.gray_300 : theme.palette.gray_1000
-              }
-              aria-label="이전 연도"
-            >
-              <MoveLeftIcon />
-            </IconButton>
-
-            <YearSection>
-              {years.map(year => {
-                const isSelected = selectedYear === year;
-                const schedules = yearSchedules[year] ?? [];
-                return (
-                  <YearItem key={year}>
-                    <YearButton
-                      $selected={isSelected}
-                      onClick={() => setSelectedYear(year)}
-                      aria-pressed={isSelected}
-                      aria-label={`${year}년`}
-                    >
-                      <Text
-                        typo={isSelected ? 'Body_1' : 'Body_3'}
-                        color="gray_1000"
-                      >
-                        {year}
-                      </Text>
-                    </YearButton>
-
-                    <ScheduleTooltip>
-                      {schedules.map((s, i) => (
-                        <Text key={i} typo="Caption_4" color="gray_900">
-                          {s}
-                        </Text>
-                      ))}
-                    </ScheduleTooltip>
-                  </YearItem>
-                );
-              })}
-            </YearSection>
-
-            <IconButton
-              onClick={moveNext}
-              $color={
-                isAtLast ? theme.palette.gray_300 : theme.palette.gray_1000
-              }
-              aria-label="다음 연도"
-            >
-              <MoveRightIcon />
-            </IconButton>
-          </YearLinks>
-        </BottomSection>
-      </ArtistInfoWrapper>
+                </div>
+              </ArtistInfo>
+              <Part>
+                <Text typo="Caption_1">팔로워</Text>
+                <Text typo="Caption_1">{followerCount.toLocaleString()}명</Text>
+              </Part>
+            </TopRow>
+          </Info>
+        </TopWrapper>
+        <YearWrapper>
+          <YearScroller
+            years={years}
+            yearSchedules={yearSchedules}
+            onYearSelect={onYearSelect}
+          />
+        </YearWrapper>
+      </Container>
     </CardWrapper>
   );
 };
 
-/* ================= styled ================= */
-
 const CardWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 950px;
   padding: 32px;
+  width: 950px;
   border-radius: 20px;
   border: 1px solid ${theme.palette.gray_200};
   background-color: ${theme.palette.gray_0};
+  gap: 32px;
+  margin-top: 12px;
 `;
 
-const ImageWrapper = styled.div<{ $imageUrl: string }>`
-  width: 200px;
-  height: 200px;
-  flex-shrink: 0;
-  aspect-ratio: 1/1;
-  border-radius: 10px;
-  background: ${({ $imageUrl }) =>
-    `url(${$imageUrl}) lightgray 50% / cover no-repeat`};
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-`;
-
-const ArtistInfoWrapper = styled.div`
+const Container = styled.div`
   display: flex;
   width: 654px;
   height: 200px;
   flex-direction: column;
   align-items: flex-start;
   gap: 64px;
-  flex-shrink: 0;
+`;
+
+const ImageWrapper = styled.div<{ $imageUrl: string }>`
+  width: 200px;
+  height: 200px;
+  aspect-ratio: 1/1;
+  border-radius: 10px;
+  background: ${({ $imageUrl }) =>
+    `url(${$imageUrl}) lightgray 50% / cover no-repeat`};
 `;
 
 const TopWrapper = styled.div`
-  display: flex;
-  width: 622px;
-  justify-content: space-between;
-  align-items: flex-start;
-`;
-
-const TopContentWrapper = styled.div`
   display: flex;
   height: 112px;
   align-items: flex-start;
@@ -218,127 +118,37 @@ const TopContentWrapper = styled.div`
   align-self: stretch;
 `;
 
-const TopSection = styled.div`
+const Info = styled.div`
+  display: flex;
+  width: 622px;
+  justify-content: space-between;
+  align-items: flex-start;
+`;
+
+const ArtistInfo = styled.div`
+  display: flex;
+  align-items: flex-start;
+  height: 32px;
+  gap: 16px;
+`;
+
+const TopRow = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
 `;
 
-const TimeLineTooltipWrapper = styled.div`
+const Part = styled.div`
   display: flex;
-  width: 32px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
 `;
 
-/* role → $role 로 변경 (DOM role 충돌 방지) */
-const TooltipItem = styled.div<{ $role?: 'watcher' | 'linker' | 'editor' }>`
-  display: flex;
-  height: 32px;
-  padding: 6px;
-  justify-content: center;
-  align-items: center;
-  align-self: stretch;
-  aspect-ratio: 1/1;
-  border-radius: 16px;
-  border: 1.5px solid
-    ${({ $role }) =>
-      $role === 'linker' || $role === 'editor'
-        ? theme.palette.sub_600
-        : theme.palette.gray_300};
-  background: #fff;
-`;
-
-const TopRow = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-`;
-
-const BottomSection = styled.div`
+const YearWrapper = styled.div`
   display: flex;
   height: 24px;
   align-items: center;
   gap: 34px;
   flex-shrink: 0;
   align-self: stretch;
-`;
-
-const YearLinks = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 24px;
-`;
-
-/* color → $color 로 변경 */
-const IconButton = styled.button<{ $color?: string }>`
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  background: none;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: ${({ $color }) => $color ?? theme.palette.gray_1000};
-`;
-
-const YearSection = styled.div`
-  display: flex;
-  width: 536px;
-  align-items: center;
-  gap: 32px;
-`;
-
-const YearItem = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  &:hover > div {
-    display: inline-flex;
-  }
-`;
-
-const ScheduleTooltip = styled.div`
-  position: absolute;
-  width: max-content;
-  bottom: 100%;
-  margin-bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
-
-  padding: 12px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-
-  border-radius: 12px;
-  border: 1px solid ${theme.palette.gray_100};
-  background: ${theme.palette.gray_0};
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-  z-index: 10;
-`;
-
-/* selected → $selected 로 변경 */
-const YearButton = styled.button<{ $selected?: boolean }>`
-  display: flex;
-  width: 47.5px;
-  height: 20px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  aspect-ratio: 47.5/20;
-  background: none;
-  border: none;
-  cursor: pointer;
-
-  &:hover > span {
-    ${theme.typo.H5};
-  }
 `;

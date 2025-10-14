@@ -2,9 +2,9 @@ import styled from 'styled-components';
 import { theme } from '@/styles/theme';
 import { ArrowIcon } from '@/assets/icons/ArrowIcon';
 
-export const Container = styled.div<{ noMargin: boolean }>`
+export const Container = styled.div<{ $noMargin: boolean }>`
   position: relative;
-  margin-top: ${({ noMargin }) => (noMargin ? '0' : '80px')};
+  margin-top: ${({ $noMargin }) => ($noMargin ? '0' : '80px')};
 `;
 
 export const Fixing = styled.div`
