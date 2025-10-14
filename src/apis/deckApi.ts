@@ -24,4 +24,11 @@ export const deckApi = {
     const res = await axiosApi.delete(`/artists/${artistId}/follow`);
     return res.data;
   },
+
+  getHotEvents: async (artistId: string, year: number) => {
+    const res = await axiosApi.get(`/events/${artistId}/hot`, {
+      params: { year: year.toString() },
+    });
+    return res.data.data;
+  },
 };
