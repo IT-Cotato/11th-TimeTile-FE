@@ -90,7 +90,6 @@ export const Tooltip = ({
 
 const Container = styled.div`
   position: relative;
-  margin-top: 80px; //실사용 시 이 마진 지우고 작업하기
 `;
 
 const Fixing = styled.div`
@@ -106,7 +105,7 @@ const Fixing = styled.div`
 `;
 
 const StyledTooltip = styled.div<{ variant: "default" | "date" }>`
-  width:max-content;
+  width: max-content;
   white-space: nowrap;
   text-align: center;
   padding: ${({ variant }) => (variant === "date" ? "10px 13px" : "16px")};

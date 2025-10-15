@@ -1,11 +1,9 @@
-"use client";
-
 import styled from "styled-components";
+import { Text } from "@/components/atoms/Text";
 import { TagCategory } from "@/components/atoms/TagCategory";
 import { TagCategoryName } from "@/model/common/tagcategory";
-import { FlexBox } from "../layouts/FlexBox";
-import { Text } from "../atoms/Text";
 import { theme } from "@/styles/theme";
+import { FlexBox } from "../layouts/FlexBox";
 
 export interface Artist {
   id: string;

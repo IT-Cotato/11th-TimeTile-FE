@@ -31,4 +31,22 @@ export const deckApi = {
     });
     return res.data.data;
   },
+
+  getFollowStatus: async (artistId: string) => {
+    const res = await axiosApi.get(`/artists/${artistId}/follow`);
+    return res.data;
+  },
+
+  getMoreEvents: async (
+    artistId: string,
+    year: number,
+    month: number,
+    lastDay?: number,
+    lastEventId?: number
+  ) => {
+    const res = await axiosApi.get(`/events/${artistId}/more`, {
+      params: { year, month, lastDay, lastEventId },
+    });
+    return res.data.data;
+  },
 };
