@@ -31,4 +31,9 @@ export const deckApi = {
     });
     return res.data.data;
   },
+
+  getFollowStatus: async (artistId: string) => {
+    const res = await axiosApi.get(`/artists/${artistId}/follow`);
+    return res.data;
+  },
 };
