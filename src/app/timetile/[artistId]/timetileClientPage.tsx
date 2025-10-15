@@ -66,6 +66,7 @@ export default function ArtistPage() {
   const [followVariant, setFollowVariant] = useState<
     "follow" | "following" | "unfollow"
   >("follow");
+  const [mode, setMode] = useState<"view" | "edit" | "waiting">("view");
 
   useEffect(() => {
     if (!artistId) return;
@@ -167,6 +168,9 @@ export default function ArtistPage() {
           years={years}
           // role={userProfile?.role}
           role="EDITOR"
+          mode={mode}
+          currentTab={activeTab}
+          setMode={setMode}
           yearSchedules={yearSchedules}
           isFollowing={followVariant}
           followLoading={followLoading}
@@ -176,9 +180,17 @@ export default function ArtistPage() {
         />
         {selectedYear && artistId && (
           <div>
-            <DeckTab activeTab={activeTab} onTabChange={setActiveTab} />
+            <DeckTab
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              mode={mode}
+            />
             {activeTab === "timeTile" && (
-              <TimetileDeck year={selectedYear} artistId={artistId} />
+              <TimetileDeck
+                year={selectedYear}
+                artistId={artistId}
+                mode={mode}
+              />
             )}
             {activeTab === "myTile" && <MyTileDeck />}
           </div>
