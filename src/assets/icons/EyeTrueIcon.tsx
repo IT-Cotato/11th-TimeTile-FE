@@ -1,4 +1,8 @@
-export const EyeTrueIcon = () => {
+interface EyeTrueIconProps {
+  color?: string;
+}
+
+export const EyeTrueIcon = ({ color = "#000" }: EyeTrueIconProps) => {
   return (
     <>
       <svg
@@ -7,6 +11,7 @@ export const EyeTrueIcon = () => {
         height="20"
         viewBox="0 0 20 20"
         fill="none"
+        style={{ color }}
       >
         <path
           d="M0.833008 9.99998C0.833008 9.99998 4.16634 3.33331 9.99967 3.33331C15.833 3.33331 19.1663 9.99998 19.1663 9.99998C19.1663 9.99998 15.833 16.6666 9.99967 16.6666C4.16634 16.6666 0.833008 9.99998 0.833008 9.99998Z"

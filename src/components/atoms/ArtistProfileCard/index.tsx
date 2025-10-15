@@ -4,6 +4,12 @@ import { theme } from "@/styles/theme";
 import { Text } from "@/components/atoms/Text";
 import { YearScroller } from "@/components/Deck/YearScroller";
 import { UserRole } from "@/model/common/user";
+import { Tooltip } from "../Tooltip";
+import { EditButtonIcon } from "@/assets/icons/EditButtonIcon";
+import { useState } from "react";
+import { AlertIcon } from "@/assets/icons/AlertIcon";
+import { EyeButtonIcon } from "@/assets/icons/EyeButtonIcon";
+import { ClockButtonIcon } from "@/assets/icons/ClockButtonIcon";
 
 interface ArtistProfileCardProps {
   artistName: string;
@@ -20,6 +26,13 @@ interface ArtistProfileCardProps {
   onYearSelect?: (year: number | null) => void;
 }
 
+const roleColorMap: Record<UserRole | "ADMIN", string> = {
+  WATCHER: theme.palette.gray_300,
+  LINKER: theme.palette.sub_600,
+  EDITOR: theme.palette.sub_600,
+  ADMIN: theme.palette.sub_600,
+};
+
 export const ArtistProfileCard = ({
   artistName,
   followerCount,
@@ -34,6 +47,17 @@ export const ArtistProfileCard = ({
   onUnfollowClick,
   onYearSelect,
 }: ArtistProfileCardProps) => {
+  const [currentMode, setCurrentMode] = useState(mode);
+  const iconColor = roleColorMap[role] ?? theme.palette.gray_300;
+
+  const handleTooltipClick = () => {
+    if (currentMode === "view" && role !== "WATCHER") {
+      setCurrentMode("edit");
+    } else if (currentMode === "edit") {
+      setCurrentMode("view");
+    }
+  };
+
   return (
     <CardWrapper>
       <ImageWrapper $imageUrl={imageUrl} />
@@ -41,7 +65,7 @@ export const ArtistProfileCard = ({
         <TopWrapper>
           <Info>
             <TopRow>
-              <ArtistInfo>
+              <ArtistInfo $isEditMode={currentMode === "edit"}>
                 <Text typo="H1" color="gray_1000">
                   {artistName}
                 </Text>
@@ -54,13 +78,18 @@ export const ArtistProfileCard = ({
                     alignItems: "flex-start",
                   }}
                 >
-                  <FollowButton
-                    variant={isFollowing}
-                    isLoading={followLoading}
-                    onClick={onFollowClick}
-                    onUnfollowClick={onUnfollowClick}
-                    width={68}
-                  />
+                  {currentMode === "edit" ? (
+                    <AlertIcon />
+                  ) : (
+                    <FollowButton
+                      variant={isFollowing}
+                      isLoading={followLoading}
+                      onClick={onFollowClick}
+                      onUnfollowClick={onUnfollowClick}
+                      width={68}
+                      height={36}
+                    />
+                  )}
                 </div>
               </ArtistInfo>
               <Part>
@@ -68,6 +97,43 @@ export const ArtistProfileCard = ({
                 <Text typo="Caption_1">{followerCount.toLocaleString()}명</Text>
               </Part>
             </TopRow>
+            {(isFollowing === "following" || isFollowing === "unfollow") && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "8px",
+                  width: 32,
+                }}
+              >
+                <Tooltip
+                  variant="default"
+                  icon={
+                    <div onClick={handleTooltipClick}>
+                      {currentMode === "edit" ? (
+                        <EyeButtonIcon color={theme.palette.sub_600} />
+                      ) : (
+                        <EditButtonIcon color={iconColor} />
+                      )}
+                    </div>
+                  }
+                >
+                  {currentMode === "edit"
+                    ? "보기 모드로 전환하기"
+                    : role === "WATCHER"
+                    ? "Linker 등급부터 문서를 편집할 수 있어요"
+                    : "편집 모드로 전환하기"}
+                </Tooltip>
+                {currentMode === "edit" && (
+                  <Tooltip
+                    variant="default"
+                    icon={<ClockButtonIcon color={iconColor} />}
+                  >
+                    업로드 대기 중인 타일 보기
+                  </Tooltip>
+                )}
+              </div>
+            )}
           </Info>
         </TopWrapper>
         <YearWrapper>
@@ -126,11 +192,19 @@ const Info = styled.div`
   align-items: flex-start;
 `;
 
-const ArtistInfo = styled.div`
+const ArtistInfo = styled.div<{ $isEditMode: boolean }>`
   display: flex;
   align-items: flex-start;
   height: 32px;
   gap: 16px;
+
+  ${({ $isEditMode }) =>
+    $isEditMode &&
+    `
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+  `}
 `;
 
 const TopRow = styled.div`
