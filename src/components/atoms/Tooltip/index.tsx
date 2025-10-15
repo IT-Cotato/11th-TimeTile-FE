@@ -9,7 +9,7 @@ import { DateText } from "../DateText";
 
 interface PropsType {
   variant: "default" | "date";
-  children?: ReactNode;
+  children?: string;
   icon?: ReactNode; // 아이콘 컴포넌트
   startDate?: string;
   endDate?: string;
@@ -97,12 +97,13 @@ const Fixing = styled.div`
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  z-index: 999;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 8px;
 `;
+
 const StyledTooltip = styled.div<{ variant: "default" | "date" }>`
   width: max-content;
   white-space: nowrap;

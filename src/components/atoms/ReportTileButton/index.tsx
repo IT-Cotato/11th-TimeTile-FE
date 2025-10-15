@@ -25,7 +25,7 @@ export const ReportTileButton = ({
       return (
         <FlexBox gap={4}>
           <Svg children={<Frown />} />
-          <Text typo="Caption_2" children="부적절해요" />
+          <Text typo="Caption_2">{children}</Text>
         </FlexBox>
       );
     } else {
@@ -56,16 +56,17 @@ const StyledButton = styled.button<{
   width?: number;
 }>`
   width: ${({ width }) => (width ? `${width}px` : 109)};
-  height: 36px;
+  height: 44px;
   padding: 8px 12px;
   background-color: ${theme.palette.warning_2};
   color: ${theme.palette.warning};
   border-radius: 10px;
   border: none;
+  z-index: 999;
 `;
 
 const StyledText = styled.div`
-  font-family: "Pretendard-SemiBold", sans-serif; // ✅ 이렇게 명시
+  font-family: "Pretendard-SemiBold", sans-serif;
   font-size: 14px;
   font-weight: 600;
   line-height: 21px;

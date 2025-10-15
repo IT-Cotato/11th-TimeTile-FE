@@ -14,13 +14,13 @@ export const DateText = ({
   ...props
 }: PropsType) => {
   //variant 설정
-  // 시작일과 끝나는 일이 같으면 Tilde variant로, 업로드 대기 상태면 waiting variant로
+  // 시작일과 끝나는 일이 다르면 Tilde variant로, 업로드 대기 상태면 waiting variant로
   const variant: "default" | "tilde" | "waiting" | "waitingTilde" =
-    isWaiting && startDate === endDate
+    isWaiting && startDate !== endDate
       ? "waitingTilde"
       : isWaiting
       ? "waiting"
-      : startDate === endDate
+      : startDate !== endDate
       ? "tilde"
       : "default";
 

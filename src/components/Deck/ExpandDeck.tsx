@@ -10,7 +10,10 @@ import { theme } from "@/styles/theme";
 import { EventData } from "@/model/components/Event";
 import { ChevronDown } from "@/assets/icons/ChevronDown";
 import { KebabIcon } from "@/assets/icons/KebabIcon";
-import { Tooltip } from "../atoms/Tooltip";
+import { DeckDateTooltip } from "./DeckDateTooltip";
+import { CommentIcon } from "@/assets/icons/CommentIcon";
+import { useState, useEffect, useRef } from "react";
+import { ReportTileButton } from "../atoms/ReportTileButton";
 
 interface ExpandDeckProps {
   events: EventData[];
@@ -18,10 +21,27 @@ interface ExpandDeckProps {
 }
 
 export const ExpandDeck = ({ events, onClose }: ExpandDeckProps) => {
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const day = date.getDate();
-    return `${day}일`;
+  const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        activeMenuId !== null &&
+        !(event.target as Element).closest(".kebab-menu-area")
+      ) {
+        setActiveMenuId(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [activeMenuId]);
+
+  const handleKebabClick = (eventId: number) => {
+    setActiveMenuId((prevId) => (prevId === eventId ? null : eventId));
   };
 
   return (
@@ -31,26 +51,35 @@ export const ExpandDeck = ({ events, onClose }: ExpandDeckProps) => {
           <EventCard key={event.eventId}>
             <TopWrapper>
               <Text typo="Body_1" color="gray_700">
-                {/* {event.startedAt !== event.endedAt ? (
-                  <Tooltip
-                    variant="date"
-                    startDate={event.startedAt}
-                    endDate={event.endedAt}
-                  />
-                ) : (
-                  formatDate(event.startedAt)
-                )} */}
-                <Tooltip
-                  variant="date"
+                <DeckDateTooltip
                   startDate={event.startedAt}
                   endDate={event.endedAt}
                 />
               </Text>
               <ReportDiv>
-                <Text typo="H4" color="gray_1000">
-                  {event.name}
-                </Text>
-                <KebabIcon />
+                <Wrap>
+                  <Text typo="H4" color="gray_1000">
+                    {event.name}
+                  </Text>
+                  <CommentIcon />
+                </Wrap>
+                <KebabWrapper className="kebab-menu-area">
+                  <div onClick={() => handleKebabClick(event.eventId)}>
+                    <KebabIcon />
+                  </div>
+                  {activeMenuId === event.eventId && (
+                    <ReportButtonWrapper>
+                      <ReportTileButton
+                        width={188}
+                        children="부적절한 정보 신고하기"
+                        onClick={() => {
+                          console.log(`${event.eventId} 신고 처리`);
+                          setActiveMenuId(null);
+                        }}
+                      />
+                    </ReportButtonWrapper>
+                  )}
+                </KebabWrapper>
               </ReportDiv>
             </TopWrapper>
             {(event.activityTypes.length > 0 ||
@@ -132,7 +161,6 @@ const EventList = styled.div`
   max-height: 640px;
   overflow-y: auto;
   padding-bottom: 12px;
-
   scrollbar-width: none;
   -ms-overflow-style: none;
   &::-webkit-scrollbar {
@@ -145,6 +173,13 @@ const ReportDiv = styled.div`
   justify-content: space-between;
   align-items: center;
   flex: 1 0 0;
+`;
+
+const Wrap = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 `;
 
 const EventCard = styled.div`
@@ -162,6 +197,19 @@ const TopWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+`;
+
+const KebabWrapper = styled.div`
+  position: relative;
+  cursor: pointer;
+`;
+
+const ReportButtonWrapper = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  z-index: 10;
 `;
 
 const TagsScrollWrapper = styled.div`
