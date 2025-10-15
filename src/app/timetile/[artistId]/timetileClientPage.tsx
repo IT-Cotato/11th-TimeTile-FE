@@ -165,7 +165,8 @@ export default function ArtistPage() {
           followerCount={artistData.followerCount}
           imageUrl={artistData.imageUrl}
           years={years}
-          role={userProfile?.role}
+          // role={userProfile?.role}
+          role="EDITOR"
           yearSchedules={yearSchedules}
           isFollowing={followVariant}
           followLoading={followLoading}
