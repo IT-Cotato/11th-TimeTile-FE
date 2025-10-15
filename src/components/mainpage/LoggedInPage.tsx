@@ -26,20 +26,16 @@ export interface MyPost {
 }
 
 export default function LoggedInPage() {
-  // 아티스트 이벤트 페이지네이션
   const [artistEvents, setArtistEvents] = useState<any[]>([]);
   const [artistPage, setArtistPage] = useState(1);
   const [artistHasNext, setArtistHasNext] = useState(false);
   const [artistHasPrevious, setArtistHasPrevious] = useState(false);
-
-  // 유저 포스트 페이지네이션
   const [userPosts, setUserPosts] = useState<MyPost[]>([]);
   const [userPage, setUserPage] = useState(1);
   const [userHasNext, setUserHasNext] = useState(false);
   const [userHasPrevious, setUserHasPrevious] = useState(false);
   const [followingArtists, setFollowingArtists] = useState<Artist[]>([]);
 
-  // 팔로잉 아티스트 조회
   useEffect(() => {
     const fetchFollowingArtists = async () => {
       const res = await usersApi.getFollowingArtists();
@@ -49,12 +45,10 @@ export default function LoggedInPage() {
     fetchFollowingArtists();
   }, []);
 
-  // 아티스트 이벤트 조회
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const data = await mainApi.getFollowingArtistsEvents(artistPage);
-        //const data = MOCK_DATA[0];
         if (data?.data?.events) {
           setArtistEvents(data.data.events);
           setArtistHasNext(data.data.hasNext);
@@ -67,7 +61,6 @@ export default function LoggedInPage() {
     fetchEvents();
   }, [artistPage]);
 
-  // 유저 포스트 조회
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -84,7 +77,6 @@ export default function LoggedInPage() {
     fetchPosts();
   }, [userPage]);
 
-  // 아티스트 이벤트
   const handleArtistPrev = () => {
     if (artistHasPrevious) setArtistPage((prev) => prev - 1);
   };
@@ -92,7 +84,6 @@ export default function LoggedInPage() {
     if (artistHasNext) setArtistPage((prev) => prev + 1);
   };
 
-  // 유저 포스트
   const handleUserPrev = () => {
     if (userHasPrevious) setUserPage((prev) => prev - 1);
   };
@@ -102,7 +93,6 @@ export default function LoggedInPage() {
 
   return (
     <FlexBox gap={32} direction="column">
-      {/* 아티스트 이벤트 */}
       <Wrapper>
         <TextWrapper>
           <Text typo="H3_2" color="primary_700">
@@ -124,10 +114,9 @@ export default function LoggedInPage() {
               </LoginComponent>
             ) : (
               artistEvents.map((event) => {
-                const topArtist = followingArtists.find(
+                const topArtist = followingArtists?.find(
                   (artist) => artist.id === event.groupId
                 );
-                if (!topArtist) return null;
 
                 const bottomData: BottomData = {
                   title: event.name,
@@ -140,7 +129,7 @@ export default function LoggedInPage() {
                 return (
                   <TimeTileComponent
                     key={event.eventId}
-                    topArtists={[topArtist]}
+                    topArtists={topArtist ? [topArtist] : []}
                     bottomData={bottomData}
                   />
                 );
@@ -153,7 +142,6 @@ export default function LoggedInPage() {
         </FlexBox>
       </Wrapper>
       <Divider />
-      {/* 유저 포스트 */}
       <Wrapper>
         <TextWrapper>
           <Text typo="H3_2" color="primary_700">
