@@ -30,7 +30,7 @@ export const ClockButtonIcon = ({ color = "#000" }: ClockButtonIconProps) => {
           stroke="currentColor"
           strokeWidth="1.5"
         />
-        <g clip-path="url(#clip0_3148_2481)">
+        <g clipPath="url(#clip0_3148_2481)">
           <path
             d="M15.9998 11.0001V16.0001L19.3332 17.6667M24.3332 16.0001C24.3332 20.6025 20.6022 24.3334 15.9998 24.3334C11.3975 24.3334 7.6665 20.6025 7.6665 16.0001C7.6665 11.3977 11.3975 7.66675 15.9998 7.66675C20.6022 7.66675 24.3332 11.3977 24.3332 16.0001Z"
             stroke="currentColor"

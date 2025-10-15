@@ -5,24 +5,29 @@ import { theme } from "@/styles/theme";
 interface DeckTabProps {
   activeTab: "timeTile" | "myTile";
   onTabChange: (tab: "timeTile" | "myTile") => void;
+  mode: "view" | "edit" | "waiting";
 }
 
-export const DeckTab = ({ activeTab, onTabChange }: DeckTabProps) => {
+export const DeckTab = ({ activeTab, onTabChange, mode }: DeckTabProps) => {
+  const currentTab = mode === "edit" ? "timeTile" : activeTab;
+
+  if (mode === "edit") return null;
+
   return (
     <TabWrapper>
       <Tab
-        selected={activeTab === "timeTile"}
+        selected={currentTab === "timeTile"}
         onClick={() => onTabChange("timeTile")}
         $isLeft={true}
       >
-        <Text typo="H4" children="타임타일 데크" />
+        <Text typo="H4">타임타일 데크</Text>
       </Tab>
       <Tab
-        selected={activeTab === "myTile"}
+        selected={currentTab === "myTile"}
         onClick={() => onTabChange("myTile")}
         $isLeft={false}
       >
-        <Text typo="H4" children="마이타일 데크" />
+        <Text typo="H4">마이타일 데크</Text>
       </Tab>
     </TabWrapper>
   );

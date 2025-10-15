@@ -6,7 +6,6 @@ import { YearScroller } from "@/components/Deck/YearScroller";
 import { UserRole } from "@/model/common/user";
 import { Tooltip } from "../Tooltip";
 import { EditButtonIcon } from "@/assets/icons/EditButtonIcon";
-import { useState } from "react";
 import { AlertIcon } from "@/assets/icons/AlertIcon";
 import { EyeButtonIcon } from "@/assets/icons/EyeButtonIcon";
 import { ClockButtonIcon } from "@/assets/icons/ClockButtonIcon";
@@ -18,9 +17,11 @@ interface ArtistProfileCardProps {
   years?: number[];
   yearSchedules?: Record<number, string[]>;
   role?: UserRole | "ADMIN";
-  mode?: "view" | "edit" | "waiting";
+  mode: "view" | "edit" | "waiting";
+  currentTab: "timeTile" | "myTile";
   isFollowing?: "follow" | "following" | "unfollow";
   followLoading?: boolean;
+  setMode?: (mode: "view" | "edit" | "waiting") => void;
   onFollowClick?: () => void;
   onUnfollowClick?: () => void;
   onYearSelect?: (year: number | null) => void;
@@ -43,18 +44,20 @@ export const ArtistProfileCard = ({
   mode = "view",
   isFollowing,
   followLoading = false,
+  currentTab,
+  setMode,
   onFollowClick,
   onUnfollowClick,
   onYearSelect,
 }: ArtistProfileCardProps) => {
-  const [currentMode, setCurrentMode] = useState(mode);
   const iconColor = roleColorMap[role] ?? theme.palette.gray_300;
 
   const handleTooltipClick = () => {
-    if (currentMode === "view" && role !== "WATCHER") {
-      setCurrentMode("edit");
-    } else if (currentMode === "edit") {
-      setCurrentMode("view");
+    if (!setMode) return;
+    if (mode === "view" && role !== "WATCHER") {
+      setMode("edit");
+    } else if (mode === "edit") {
+      setMode("view");
     }
   };
 
@@ -65,7 +68,7 @@ export const ArtistProfileCard = ({
         <TopWrapper>
           <Info>
             <TopRow>
-              <ArtistInfo $isEditMode={currentMode === "edit"}>
+              <ArtistInfo $isEditMode={mode === "edit"}>
                 <Text typo="H1" color="gray_1000">
                   {artistName}
                 </Text>
@@ -78,7 +81,7 @@ export const ArtistProfileCard = ({
                     alignItems: "flex-start",
                   }}
                 >
-                  {currentMode === "edit" ? (
+                  {mode === "edit" ? (
                     <AlertIcon />
                   ) : (
                     <FollowButton
@@ -97,43 +100,47 @@ export const ArtistProfileCard = ({
                 <Text typo="Caption_1">{followerCount.toLocaleString()}명</Text>
               </Part>
             </TopRow>
-            {(isFollowing === "following" || isFollowing === "unfollow") && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "8px",
-                  width: 32,
-                }}
-              >
-                <Tooltip
-                  variant="default"
-                  icon={
-                    <div onClick={handleTooltipClick}>
-                      {currentMode === "edit" ? (
-                        <EyeButtonIcon color={theme.palette.sub_600} />
-                      ) : (
-                        <EditButtonIcon color={iconColor} />
-                      )}
-                    </div>
-                  }
+            {currentTab === "timeTile" &&
+              (isFollowing === "following" || isFollowing === "unfollow") && (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    width: 32,
+                  }}
                 >
-                  {currentMode === "edit"
-                    ? "보기 모드로 전환하기"
-                    : role === "WATCHER"
-                    ? "Linker 등급부터 문서를 편집할 수 있어요"
-                    : "편집 모드로 전환하기"}
-                </Tooltip>
-                {currentMode === "edit" && (
                   <Tooltip
                     variant="default"
-                    icon={<ClockButtonIcon color={iconColor} />}
+                    icon={
+                      <div
+                        onClick={handleTooltipClick}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {mode === "edit" ? (
+                          <EyeButtonIcon color={theme.palette.sub_600} />
+                        ) : (
+                          <EditButtonIcon color={iconColor} />
+                        )}
+                      </div>
+                    }
                   >
-                    업로드 대기 중인 타일 보기
+                    {mode === "edit"
+                      ? "보기 모드로 전환하기"
+                      : role === "WATCHER"
+                      ? "Linker 등급부터 문서를 편집할 수 있어요"
+                      : "편집 모드로 전환하기"}
                   </Tooltip>
-                )}
-              </div>
-            )}
+                  {mode === "edit" && (
+                    <Tooltip
+                      variant="default"
+                      icon={<ClockButtonIcon color={iconColor} />}
+                    >
+                      업로드 대기 중인 타일 보기
+                    </Tooltip>
+                  )}
+                </div>
+              )}
           </Info>
         </TopWrapper>
         <YearWrapper>
