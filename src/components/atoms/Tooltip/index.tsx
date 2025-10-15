@@ -97,13 +97,12 @@ const Fixing = styled.div`
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 999;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 8px;
 `;
-
 const StyledTooltip = styled.div<{ variant: "default" | "date" }>`
   width: max-content;
   white-space: nowrap;

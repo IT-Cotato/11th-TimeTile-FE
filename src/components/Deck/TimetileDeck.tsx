@@ -3,37 +3,11 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
-import axios from "axios";
-
-interface RelatedArtist {
-  id: string;
-  name: string;
-  imageUrl: string;
-}
-
-interface EventData {
-  eventId: number;
-  groupId: string;
-  name: string;
-  description: string;
-  source: string;
-  relatedEvents: string[];
-  relatedArtists: RelatedArtist[];
-  activityTypes: string[];
-  relatedMaterials: string[];
-  startedAt: string;
-  endedAt: string;
-  contributorCount: number;
-}
-
-interface EventsResponse {
-  isSuccess: boolean;
-  code: string;
-  message: string;
-  data: {
-    events: Record<number, EventData[]>;
-  };
-}
+import { deckApi } from "@/apis/deckApi";
+import { DefaultDeck } from "./DefaultDeck";
+import { ExpandDeck } from "./ExpandDeck";
+import { Text } from "../atoms/Text";
+import { EventData } from "@/model/components/Event";
 
 interface TimetileDeckProps {
   year: number;
@@ -46,20 +20,31 @@ export const TimetileDeck = ({ year, artistId, mode }: TimetileDeckProps) => {
     Record<number, EventData[]>
   >({});
   const [loading, setLoading] = useState(true);
+  const [expandedMonths, setExpandedMonths] = useState<Record<number, boolean>>(
+    {}
+  );
+  const [hasMore, setHasMore] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const res = await axios.get<EventsResponse>(`/events/${artistId}/hot`, {
-          params: { year: year.toString() },
-        });
+        const hotData = await deckApi.getHotEvents(artistId, year);
 
-        if (res.data.isSuccess) {
-          setMonthlyEvents(res.data.data.events);
-        } else {
-          console.error("API Error:", res.data.message);
+        const months = Object.keys(hotData.events).map(Number);
+        const monthly: Record<number, EventData[]> = {};
+        const more: Record<number, boolean> = {};
+
+        for (const month of months) {
+          monthly[month] = hotData.events[month];
+
+          const fullData = await deckApi.getMoreEvents(artistId, year, month);
+          monthly[month] = fullData.events;
+          more[month] = fullData.hasNext;
         }
+
+        setMonthlyEvents(monthly);
+        setHasMore(more);
       } catch (e) {
         console.error(e);
       } finally {
@@ -70,35 +55,43 @@ export const TimetileDeck = ({ year, artistId, mode }: TimetileDeckProps) => {
     fetchEvents();
   }, [artistId, year]);
 
+  const toggleExpand = (month: number) => {
+    setExpandedMonths((prev) => ({
+      ...prev,
+      [month]: !prev[month],
+    }));
+  };
+
   if (loading) return <Container $mode={mode}>로딩 중...</Container>;
 
   return (
     <Container $mode={mode}>
-      {Object.entries(monthlyEvents).map(([month, events]) => (
-        <MonthWrapper key={month}>
-          <MonthTitle>{month}월</MonthTitle>
-          {events.map((event) => (
-            <EventCard key={event.eventId}>
-              <EventName>{event.name}</EventName>
-              <EventDate>
-                {event.startedAt} ~ {event.endedAt}
-              </EventDate>
-              {event.relatedArtists.length > 0 && (
-                <RelatedArtists>
-                  {event.relatedArtists.map((artist) => (
-                    <ArtistImg
-                      key={artist.id}
-                      src={artist.imageUrl}
-                      alt={artist.name}
-                      title={artist.name}
-                    />
-                  ))}
-                </RelatedArtists>
+      {Object.entries(monthlyEvents).map(([monthStr, events]) => {
+        const month = Number(monthStr);
+        const expanded = expandedMonths[month];
+
+        return (
+          <ScheduleWrapper key={month}>
+            <MonthTitle>
+              <Text typo="H2">{month}월</Text>
+            </MonthTitle>
+            <Wrapper>
+              {expanded ? (
+                <ExpandDeck
+                  events={events}
+                  onClose={() => toggleExpand(month)}
+                />
+              ) : (
+                <DefaultDeck
+                  events={events}
+                  showMoreButton={true}
+                  onMoreClick={() => toggleExpand(month)}
+                />
               )}
-            </EventCard>
-          ))}
-        </MonthWrapper>
-      ))}
+            </Wrapper>
+          </ScheduleWrapper>
+        );
+      })}
     </Container>
   );
 };
@@ -117,44 +110,24 @@ const Container = styled.div<{ $mode: "view" | "edit" | "waiting" }>`
   background: ${theme.palette.primary_20};
 `;
 
-const MonthWrapper = styled.div`
+const ScheduleWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 33px;
+`;
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  width: 100%;
+  gap: 10px;
 `;
 
 const MonthTitle = styled.div`
-  font-weight: bold;
-  color: ${theme.palette.gray_900};
-`;
-
-const EventCard = styled.div`
-  padding: 8px;
-  border-radius: 8px;
-  background: ${theme.palette.gray_100};
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const EventName = styled.div`
-  font-weight: 500;
-`;
-
-const EventDate = styled.div`
-  font-size: 12px;
-  color: ${theme.palette.gray_600};
-`;
-
-const RelatedArtists = styled.div`
-  display: flex;
-  gap: 4px;
-  margin-top: 4px;
-`;
-
-const ArtistImg = styled.img`
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 52px;
+  height: 49px;
+  padding: 8px 6px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
 `;

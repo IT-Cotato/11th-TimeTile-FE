@@ -94,27 +94,21 @@ export default function ArtistPage() {
           followerCount: artistInfo.followCount,
         });
 
-        setYears(mockYears);
-        setYearSchedules(mockYearSchedules);
-        {
-          /* 지금은 목데이터로 확인중이라 위에 두줄 쓰고 실제 데이터는 아래
-                const activeYears = await deckApi.getArtistActiveYears(
-                  artistId
-                );
-                const sortedYears = Object.keys(activeYears)
-                  .map((y) => parseInt(y))
-                  .sort((a, b) => a - b);
-                setYears(sortedYears);
-                setYearSchedules(
-                  Object.fromEntries(
-                    Object.entries(activeYears).map(([year, schedules]) => [
-                      parseInt(year),
-                      schedules as string[],
-                    ])
-                  )
-                );
-                     */
-        }
+        // setYears(mockYears);
+        // setYearSchedules(mockYearSchedules);
+        const activeYears = await deckApi.getArtistActiveYears(artistId);
+        const sortedYears = Object.keys(activeYears)
+          .map((y) => parseInt(y))
+          .sort((a, b) => a - b);
+        setYears(sortedYears);
+        setYearSchedules(
+          Object.fromEntries(
+            Object.entries(activeYears).map(([year, schedules]) => [
+              parseInt(year),
+              schedules as string[],
+            ])
+          )
+        );
       } catch (error) {
         console.error(error);
       } finally {
