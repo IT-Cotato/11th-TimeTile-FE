@@ -8,6 +8,8 @@ import { deckApi } from "@/apis/deckApi";
 import { TimetileDeck } from "@/components/Deck/TimetileDeck";
 import { DeckTab } from "@/components/Deck/DeckTab";
 import { MyTileDeck } from "@/components/Deck/MyTileDeck";
+import { useAtom } from "jotai";
+import { userProfileAtom } from "@/store/UserProfileAtom";
 
 interface ArtistData {
   artistName: string;
@@ -54,11 +56,29 @@ export default function ArtistPage() {
   const [yearSchedules, setYearSchedules] = useState<Record<number, string[]>>(
     {}
   );
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followLoading, setFollowLoading] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+  const [followLoading, setFollowLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"timeTile" | "myTile">("timeTile");
+
+  const [userProfile, setUserProfile] = useAtom(userProfileAtom);
+  const [followVariant, setFollowVariant] = useState<
+    "follow" | "following" | "unfollow"
+  >("follow");
+
+  useEffect(() => {
+    if (!artistId) return;
+    const fetchFollowStatus = async () => {
+      try {
+        const res = await deckApi.getFollowStatus(artistId);
+        setFollowVariant(res.data.isFollowing ? "following" : "follow");
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    fetchFollowStatus();
+  }, [artistId]);
 
   useEffect(() => {
     if (!artistId) return;
@@ -106,19 +126,32 @@ export default function ArtistPage() {
 
   const handleFollowClick = async () => {
     if (!artistId) return;
-    setFollowLoading(true);
-    try {
-      if (isFollowing) {
-        await deckApi.unfollowArtist(artistId);
-        setIsFollowing(false);
-      } else {
+
+    if (followVariant === "follow") {
+      try {
         await deckApi.followArtist(artistId);
-        setIsFollowing(true);
+        setFollowVariant("following");
+        setArtistData((prev) =>
+          prev ? { ...prev, followerCount: prev.followerCount + 1 } : prev
+        );
+      } catch (e) {
+        console.error(e);
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setFollowLoading(false);
+    } else if (followVariant === "following") {
+      setFollowVariant("unfollow");
+    }
+  };
+
+  const handleUnfollowClick = async () => {
+    if (!artistId) return;
+    try {
+      await deckApi.unfollowArtist(artistId);
+      setFollowVariant("follow");
+      setArtistData((prev) =>
+        prev ? { ...prev, followerCount: prev.followerCount - 1 } : prev
+      );
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -132,11 +165,12 @@ export default function ArtistPage() {
           followerCount={artistData.followerCount}
           imageUrl={artistData.imageUrl}
           years={years}
+          role={userProfile?.role}
           yearSchedules={yearSchedules}
-          isFollowing={isFollowing}
+          isFollowing={followVariant}
           followLoading={followLoading}
           onFollowClick={handleFollowClick}
-          onUnfollowClick={handleFollowClick}
+          onUnfollowClick={handleUnfollowClick}
           onYearSelect={setSelectedYear}
         />
         {selectedYear && artistId && (

@@ -3,6 +3,7 @@ import { FollowButton } from "@/components/atoms/FollowButton";
 import { theme } from "@/styles/theme";
 import { Text } from "@/components/atoms/Text";
 import { YearScroller } from "@/components/Deck/YearScroller";
+import { UserRole } from "@/model/common/user";
 
 interface ArtistProfileCardProps {
   artistName: string;
@@ -10,9 +11,9 @@ interface ArtistProfileCardProps {
   imageUrl: string;
   years?: number[];
   yearSchedules?: Record<number, string[]>;
-  role?: "watcher" | "linker" | "editor";
+  role?: UserRole | "ADMIN";
   mode?: "view" | "edit" | "waiting";
-  isFollowing?: boolean;
+  isFollowing?: "follow" | "following" | "unfollow";
   followLoading?: boolean;
   onFollowClick?: () => void;
   onUnfollowClick?: () => void;
@@ -25,10 +26,10 @@ export const ArtistProfileCard = ({
   imageUrl,
   years = [],
   yearSchedules = {},
-  role = "watcher",
+  role = "WATCHER",
   mode = "view",
   isFollowing,
-  followLoading,
+  followLoading = false,
   onFollowClick,
   onUnfollowClick,
   onYearSelect,
@@ -54,7 +55,7 @@ export const ArtistProfileCard = ({
                   }}
                 >
                   <FollowButton
-                    variant={isFollowing ? "unfollow" : "follow"}
+                    variant={isFollowing}
                     isLoading={followLoading}
                     onClick={onFollowClick}
                     onUnfollowClick={onUnfollowClick}
