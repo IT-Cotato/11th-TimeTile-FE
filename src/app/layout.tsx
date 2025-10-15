@@ -22,6 +22,7 @@ export default function RootLayout({
           <HeaderWrapper />
           {children}
         </JotaiProvider>
+        <div id="tooltip-portal"></div>
       </body>
     </html>
   );
