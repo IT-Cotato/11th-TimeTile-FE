@@ -1,17 +1,33 @@
 import styled, { css } from "styled-components";
 import { Text } from "../atoms/Text";
 import { theme } from "@/styles/theme";
+import { AddTileButton } from "../atoms/AddTileButton";
+import { UserRole } from "@/model/common/user";
 
 interface DeckTabProps {
   activeTab: "timeTile" | "myTile";
+  artistName?: string;
+  role?: UserRole;
   onTabChange: (tab: "timeTile" | "myTile") => void;
   mode: "view" | "edit" | "waiting";
 }
 
-export const DeckTab = ({ activeTab, onTabChange, mode }: DeckTabProps) => {
+export const DeckTab = ({
+  activeTab,
+  artistName,
+  role,
+  onTabChange,
+  mode,
+}: DeckTabProps) => {
   const currentTab = mode === "edit" ? "timeTile" : activeTab;
+  const buttonVariant = role === "LINKER" ? "disable" : "able";
 
-  if (mode === "edit") return null;
+  if (mode === "edit")
+    return (
+      <ButtonWrapper>
+        <AddTileButton variant={buttonVariant} children={artistName} />
+      </ButtonWrapper>
+    );
 
   return (
     <TabWrapper>
@@ -32,6 +48,13 @@ export const DeckTab = ({ activeTab, onTabChange, mode }: DeckTabProps) => {
     </TabWrapper>
   );
 };
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 24px;
+`;
 
 const TabWrapper = styled.div`
   display: flex;
