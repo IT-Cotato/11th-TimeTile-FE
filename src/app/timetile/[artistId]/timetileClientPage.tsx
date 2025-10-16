@@ -176,6 +176,9 @@ export default function ArtistPage() {
           <div>
             <DeckTab
               activeTab={activeTab}
+              //role={userProfile?.role}
+              role="EDITOR"
+              artistName={artistData.artistName}
               onTabChange={setActiveTab}
               mode={mode}
             />
