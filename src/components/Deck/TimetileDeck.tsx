@@ -78,6 +78,7 @@ export const TimetileDeck = ({ year, artistId, mode }: TimetileDeckProps) => {
             <Wrapper>
               {expanded ? (
                 <ExpandDeck
+                  mode={mode}
                   events={events}
                   onClose={() => toggleExpand(month)}
                 />
