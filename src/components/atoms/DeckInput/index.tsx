@@ -5,6 +5,7 @@ import { Text } from "../Text";
 
 interface InputProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   maxLength?: number;
+  height?: number;
   placeholder?: string;
   value?: string;
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
@@ -13,6 +14,7 @@ interface InputProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
 
 export const DeckInput = ({
   maxLength = 50,
+  height = 40,
   placeholder = "타일 이름을 입력해주세요.",
   value = "",
   onChange,
@@ -40,6 +42,7 @@ export const DeckInput = ({
   return (
     <InputContainer>
       <Input
+        $height={height}
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
@@ -54,9 +57,12 @@ export const DeckInput = ({
             </Text>
           )}
         </div>
-        <CharCount $isError={isOverLimit}>
-          <Text typo="Caption_2">
-            {value.length}/{maxLength}
+        <CharCount>
+          <Text typo="Caption_2" color={isOverLimit ? "warning" : "gray_500"}>
+            {value.length}&nbsp;
+          </Text>
+          <Text typo="Caption_2" color="gray_500">
+            / {maxLength}자
           </Text>
         </CharCount>
       </InfoRow>
@@ -72,9 +78,9 @@ const InputContainer = styled.div`
   width: 100%;
 `;
 
-const Input = styled.textarea<{ $isError?: boolean }>`
+const Input = styled.textarea<{ $height?: number; $isError?: boolean }>`
   display: flex;
-  height: 40px;
+  height: ${({ $height }) => ($height ? `${$height}px` : "40px")};
   padding: 8px 16px;
   align-items: center;
   align-self: stretch;
@@ -115,7 +121,4 @@ const InfoRow = styled.div`
   width: 100%;
 `;
 
-const CharCount = styled.span<{ $isError?: boolean }>`
-  color: ${({ $isError }) =>
-    $isError ? theme.palette.warning : theme.palette.gray_500};
-`;
+const CharCount = styled.span``;

@@ -54,3 +54,13 @@ export const FilledInput: Story = {
     maxLength: 50,
   },
 };
+
+export const IntroInput: Story = {
+  args: {
+    onChange: () => {},
+    value: "",
+    placeholder: "타일에 대한 간략한 설명을 입력해주세요.",
+    maxLength: 200,
+    height: 166,
+  },
+};
