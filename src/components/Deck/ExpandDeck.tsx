@@ -16,6 +16,7 @@ import { useState, useEffect, useRef } from "react";
 import { ReportTileButton } from "../atoms/ReportTileButton";
 import { EditIcon } from "@/assets/icons/EditIcon";
 import { DeckWriteModal } from "./DeckWriteModal";
+import { ParticipantsModal } from "./ParticipantsModal";
 
 interface ExpandDeckProps {
   mode: "view" | "edit" | "waiting";
@@ -27,6 +28,8 @@ export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [isParticipantsOpen, setIsParticipantsOpen] = useState(false);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -151,7 +154,12 @@ export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
                 </ScrollContainer>
               </MaterialsWrapper>
             )}
-            <ContributeDiv>
+            <ContributeDiv
+              onClick={() => {
+                setSelectedGroupId(event.groupId);
+                setIsParticipantsOpen(true);
+              }}
+            >
               <Text typo="Caption_2" color="gray_600">
                 {event.contributorCount}명 참여했어요
               </Text>
@@ -172,6 +180,15 @@ export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
             onClose={handleCloseModal}
           />
         </ModalOverlay>
+      )}
+      {isParticipantsOpen && selectedGroupId && (
+        <ParticipantsModal
+          groupId={selectedGroupId}
+          onClose={() => {
+            setIsParticipantsOpen(false);
+            setSelectedGroupId(null);
+          }}
+        />
       )}
     </ExpandContainer>
   );

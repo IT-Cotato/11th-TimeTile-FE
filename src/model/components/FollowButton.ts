@@ -15,6 +15,7 @@ export interface FollowButtonPropsType
   variant: FollowButtonVariantType;
   width?: number;
   height?: number;
+  size?: "default" | "small";
   isLoading?: boolean;
   onClick?: () => void;
   onUnfollowClick: () => void;
