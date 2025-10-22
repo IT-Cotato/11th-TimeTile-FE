@@ -10,6 +10,7 @@ import {
   FOLLOW_BUTTON_COLOR_TYPE,
   FOLLOW_BUTTON_TEXT_COLOR_TYPE,
   FOLLOW_BUTTON_SHAPE_TYPE,
+  FOLLOW_BUTTON_SMALL_SHAPE_TYPE,
 } from "@/constants/atoms/followButton";
 /**
  * @param variant 팔로우 상태별 버튼의 종류: 'follow' | 'following' | 'unfollow'
@@ -25,11 +26,17 @@ export const FollowButton = ({
   width,
   height,
   variant = "follow",
+  size = "default",
   isLoading,
   onClick,
   onUnfollowClick,
   ...props
 }: FollowButtonProps) => {
+  const followTypo =
+    size === "small"
+      ? FOLLOW_BUTTON_SMALL_SHAPE_TYPE[variant].typo
+      : FOLLOW_BUTTON_SHAPE_TYPE[variant].typo;
+
   return (
     <>
       <StyledFollowButton
@@ -43,7 +50,7 @@ export const FollowButton = ({
           <Text typo="Body_1" children="로딩 중..." />
         ) : (
           <FlexBox>
-            <Text typo={FOLLOW_BUTTON_SHAPE_TYPE[variant].typo}>
+            <Text typo={followTypo}>
               {variant === "following" || variant === "unfollow"
                 ? "팔로잉"
                 : "팔로우"}

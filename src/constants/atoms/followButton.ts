@@ -31,3 +31,18 @@ export const FOLLOW_BUTTON_SHAPE_TYPE: FollowButtonShapeType = {
     boxShadow: "none",
   },
 };
+
+export const FOLLOW_BUTTON_SMALL_SHAPE_TYPE: FollowButtonShapeType = {
+  follow: {
+    typo: "Caption_1",
+    boxShadow: "none",
+  },
+  following: {
+    typo: "Caption_1",
+    boxShadow: "none",
+  },
+  unfollow: {
+    typo: "Caption_1",
+    boxShadow: "none",
+  },
+};

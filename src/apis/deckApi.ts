@@ -49,4 +49,9 @@ export const deckApi = {
     });
     return res.data.data;
   },
+
+  getParticipants: async (groupId: string) => {
+    const res = await axiosApi.get(`/events/${groupId}/participants`);
+    return res.data.data.contributors;
+  },
 };
