@@ -4,14 +4,13 @@ import { createGlobalStyle } from "styled-components";
 import { theme } from "@/styles/theme";
 
 export const DatePickerGlobalStyle = createGlobalStyle`
-   /* 모든 요소의 기본 margin 제거 */
+
 .react-datepicker * {
   margin: 0 !important; 
   padding: 0; 
   box-sizing: border-box;
 }
 
-  /* 달력 전체 박스 */
   .react-datepicker {
     display: flex;
     flex-direction: column;
@@ -25,7 +24,6 @@ export const DatePickerGlobalStyle = createGlobalStyle`
     font-family: "Pretendard-Regular";
   }
 
-  /* 헤더 부분 */
   .react-datepicker__header {
     width: 266px;
     background: transparent;
@@ -33,16 +31,13 @@ export const DatePickerGlobalStyle = createGlobalStyle`
     padding: 0;
   }
 
-    /* 각 week 행 */
   .react-datepicker__week {
     display: flex;
     align-items: center;
     gap: 21px; 
     align-self: stretch;
-
   }
 
-  /* day 셀 */
   .react-datepicker__day {
     width: 20px;
     height: 20px;
@@ -81,21 +76,18 @@ export const DatePickerGlobalStyle = createGlobalStyle`
     color: #fff !important;
   }
 
-    /* 오늘 날짜이지만 선택되지 않은 경우, 다른 날짜가 선택되어 있을 때 */
   .react-datepicker__day--today:not(.react-datepicker__day--selected):not(.react-datepicker__day--keyboard-selected) {
     background: transparent !important;
     color: #000 !important;
   }
 
-    /* 오늘 날짜이지만 다른 날짜가 선택된 상태에서 hover하면 일반 hover로 처리 */
   .react-datepicker__day--today:not(.react-datepicker__day--selected):not(.react-datepicker__day--keyboard-selected):hover {
     background: #f0f0f0 !important;
     color: #000 !important;
   }
 
   .react-datepicker__day--keyboard-selected{
-    background: ${theme.palette.primary_500};
-    color: #fff;
+    color: #000 !important;
     box-shadow: 0 0 8px rgba(128, 169, 242, 0.3);
   }
 
@@ -120,12 +112,10 @@ export const DatePickerGlobalStyle = createGlobalStyle`
     line-height: 0;
   }
 
-  /* 이번 달이 아닌 날짜 (이전/다음 달 일부) */
   .react-datepicker__day--outside-month {
     color: ${theme.palette.gray_600} !important;
   }
 
-  /* hover했을 때도 색상 유지 */
   .react-datepicker__day--outside-month:hover {
     background: transparent !important;
     color: ${theme.palette.gray_600} !important;
@@ -158,6 +148,11 @@ export const DatePickerGlobalStyle = createGlobalStyle`
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    font-family: "Pretendard-Regular";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
   }
 
   .react-datepicker__month .react-datepicker__month-text {
@@ -171,28 +166,32 @@ export const DatePickerGlobalStyle = createGlobalStyle`
   cursor: pointer;
 }
 
-/* 일반 hover (선택되지 않은 월 hover 시) */
 .react-datepicker__month-text:hover {
   background: #f0f0f0 !important;
   color: #000 !important;
   border-radius: 16px !important;
 }
 
-/* 선택된 월 */
 .react-datepicker__month-text--selected {
   background: ${theme.palette.primary_500} !important;
   color: #fff !important;
   border-radius: 16px !important;
 }
 
-/* 선택된 월 hover 시 */
 .react-datepicker__month-text--selected:hover {
   background: ${theme.palette.primary_500} !important;
   color: #fff !important;
   border-radius: 16px !important;
 }
 
-  
+  .react-datepicker__month-text--keyboard-selected{
+    color: #000 !important;
+    box-shadow: 0 0 8px rgba(128, 169, 242, 0.3);
+  }
+
+  .react-datepicker__month-text--today {
+  font-weight: 400 !important;
+}
 
   .react-datepicker__year-text {
     width: 70px;
