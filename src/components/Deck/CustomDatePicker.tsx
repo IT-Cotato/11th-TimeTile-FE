@@ -25,6 +25,7 @@ export const CustomDatePicker = ({
   const [selectedDate, setSelectedDate] = useState<Date | null>(
     value ? new Date(value) : null
   );
+
   const [viewMode, setViewMode] = useState<"day" | "month" | "year">("day");
 
   const handleDaySelect = (date: Date | null) => {
@@ -62,10 +63,27 @@ export const CustomDatePicker = ({
         placeholderText={placeholder}
         renderCustomHeader={
           ((props: any) => {
-            const { date, decreaseMonth, increaseMonth } = props;
+            const {
+              date,
+              decreaseMonth,
+              increaseMonth,
+              decreaseYear,
+              increaseYear,
+            } = props;
+
+            const handlePrev = () => {
+              if (viewMode === "month" || viewMode === "year") decreaseYear();
+              else decreaseMonth();
+            };
+
+            const handleNext = () => {
+              if (viewMode === "month" || viewMode === "year") increaseYear();
+              else increaseMonth();
+            };
+
             return (
               <Header>
-                <HeaderTitle>
+                <HeaderTitle onClick={toggleMode}>
                   {viewMode === "year" && (
                     <Text typo="Caption_1" color="gray_1000">
                       {`${Math.floor(date.getFullYear() / 10) * 10} - ${
@@ -83,17 +101,13 @@ export const CustomDatePicker = ({
                       {`${date.getFullYear()}년 ${date.getMonth() + 1}월`}
                     </Text>
                   )}
-                  {viewMode !== "year" && (
-                    <div onClick={toggleMode}>
-                      <ChevronDown size="16" />
-                    </div>
-                  )}
+                  {viewMode !== "year" && <ChevronDown size="16" />}
                 </HeaderTitle>
                 <FlexBox gap={16}>
-                  <ArrowButton onClick={decreaseMonth}>
+                  <ArrowButton onClick={handlePrev}>
                     <LeftArrowIcon size={20} disabled={false} />
                   </ArrowButton>
-                  <ArrowButton onClick={increaseMonth}>
+                  <ArrowButton onClick={handleNext}>
                     <RightIcon size={20} />
                   </ArrowButton>
                 </FlexBox>
