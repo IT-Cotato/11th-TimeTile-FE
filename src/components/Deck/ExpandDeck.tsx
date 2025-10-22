@@ -328,6 +328,7 @@ const ContributeDiv = styled.div`
   display: flex;
   width: 100%;
   justify-content: flex-end;
+  cursor: pointer;
 `;
 
 const TextWrap = styled.div`
