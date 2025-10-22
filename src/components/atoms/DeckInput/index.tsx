@@ -10,6 +10,7 @@ interface InputProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   value?: string;
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   showError?: boolean;
+  variant?: "default" | "noCount";
 }
 
 export const DeckInput = ({
@@ -19,6 +20,7 @@ export const DeckInput = ({
   value = "",
   onChange,
   showError = false,
+  variant = "default",
   ...props
 }: InputProps) => {
   const [isTouched, setIsTouched] = useState(false);
@@ -47,25 +49,32 @@ export const DeckInput = ({
         value={value}
         onChange={handleChange}
         $isError={isError}
+        spellCheck={false}
+        $variant={variant}
         {...props}
       />
-      <InfoRow>
-        <div>
-          {errorMessage && (
-            <Text typo="Caption_4" color="warning">
-              {errorMessage}
+      {variant === "default" && (
+        <InfoRow>
+          <div>
+            {errorMessage && (
+              <Text typo="Caption_4" color="warning">
+                {errorMessage}
+              </Text>
+            )}
+          </div>
+          <CharCount>
+            <Text
+              typo="Caption_2"
+              color={isOverLimit ? "warning" : "gray_1000"}
+            >
+              {value.length}&nbsp;
             </Text>
-          )}
-        </div>
-        <CharCount>
-          <Text typo="Caption_2" color={isOverLimit ? "warning" : "gray_500"}>
-            {value.length}&nbsp;
-          </Text>
-          <Text typo="Caption_2" color="gray_500">
-            / {maxLength}자
-          </Text>
-        </CharCount>
-      </InfoRow>
+            <Text typo="Caption_2" color="gray_500">
+              / {maxLength}자
+            </Text>
+          </CharCount>
+        </InfoRow>
+      )}
     </InputContainer>
   );
 };
@@ -75,10 +84,14 @@ const InputContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
-  width: 100%;
+  width: 480px;
 `;
 
-const Input = styled.textarea<{ $height?: number; $isError?: boolean }>`
+const Input = styled.textarea<{
+  $height?: number;
+  $isError?: boolean;
+  $variant?: "default" | "noCount";
+}>`
   display: flex;
   height: ${({ $height }) => ($height ? `${$height}px` : "40px")};
   padding: 8px 16px;
@@ -86,14 +99,23 @@ const Input = styled.textarea<{ $height?: number; $isError?: boolean }>`
   align-self: stretch;
   border-radius: 10px;
   border: 1px solid
-    ${({ $isError }) =>
-      $isError ? theme.palette.warning : theme.palette.primary_400};
+    ${({ $variant, $isError }) =>
+      $variant === "noCount"
+        ? theme.palette.primary_400
+        : $isError
+        ? theme.palette.warning
+        : theme.palette.primary_400};
+  background: ${theme.palette.gray_0};
   background: ${theme.palette.gray_0};
 
   &:focus {
     outline: none;
-    border-color: ${({ $isError }) =>
-      $isError ? theme.palette.warning : theme.palette.primary_500};
+    border-color: ${({ $variant, $isError }) =>
+      $variant === "noCount"
+        ? theme.palette.primary_500
+        : $isError
+        ? theme.palette.warning
+        : theme.palette.primary_500};
   }
 
   font-family: "Pretendard-Regular";
