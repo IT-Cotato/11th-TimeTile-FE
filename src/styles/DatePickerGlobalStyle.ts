@@ -225,6 +225,11 @@ export const DatePickerGlobalStyle = createGlobalStyle`
     border-radius: 16px;
     color: ${theme.palette.gray_1000};
     cursor: pointer;
+    font-family: "Pretendard-Regular";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
   }
 
 
