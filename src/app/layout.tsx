@@ -3,7 +3,7 @@ import "./globals.css";
 import { Provider as JotaiProvider } from "jotai";
 import { JotaiInitializer } from "@/components/layouts/JotaiInitializer";
 import { HeaderWrapper } from "@/components/layouts/HeaderWrapper";
-import { ClientGlobalStyleWrapper } from "@/components/layouts/clientGlobalStyleWrapper";
+import { ClientGlobalStyleWrapper } from "@/components/layouts/ClientGlobalStyleWrapper";
 
 export const metadata: Metadata = {
   title: "TimeTile",
