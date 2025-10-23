@@ -14,14 +14,22 @@ import { DeckDateTooltip } from "./DeckDateTooltip";
 import { CommentIcon } from "@/assets/icons/CommentIcon";
 import { useState, useEffect, useRef } from "react";
 import { ReportTileButton } from "../atoms/ReportTileButton";
+import { EditIcon } from "@/assets/icons/EditIcon";
+import { DeckWriteModal } from "./DeckWriteModal";
+import { ParticipantsModal } from "./ParticipantsModal";
 
 interface ExpandDeckProps {
+  mode: "view" | "edit" | "waiting";
   events: EventData[];
   onClose: () => void;
 }
 
-export const ExpandDeck = ({ events, onClose }: ExpandDeckProps) => {
+export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [isParticipantsOpen, setIsParticipantsOpen] = useState(false);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -44,6 +52,16 @@ export const ExpandDeck = ({ events, onClose }: ExpandDeckProps) => {
     setActiveMenuId((prevId) => (prevId === eventId ? null : eventId));
   };
 
+  const handleEditClick = (eventId: number) => {
+    setSelectedEventId(eventId);
+    setIsWriteModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsWriteModalOpen(false);
+    setSelectedEventId(null);
+  };
+
   return (
     <ExpandContainer>
       <EventList>
@@ -63,23 +81,31 @@ export const ExpandDeck = ({ events, onClose }: ExpandDeckProps) => {
                   </Text>
                   <CommentIcon />
                 </Wrap>
-                <KebabWrapper className="kebab-menu-area">
-                  <div onClick={() => handleKebabClick(event.eventId)}>
-                    <KebabIcon />
-                  </div>
-                  {activeMenuId === event.eventId && (
-                    <ReportButtonWrapper>
-                      <ReportTileButton
-                        width={188}
-                        children="부적절한 정보 신고하기"
-                        onClick={() => {
-                          console.log(`${event.eventId} 신고 처리`);
-                          setActiveMenuId(null);
-                        }}
-                      />
-                    </ReportButtonWrapper>
-                  )}
-                </KebabWrapper>
+                {mode === "edit" ? (
+                  <EditIconWrapper
+                    onClick={() => handleEditClick(event.eventId)}
+                  >
+                    <EditIcon />
+                  </EditIconWrapper>
+                ) : (
+                  <KebabWrapper className="kebab-menu-area">
+                    <div onClick={() => handleKebabClick(event.eventId)}>
+                      <KebabIcon />
+                    </div>
+                    {activeMenuId === event.eventId && (
+                      <ReportButtonWrapper>
+                        <ReportTileButton
+                          width={188}
+                          children="부적절한 정보 신고하기"
+                          onClick={() => {
+                            console.log(`${event.eventId} 신고 처리`);
+                            setActiveMenuId(null);
+                          }}
+                        />
+                      </ReportButtonWrapper>
+                    )}
+                  </KebabWrapper>
+                )}
               </ReportDiv>
             </TopWrapper>
             {(event.activityTypes.length > 0 ||
@@ -128,7 +154,12 @@ export const ExpandDeck = ({ events, onClose }: ExpandDeckProps) => {
                 </ScrollContainer>
               </MaterialsWrapper>
             )}
-            <ContributeDiv>
+            <ContributeDiv
+              onClick={() => {
+                setSelectedGroupId(event.groupId);
+                setIsParticipantsOpen(true);
+              }}
+            >
               <Text typo="Caption_2" color="gray_600">
                 {event.contributorCount}명 참여했어요
               </Text>
@@ -141,6 +172,24 @@ export const ExpandDeck = ({ events, onClose }: ExpandDeckProps) => {
           <Text typo="Caption_2">타일 접기</Text> <ChevronDown />
         </CloseButton>
       </TextWrap>
+      {isWriteModalOpen && selectedEventId !== null && (
+        <ModalOverlay>
+          <DeckWriteModal
+            modalMode="edit"
+            eventId={selectedEventId}
+            onClose={handleCloseModal}
+          />
+        </ModalOverlay>
+      )}
+      {isParticipantsOpen && selectedGroupId && (
+        <ParticipantsModal
+          groupId={selectedGroupId}
+          onClose={() => {
+            setIsParticipantsOpen(false);
+            setSelectedGroupId(null);
+          }}
+        />
+      )}
     </ExpandContainer>
   );
 };
@@ -182,6 +231,12 @@ const Wrap = styled.div`
   cursor: pointer;
 `;
 
+const EditIconWrapper = styled.div`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+`;
+
 const EventCard = styled.div`
   display: flex;
   flex-direction: column;
@@ -190,6 +245,7 @@ const EventCard = styled.div`
   border-radius: 12px;
   background: ${theme.palette.primary_20};
   border: 1px solid ${theme.palette.primary_200};
+  margin-right: 4px;
   box-shadow: 0 4px 12px 0 rgba(159, 198, 255, 0.25);
 `;
 
@@ -272,6 +328,7 @@ const ContributeDiv = styled.div`
   display: flex;
   width: 100%;
   justify-content: flex-end;
+  cursor: pointer;
 `;
 
 const TextWrap = styled.div`
@@ -279,4 +336,17 @@ const TextWrap = styled.div`
   padding: 12px;
   justify-content: flex-end;
   align-self: stretch;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
 `;

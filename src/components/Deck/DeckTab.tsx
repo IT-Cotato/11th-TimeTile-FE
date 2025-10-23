@@ -1,17 +1,55 @@
 import styled, { css } from "styled-components";
 import { Text } from "../atoms/Text";
 import { theme } from "@/styles/theme";
+import { AddTileButton } from "../atoms/AddTileButton";
+import { UserRole } from "@/model/common/user";
+import { useState } from "react";
+import { DeckWriteModal } from "./DeckWriteModal";
 
 interface DeckTabProps {
   activeTab: "timeTile" | "myTile";
+  artistName?: string;
+  role?: UserRole;
   onTabChange: (tab: "timeTile" | "myTile") => void;
   mode: "view" | "edit" | "waiting";
 }
 
-export const DeckTab = ({ activeTab, onTabChange, mode }: DeckTabProps) => {
-  const currentTab = mode === "edit" ? "timeTile" : activeTab;
+export const DeckTab = ({
+  activeTab,
+  artistName,
+  role,
+  onTabChange,
+  mode,
+}: DeckTabProps) => {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  if (mode === "edit") return null;
+  const currentTab = mode === "edit" ? "timeTile" : activeTab;
+  const buttonVariant = role === "LINKER" ? "disable" : "able";
+
+  const handleAddTile = () => {
+    if (buttonVariant === "able") setIsModalOpen(true);
+  };
+
+  if (mode === "edit")
+    return (
+      <>
+        <ButtonWrapper>
+          <AddTileButton
+            variant={buttonVariant}
+            onClick={handleAddTile}
+            children={artistName}
+          />
+        </ButtonWrapper>
+        {isModalOpen && (
+          <ModalOverlay>
+            <DeckWriteModal
+              modalMode="add"
+              onClose={() => setIsModalOpen(false)}
+            />
+          </ModalOverlay>
+        )}
+      </>
+    );
 
   return (
     <TabWrapper>
@@ -32,6 +70,13 @@ export const DeckTab = ({ activeTab, onTabChange, mode }: DeckTabProps) => {
     </TabWrapper>
   );
 };
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 24px;
+`;
 
 const TabWrapper = styled.div`
   display: flex;
@@ -70,4 +115,14 @@ const Tab = styled.div<{ selected: boolean; $isLeft?: boolean }>`
           color: ${theme.palette.primary_400};
           ${$isLeft ? "margin-right: -30px;" : "margin-left: -30px;"}
         `}
+`;
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
 `;
