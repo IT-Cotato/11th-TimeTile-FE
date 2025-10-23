@@ -7,7 +7,6 @@ import { theme } from "@/styles/theme";
 import { FlexBox } from "../layouts/FlexBox";
 import { Text } from "../atoms/Text";
 import { ChevronDown } from "@/assets/icons/ChevronDown";
-import { LeftIcon } from "@/assets/icons/LeftIcon";
 import { RightIcon } from "@/assets/icons/RightIcon";
 import { LeftArrowIcon } from "@/assets/icons/LeftArrowIcon";
 
