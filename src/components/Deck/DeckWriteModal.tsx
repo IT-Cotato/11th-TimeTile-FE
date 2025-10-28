@@ -10,6 +10,9 @@ import { GroupCategory } from "../atoms/GroupCategory";
 import { CustomDatePicker } from "./CustomDatePicker";
 import { RightBlue } from "@/assets/icons/RightBlue";
 import { SearchCustomInput } from "./SearchCustomInput";
+import { AddLinkIcon } from "@/assets/icons/AddLinkIcon";
+import { MaterialPreview, RelatedContentInput } from "./RelatedContentInput";
+import { Buttons } from "../atoms/Buttons";
 
 interface ModalProps {
   modalMode: "add" | "edit";
@@ -27,6 +30,7 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
   const [relatedDeck, setRelatedDeck] = useState<string>("");
   const [relatedTile, setRelatedTile] = useState<string>("");
   const [relatedMaterial, setRelatedMaterial] = useState<string>("");
+  const [materials, setMaterials] = useState<MaterialPreview[]>([]);
 
   return (
     <Container>
@@ -134,14 +138,12 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
             <InputInfo>
               <Text typo="H5" children="관련 컨텐츠" />
             </InputInfo>
-            <DeckInput
-              variant="noCount"
-              value={relatedMaterial}
-              onChange={(e) => setRelatedMaterial(e.target.value)}
-              placeholder="타일과 관련된 컨텐츠 링크를 첨부해주세요."
-            />
+            <RelatedContentInput onChange={(list) => setMaterials(list)} />
           </TileName>
         </ContentWrapper>
+        <ButtonWrapper>
+          <Buttons variant="addTile" children="타일 추가" width={86} />
+        </ButtonWrapper>
       </Wrapper>
     </Container>
   );
@@ -216,5 +218,9 @@ const Required = styled.div`
 const TileName = styled.div`
   display: flex;
   align-items: flex-start;
-  width: 100%;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;
