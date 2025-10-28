@@ -106,7 +106,7 @@ export async function GET(request: Request) {
       description: description.trim(),
     });
   } catch (err) {
-    console.error("🧨 preview error:", err);
+    console.error("preview error:", err);
     return NextResponse.json(
       {
         title: "",
