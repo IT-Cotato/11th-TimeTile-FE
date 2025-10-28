@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { TagCategory } from "../TagCategory";
 import { TagCategoryName } from "@/model/common/tagcategory";
 import { Text } from "../Text";
+
+interface GroupCategoryProps {
+  value?: string[];
+  onChange?: (selected: string[]) => void;
+  showError?: boolean;
+}
 
 const FIRST_LINE: TagCategoryName[] = [
   "콘서트/팬미팅",
@@ -29,10 +35,25 @@ const THIRD_LINE: TagCategoryName[] = [
   "기타",
 ];
 
-export const GroupCategory = () => {
+export const GroupCategory = ({
+  value = [],
+  onChange,
+  showError,
+}: GroupCategoryProps) => {
   const [selectedCategories, setSelectedCategories] = useState<
     Set<TagCategoryName>
-  >(new Set());
+  >(new Set(value as TagCategoryName[]));
+
+  useEffect(() => {
+    const newSet = new Set(value as TagCategoryName[]);
+    const isDifferent =
+      newSet.size !== selectedCategories.size ||
+      Array.from(newSet).some((v) => !selectedCategories.has(v));
+
+    if (isDifferent) {
+      setSelectedCategories(newSet);
+    }
+  }, [value]);
 
   const toggleCategory = (category: TagCategoryName) => {
     setSelectedCategories((prev) => {
@@ -42,6 +63,12 @@ export const GroupCategory = () => {
       return newSet;
     });
   };
+
+  useEffect(() => {
+    onChange?.(Array.from(selectedCategories));
+  }, [selectedCategories]);
+
+  const shouldShowError = showError && selectedCategories.size === 0;
 
   const renderTag = (category: TagCategoryName) => (
     <TagCategory
@@ -59,7 +86,7 @@ export const GroupCategory = () => {
         <Line>{SECOND_LINE.map(renderTag)}</Line>
         <Line>{THIRD_LINE.map(renderTag)}</Line>
       </LineContainer>
-      {selectedCategories.size === 0 && (
+      {shouldShowError && (
         <Text typo="Caption_4" color="warning">
           활동 종류를 선택해주세요.
         </Text>

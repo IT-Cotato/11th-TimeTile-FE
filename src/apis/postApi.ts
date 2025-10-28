@@ -133,7 +133,7 @@ export const postApi = {
     const path = '/posts/files';
     try {
       // 최종 요청 대상/파라미터 확인
-      // eslint-disable-next-line no-console
+       
       console.log(
         '[files] baseURL=',
         (authAxios as any).defaults?.baseURL,
@@ -149,7 +149,7 @@ export const postApi = {
       });
       return unwrap(res);
     } catch (e1) {
-      // eslint-disable-next-line no-console
+       
       console.warn('[getUploadUrls] GET repeat 실패 → [] 포맷 재시도', e1);
       try {
         // 2차: GET + [] 포맷 (?extensions[]=jpg&extensions[]=png)
@@ -159,14 +159,14 @@ export const postApi = {
         });
         return unwrap(res2);
       } catch (e2) {
-        // eslint-disable-next-line no-console
+         
         console.warn('[getUploadUrls] GET [] 실패 → POST 바디 재시도', e2);
         try {
           // 3차: POST 바디
           const res3 = await authAxios.post(path, { extensions });
           return unwrap(res3);
         } catch (e3) {
-          // eslint-disable-next-line no-console
+           
           console.error('[getUploadUrls] 최종 실패', e3);
           throw e3;
         }

@@ -54,4 +54,53 @@ export const deckApi = {
     const res = await axiosApi.get(`/events/${groupId}/participants`);
     return res.data.data.contributors;
   },
+
+  searchArtists: async (query: string) => {
+    const res = await axiosApi.get(`/artists/search`, { params: { query } });
+    return res.data.data.artists;
+  },
+
+  searchEvents: async (query: string) => {
+    const res = await axiosApi.get(`/events/search`, { params: { query } });
+    return res.data.data.events;
+  },
+
+  postEvent: async (body: {
+    name: string;
+    description: string;
+    source: string;
+    relatedEvents?: string[];
+    relatedArtists?: string[];
+    relatedMaterials?: string[];
+    activityTypes: string[];
+    startedAt: string;
+    endedAt: string;
+    artistId: string;
+  }) => {
+    const res = await axiosApi.post("/events", body);
+    return res.data;
+  },
+
+  putEvent: async (
+    groupId: string,
+    body: {
+      name: string;
+      description: string;
+      source: string;
+      relatedEvents?: string[];
+      relatedArtists?: string[];
+      relatedMaterials?: string[];
+      activityTypes: string[];
+      startedAt: string;
+      endedAt: string;
+    }
+  ) => {
+    const res = await axiosApi.put(`/events/${groupId}`, body);
+    return res.data;
+  },
+
+  getEventDetail: async (groupId: string) => {
+    const res = await axiosApi.get(`/events/${groupId}`);
+    return res.data.data;
+  },
 };
