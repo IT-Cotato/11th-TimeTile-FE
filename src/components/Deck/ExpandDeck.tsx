@@ -27,7 +27,7 @@ interface ExpandDeckProps {
 export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
-  const [selectedEventId, setSelectedEventId] = useState<number | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
   const [isParticipantsOpen, setIsParticipantsOpen] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
 
@@ -52,14 +52,14 @@ export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
     setActiveMenuId((prevId) => (prevId === eventId ? null : eventId));
   };
 
-  const handleEditClick = (eventId: number) => {
-    setSelectedEventId(eventId);
+  const handleEditClick = (event: EventData) => {
+    setSelectedEvent(event);
     setIsWriteModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setIsWriteModalOpen(false);
-    setSelectedEventId(null);
+    setSelectedEvent(null);
   };
 
   return (
@@ -82,9 +82,7 @@ export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
                   <CommentIcon />
                 </Wrap>
                 {mode === "edit" ? (
-                  <EditIconWrapper
-                    onClick={() => handleEditClick(event.eventId)}
-                  >
+                  <EditIconWrapper onClick={() => handleEditClick(event)}>
                     <EditIcon />
                   </EditIconWrapper>
                 ) : (
@@ -172,11 +170,11 @@ export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
           <Text typo="Caption_2">타일 접기</Text> <ChevronDown />
         </CloseButton>
       </TextWrap>
-      {isWriteModalOpen && selectedEventId !== null && (
+      {isWriteModalOpen && selectedEvent !== null && (
         <ModalOverlay>
           <DeckWriteModal
             modalMode="edit"
-            eventId={selectedEventId}
+            eventId={selectedEvent.groupId}
             onClose={handleCloseModal}
           />
         </ModalOverlay>

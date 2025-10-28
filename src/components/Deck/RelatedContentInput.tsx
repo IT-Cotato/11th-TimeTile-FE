@@ -17,17 +17,31 @@ export interface MaterialPreview {
 }
 
 interface RelatedContentInputProps {
+  value?: MaterialPreview[];
   onChange: (materials: MaterialPreview[]) => void;
 }
 
-export const RelatedContentInput = ({ onChange }: RelatedContentInputProps) => {
+export const RelatedContentInput = ({
+  value = [],
+  onChange,
+}: RelatedContentInputProps) => {
   const [inputValue, setInputValue] = useState("");
-  const [materials, setMaterials] = useState<MaterialPreview[]>([]);
+  const [materials, setMaterials] = useState<MaterialPreview[]>(value);
   const [loading, setLoading] = useState(false);
 
   const listRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(false);
+
+  useEffect(() => {
+    const isDifferent =
+      value.length !== materials.length ||
+      value.some((v, i) => v.url !== materials[i]?.url);
+
+    if (isDifferent) {
+      setMaterials(value);
+    }
+  }, [value]);
 
   const updateScrollState = () => {
     const el = listRef.current;
@@ -110,7 +124,11 @@ export const RelatedContentInput = ({ onChange }: RelatedContentInputProps) => {
               {materials.map((m) => (
                 <Thumb key={m.id}>
                   <img src={m.thumbnailUrl} alt={m.title} />
-                  <LinkButton>
+                  <LinkButton
+                    onClick={() =>
+                      window.open(m.url, "_blank", "noopener noreferrer")
+                    }
+                  >
                     <LinkIcon />
                   </LinkButton>
                   <InfoBar>
@@ -189,13 +207,8 @@ const Input = styled.input`
   color: ${theme.palette.gray_1000};
   background: ${theme.palette.gray_0};
   outline: none;
-
   font-family: "Pretendard-Regular";
   font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 150%;
-
   &::placeholder {
     color: ${theme.palette.gray_600};
   }
@@ -242,26 +255,9 @@ const Strip = styled.div`
   overflow-x: auto;
   padding-bottom: 4px;
   scroll-behavior: smooth;
-
   &::-webkit-scrollbar {
     height: 0;
   }
-`;
-
-const LinkButton = styled.button`
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  border: none;
-  border-radius: 50%;
-  padding: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  padding: 0;
 `;
 
 const Thumb = styled.div`
@@ -272,14 +268,11 @@ const Thumb = styled.div`
   border-radius: 10px;
   overflow: hidden;
   background: #eee;
-
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
   }
-
   &:hover .overlay {
     opacity: 1;
   }
@@ -312,16 +305,13 @@ const InfoBar = styled.div`
 const Title = styled.div`
   width: 138px;
   height: 40px;
-  flex-shrink: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-
   font-family: "Pretendard-Medium";
   font-size: 14px;
-  font-style: normal;
   font-weight: 500;
   line-height: 130%;
 `;
@@ -335,16 +325,21 @@ const DeleteBtn = styled.button`
   background: transparent;
   border: none;
   color: ${theme.palette.gray_0};
-
   font-family: "Pretendard-Medium";
   font-size: 16px;
-  font-style: normal;
   font-weight: 500;
   line-height: 150%;
+`;
 
-  span {
-    transform: translateY(0.5px);
-  }
+const LinkButton = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  background: transparent;
 `;
 
 const RightGradient = styled.div`
@@ -353,7 +348,6 @@ const RightGradient = styled.div`
   top: 0;
   width: 74px;
   height: 142px;
-  flex-shrink: 0;
   background: linear-gradient(90deg, rgba(247, 250, 255, 0) 0%, #f7faff 61.54%);
   pointer-events: none;
 `;
@@ -363,11 +357,9 @@ const ArrowStack = styled.div`
   right: 0;
   top: 0;
   height: 142px;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 16px;
-  padding-left: 4px;
   justify-content: center;
   z-index: 2;
 `;

@@ -13,6 +13,7 @@ export interface EventData {
   eventId: number;
   groupId: string;
   name: string;
+  source: string;
   description: string;
   startedAt: string;
   endedAt?: string;
