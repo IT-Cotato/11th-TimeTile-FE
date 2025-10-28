@@ -18,14 +18,21 @@ import { EditIcon } from "@/assets/icons/EditIcon";
 import { DeckWriteModal } from "./DeckWriteModal";
 import { ParticipantsModal } from "./ParticipantsModal";
 import { RelatedMaterialPreview } from "./RelatedMaterialPreview";
+import { UserRole } from "@/model/common/user";
 
 interface ExpandDeckProps {
   mode: "view" | "edit" | "waiting";
   events: EventData[];
   onClose: () => void;
+  role: UserRole;
 }
 
-export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
+export const ExpandDeck = ({
+  mode,
+  events,
+  onClose,
+  role,
+}: ExpandDeckProps) => {
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
@@ -163,6 +170,7 @@ export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
             modalMode="edit"
             eventId={selectedEvent.groupId}
             onClose={handleCloseModal}
+            userRole={role}
           />
         </ModalOverlay>
       )}

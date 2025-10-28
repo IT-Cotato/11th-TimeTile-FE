@@ -8,14 +8,21 @@ import { DefaultDeck } from "./DefaultDeck";
 import { ExpandDeck } from "./ExpandDeck";
 import { Text } from "../atoms/Text";
 import { EventData } from "@/model/components/Event";
+import { UserRole } from "@/model/common/user";
 
 interface TimetileDeckProps {
   year: number;
   artistId: string;
   mode: "view" | "edit" | "waiting";
+  role: UserRole;
 }
 
-export const TimetileDeck = ({ year, artistId, mode }: TimetileDeckProps) => {
+export const TimetileDeck = ({
+  year,
+  artistId,
+  mode,
+  role,
+}: TimetileDeckProps) => {
   const [monthlyEvents, setMonthlyEvents] = useState<
     Record<number, EventData[]>
   >({});
@@ -78,6 +85,7 @@ export const TimetileDeck = ({ year, artistId, mode }: TimetileDeckProps) => {
             <Wrapper>
               {expanded ? (
                 <ExpandDeck
+                  role={role}
                   mode={mode}
                   events={events}
                   onClose={() => toggleExpand(month)}
