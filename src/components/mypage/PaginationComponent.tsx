@@ -19,8 +19,8 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
   const maxButtons = 5;
   const pageGroup = Math.floor((page - 1) / maxButtons);
 
-  let startPage = pageGroup * maxButtons + 1;
-  let endPage = Math.min(startPage + maxButtons - 1, totalPages);
+  const startPage = pageGroup * maxButtons + 1;
+  const endPage = Math.min(startPage + maxButtons - 1, totalPages);
 
   const pages = [];
   for (let i = startPage; i <= endPage; i++) {
