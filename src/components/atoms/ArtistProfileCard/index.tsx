@@ -82,7 +82,8 @@ export const ArtistProfileCard = ({
                   }}
                 >
                   {mode === "edit" ? (
-                    <AlertIcon />
+                    // <AlertIcon />
+                    <></>
                   ) : (
                     <FollowButton
                       variant={isFollowing}

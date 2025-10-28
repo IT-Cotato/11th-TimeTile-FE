@@ -13,6 +13,7 @@ import { MaterialPreview, RelatedContentInput } from "./RelatedContentInput";
 import { Buttons } from "../atoms/Buttons";
 import { usePathname } from "next/navigation";
 import { deckApi } from "@/apis/deckApi";
+import { Tooltip } from "../atoms/Tooltip";
 
 interface ModalProps {
   modalMode: "add" | "edit";
@@ -166,6 +167,10 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
             <InputInfo>
               <Text typo="H5">출처</Text>
               <Required>*</Required>
+              <Tooltip
+                variant="default"
+                children="입력해주신 출처는 업로드 대기 페이지에서만 확인 가능합니다."
+              />
             </InputInfo>
             <DeckInput
               variant="noCount"
@@ -179,6 +184,12 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
           <TileName>
             <InputInfo>
               <Text typo="H5">관련 데크</Text>
+              <Tooltip variant="default">
+                이 타일과 연결하고 싶은 다른 타일의 이름을 입력해주세요.
+                <br />
+                입력한 타일은 ‘관련 타일’로 등록되며, 클릭 시 해당 타일로 이동할
+                수 있어요.
+              </Tooltip>
             </InputInfo>
             <DeckInput
               variant="noCount"
@@ -191,6 +202,11 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
           <TileName>
             <InputInfo>
               <Text typo="H5">관련 타일</Text>
+              <Tooltip variant="default">
+                이 타일과 연관된 데크의 이름을 입력해주세요.
+                <br />
+                연결된 데크는 클릭시 바로 이동할 수 있어요.
+              </Tooltip>
             </InputInfo>
             <DeckInput
               variant="noCount"
