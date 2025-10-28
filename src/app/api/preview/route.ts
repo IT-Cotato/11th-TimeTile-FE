@@ -16,19 +16,25 @@ export async function GET(request: Request) {
   }
 
   try {
-    if (
-      targetUrl.includes("youtube.com/watch?v=") ||
-      targetUrl.includes("youtu.be/") ||
-      targetUrl.includes("youtube.com/shorts/")
-    ) {
+    if (targetUrl.includes("youtube.com") || targetUrl.includes("youtu.be")) {
       let videoId = "";
 
-      if (targetUrl.includes("watch?v=")) {
-        videoId = new URL(targetUrl).searchParams.get("v") || "";
-      } else if (targetUrl.includes("youtu.be/")) {
-        videoId = targetUrl.split("youtu.be/")[1].split(/[?&]/)[0];
-      } else if (targetUrl.includes("shorts/")) {
-        videoId = targetUrl.split("shorts/")[1].split(/[?&]/)[0];
+      try {
+        const urlObj = new URL(targetUrl);
+        const paramV = urlObj.searchParams.get("v");
+        if (paramV) videoId = paramV;
+
+        if (!videoId && targetUrl.includes("youtu.be/")) {
+          videoId = targetUrl.split("youtu.be/")[1].split(/[?&]/)[0];
+        }
+
+        if (!videoId && targetUrl.includes("shorts/")) {
+          videoId = targetUrl.split("shorts/")[1].split(/[?&]/)[0];
+        }
+
+        videoId = videoId.replace(/[\s&?=].*$/, "").trim();
+      } catch (e) {
+        console.error("YouTube ID parse error:", e);
       }
 
       if (videoId) {
@@ -47,9 +53,7 @@ export async function GET(request: Request) {
                 : "YouTube video",
             });
           }
-        } catch {
-          // 무시하고 fallback
-        }
+        } catch {}
 
         return NextResponse.json({
           title: "YouTube Video",
