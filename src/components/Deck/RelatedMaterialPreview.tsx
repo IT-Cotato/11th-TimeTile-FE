@@ -41,45 +41,49 @@ export const RelatedMaterialPreview = ({
       const results: MaterialPreview[] = [];
 
       for (let i = 0; i < materials.length; i++) {
-        const url = materials[i];
+        let rawUrl = materials[i];
 
-        if (previewCache[url]) {
-          results.push(previewCache[url]);
+        const normalizedUrl =
+          rawUrl.startsWith("http://") || rawUrl.startsWith("https://")
+            ? rawUrl
+            : `https://${rawUrl}`;
+
+        if (previewCache[normalizedUrl]) {
+          results.push(previewCache[normalizedUrl]);
           continue;
         }
 
         try {
           const res = await fetch(
-            `/api/preview?url=${encodeURIComponent(url)}`,
-            {
-              cache: "no-store",
-            }
+            `/api/preview?url=${encodeURIComponent(normalizedUrl)}`,
+            { cache: "no-store" }
           );
+
           const data = await res.json();
 
-          if (url.includes("youtube.com/watch?v=")) {
-            const videoId = new URL(url).searchParams.get("v");
+          if (normalizedUrl.includes("youtube.com/watch?v=")) {
+            const videoId = new URL(normalizedUrl).searchParams.get("v");
             data.image = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
           }
 
           const preview: MaterialPreview = {
             id: String(i),
-            title: data.title || new URL(url).hostname,
+            title: data.title || new URL(normalizedUrl).hostname,
             thumbnailUrl:
               data.image && data.image !== "" ? data.image : "/Symbol-Logo.png",
-            url,
+            url: normalizedUrl,
           };
 
-          previewCache[url] = preview;
+          previewCache[normalizedUrl] = preview;
           results.push(preview);
-        } catch {
+        } catch (err) {
           const fallback: MaterialPreview = {
             id: String(i),
-            title: new URL(url).hostname,
+            title: new URL(normalizedUrl).hostname,
             thumbnailUrl: "/Symbol-Logo.png",
-            url,
+            url: normalizedUrl,
           };
-          previewCache[url] = fallback;
+          previewCache[normalizedUrl] = fallback;
           results.push(fallback);
         }
       }
