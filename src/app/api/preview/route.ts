@@ -4,9 +4,6 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
-/**
- * OpenGraph + 일반 이미지 추출 + YouTube 안정화 버전
- */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const targetUrl = searchParams.get("url");
@@ -19,35 +16,49 @@ export async function GET(request: Request) {
   }
 
   try {
-    /**  YouTube 전용 처리 **/
-    if (targetUrl.includes("youtube.com/watch?v=")) {
-      const videoId = new URL(targetUrl).searchParams.get("v");
+    if (
+      targetUrl.includes("youtube.com/watch?v=") ||
+      targetUrl.includes("youtu.be/") ||
+      targetUrl.includes("youtube.com/shorts/")
+    ) {
+      let videoId = "";
 
-      // 공식 YouTube oEmbed API 사용
-      const oembedRes = await fetch(
-        `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
-      );
-
-      if (oembedRes.ok) {
-        const data = await oembedRes.json();
-        return NextResponse.json({
-          title: data.title || "YouTube Video",
-          image: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-          description: data.author_name
-            ? `by ${data.author_name} on YouTube`
-            : "YouTube video",
-        });
+      if (targetUrl.includes("watch?v=")) {
+        videoId = new URL(targetUrl).searchParams.get("v") || "";
+      } else if (targetUrl.includes("youtu.be/")) {
+        videoId = targetUrl.split("youtu.be/")[1].split(/[?&]/)[0];
+      } else if (targetUrl.includes("shorts/")) {
+        videoId = targetUrl.split("shorts/")[1].split(/[?&]/)[0];
       }
 
-      // 실패 시 fallback
-      return NextResponse.json({
-        title: "YouTube Video",
-        image: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-        description: "YouTube video preview",
-      });
+      if (videoId) {
+        try {
+          const oembedRes = await fetch(
+            `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
+          );
+
+          if (oembedRes.ok) {
+            const data = await oembedRes.json();
+            return NextResponse.json({
+              title: data.title || "YouTube Video",
+              image: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+              description: data.author_name
+                ? `by ${data.author_name} on YouTube`
+                : "YouTube video",
+            });
+          }
+        } catch {
+          // 무시하고 fallback
+        }
+
+        return NextResponse.json({
+          title: "YouTube Video",
+          image: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+          description: "YouTube video preview",
+        });
+      }
     }
 
-    /** 일반 웹페이지 처리 **/
     const res = await fetch(targetUrl, {
       method: "GET",
       headers: {
@@ -92,19 +103,16 @@ export async function GET(request: Request) {
 
     let fixedImage = image || $("img").first().attr("src") || "";
 
-    // 상대경로 이미지 처리
     if (fixedImage.startsWith("/")) {
       const base = new URL(targetUrl).origin;
       fixedImage = `${base}${fixedImage}`;
     }
 
-    // 인스타그램 fallback
     if (!fixedImage && targetUrl.includes("instagram.com")) {
       fixedImage =
         "https://static.cdninstagram.com/rsrc.php/v3/yE/r/OG4v6s2sW3C.png";
     }
 
-    // favicon fallback
     if (!fixedImage) {
       const favicon =
         $('link[rel="icon"]').attr("href") ||
