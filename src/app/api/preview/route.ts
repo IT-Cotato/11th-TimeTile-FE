@@ -1,3 +1,6 @@
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
@@ -26,6 +29,7 @@ export async function GET(request: Request) {
           "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       },
       cache: "no-store",
+      next: { revalidate: 0 },
     });
 
     if (!res.ok) {
