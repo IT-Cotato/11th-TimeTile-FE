@@ -9,10 +9,10 @@ import { useState } from "react";
 import { GroupCategory } from "../atoms/GroupCategory";
 import { CustomDatePicker } from "./CustomDatePicker";
 import { RightBlue } from "@/assets/icons/RightBlue";
-import { SearchCustomInput } from "./SearchCustomInput";
-import { AddLinkIcon } from "@/assets/icons/AddLinkIcon";
 import { MaterialPreview, RelatedContentInput } from "./RelatedContentInput";
 import { Buttons } from "../atoms/Buttons";
+import { usePathname } from "next/navigation";
+import { deckApi } from "@/apis/deckApi";
 
 interface ModalProps {
   modalMode: "add" | "edit";
@@ -22,6 +22,9 @@ interface ModalProps {
 
 export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
   const isEdit = modalMode === "edit";
+  const pathname = usePathname();
+  const artistId = pathname.split("/").pop() || "";
+
   const [title, setTitle] = useState<string>("");
   const [startedAt, setStartedAt] = useState<string>("");
   const [endedAt, setEndedAt] = useState<string>("");
@@ -29,8 +32,72 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
   const [source, setSource] = useState<string>("");
   const [relatedDeck, setRelatedDeck] = useState<string>("");
   const [relatedTile, setRelatedTile] = useState<string>("");
-  const [relatedMaterial, setRelatedMaterial] = useState<string>("");
+  const [activityTypes, setActivityTypes] = useState<string[]>([]);
   const [materials, setMaterials] = useState<MaterialPreview[]>([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // const handleSubmit = async () => {
+  //   try {
+  //     const body = {
+  //       name: title,
+  //       description: info,
+  //       source,
+  //       relatedEvents: relatedDeck ? [relatedDeck] : [],
+  //       relatedArtists: [],
+  //       relatedMaterials: materials.map((m) => m.url),
+  //       activityTypes,
+  //       startedAt,
+  //       endedAt,
+  //       artistId,
+  //     };
+
+  //     await deckApi.postEvent(body);
+  //   } catch (err) {
+  //     console.error(err);
+  //   } finally {
+  //     setShowSuccessModal(true);
+  //   }
+  // };
+
+  const handleSubmit = async () => {
+    if (
+      !title ||
+      !info ||
+      !source ||
+      !startedAt ||
+      !endedAt ||
+      activityTypes.length === 0
+    ) {
+      alert("필수 항목을 모두 입력해주세요.");
+      return;
+    }
+
+    try {
+      const body = {
+        name: title,
+        description: info,
+        source,
+        relatedEvents: relatedDeck ? [relatedDeck] : [],
+        relatedArtists: [],
+        relatedMaterials: materials.map((m) => m.url),
+        activityTypes,
+        startedAt,
+        endedAt,
+        artistId,
+      };
+
+      const res = await deckApi.postEvent(body);
+
+      if (res.isSuccess) {
+        setShowSuccessModal(true);
+      } else {
+        alert(res.message || "등록에 실패했습니다.");
+      }
+    } catch (err) {
+      alert("에러가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      console.error(err);
+    }
+  };
 
   return (
     <Container>
@@ -107,13 +174,6 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
               onChange={(e) => setRelatedDeck(e.target.value)}
               placeholder="관련 데크의 이름을 정확히 입력해주세요."
             />
-            {/* <SearchCustomInput
-              type="artist"
-              placeholder="관련 데크의 이름을 정확히 입력해주세요."
-              onSelect={(artist) => {
-                setRelatedDeck(artist.name);
-              }}
-            /> */}
           </TileName>
           <TileName>
             <InputInfo>
@@ -132,7 +192,9 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
               <Text typo="H5" children="활동 종류" />
               <Required>*</Required>
             </InputInfo>
-            <GroupCategory />
+            <GroupCategory
+              onChange={(selected) => setActivityTypes(selected)}
+            />
           </TileName>
           <TileName>
             <InputInfo>
@@ -142,9 +204,34 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
           </TileName>
         </ContentWrapper>
         <ButtonWrapper>
-          <Buttons variant="addTile" children="타일 추가" width={86} />
+          <Buttons
+            variant="addTile"
+            children="타일 추가"
+            width={86}
+            onClick={handleSubmit}
+          />
         </ButtonWrapper>
       </Wrapper>
+      {showSuccessModal && (
+        <SuccessModal>
+          <SuccessBox>
+            <CloseBtn
+              onClick={() => {
+                setShowSuccessModal(false);
+                onClose();
+              }}
+            >
+              <CloseIcon />
+            </CloseBtn>
+            <Text typo="Body_3">
+              작성하신 타일이 업로드 대기 페이지에 등록되었습니다.
+            </Text>
+            <Text typo="Body_3">
+              해당 타일은 내용의 적절성 검토를 거쳐 6시간 후, 데크에 반영됩니다.
+            </Text>
+          </SuccessBox>
+        </SuccessModal>
+      )}
     </Container>
   );
 };
@@ -223,4 +310,38 @@ const TileName = styled.div`
 const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
+`;
+
+const SuccessModal = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+`;
+
+const SuccessBox = styled.div`
+  position: relative;
+  width: 656px;
+  height: 237px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 20px;
+  border: 1px solid ${theme.palette.primary_400};
+  background: ${theme.palette.primary_50};
+  box-shadow: 0 4px 16px 0 rgba(159, 198, 255, 0.25);
+`;
+
+const CloseBtn = styled.button`
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
 `;
