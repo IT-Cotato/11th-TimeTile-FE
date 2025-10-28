@@ -5,8 +5,7 @@ import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
 /**
- * OpenGraph + 일반 이미지 추출
- * 유튜브, 인스타그램, 블로그 등 대부분의 사이트 대응
+ * OpenGraph + 일반 이미지 추출 + YouTube 안정화 버전
  */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -20,26 +19,54 @@ export async function GET(request: Request) {
   }
 
   try {
+    /**  YouTube 전용 처리 **/
+    if (targetUrl.includes("youtube.com/watch?v=")) {
+      const videoId = new URL(targetUrl).searchParams.get("v");
+
+      // 공식 YouTube oEmbed API 사용
+      const oembedRes = await fetch(
+        `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
+      );
+
+      if (oembedRes.ok) {
+        const data = await oembedRes.json();
+        return NextResponse.json({
+          title: data.title || "YouTube Video",
+          image: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+          description: data.author_name
+            ? `by ${data.author_name} on YouTube`
+            : "YouTube video",
+        });
+      }
+
+      // 실패 시 fallback
+      return NextResponse.json({
+        title: "YouTube Video",
+        image: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        description: "YouTube video preview",
+      });
+    }
+
+    /** 일반 웹페이지 처리 **/
     const res = await fetch(targetUrl, {
       method: "GET",
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
         Accept:
           "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "ko,en;q=0.9",
       },
+      redirect: "follow",
       cache: "no-store",
       next: { revalidate: 0 },
     });
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch URL: ${targetUrl}`);
-    }
+    if (!res.ok) throw new Error(`Failed to fetch: ${targetUrl}`);
 
     const html = await res.text();
     const $ = cheerio.load(html);
 
-    // 메타 태그에서 정보 추출
     const getMeta = (names: string[]): string | undefined => {
       for (const name of names) {
         const content =
@@ -65,15 +92,10 @@ export async function GET(request: Request) {
 
     let fixedImage = image || $("img").first().attr("src") || "";
 
-    if (fixedImage && fixedImage.startsWith("/")) {
+    // 상대경로 이미지 처리
+    if (fixedImage.startsWith("/")) {
       const base = new URL(targetUrl).origin;
       fixedImage = `${base}${fixedImage}`;
-    }
-
-    // 유튜브 링크일 경우 썸네일
-    if (!fixedImage && targetUrl.includes("youtube.com/watch?v=")) {
-      const videoId = targetUrl.split("v=")[1].split("&")[0];
-      fixedImage = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
     }
 
     // 인스타그램 fallback
@@ -95,11 +117,8 @@ export async function GET(request: Request) {
       }
     }
 
-    if (!fixedImage) {
-      fixedImage = "/Symbol-Logo.png";
-    }
+    if (!fixedImage) fixedImage = "/Symbol-Logo.png";
 
-    // 응답 반환
     return NextResponse.json({
       title: title.trim(),
       image: fixedImage.trim(),
