@@ -19,6 +19,7 @@ import { DeckWriteModal } from "./DeckWriteModal";
 import { ParticipantsModal } from "./ParticipantsModal";
 import { RelatedMaterialPreview } from "./RelatedMaterialPreview";
 import { UserRole } from "@/model/common/user";
+import { useRouter } from "next/navigation";
 
 interface ExpandDeckProps {
   mode: "view" | "edit" | "waiting";
@@ -33,6 +34,7 @@ export const ExpandDeck = ({
   onClose,
   role,
 }: ExpandDeckProps) => {
+  const router = useRouter();
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
@@ -138,7 +140,11 @@ export const ExpandDeck = ({
                     </TagWrapper>
                   ))}
                   {event.relatedArtists.map((artist) => (
-                    <TagWrapper key={artist.id}>
+                    <TagWrapper
+                      key={artist.id}
+                      onClick={() => router.push(`/timetile/${artist.id}`)} // ✅ 이동
+                      style={{ cursor: "pointer" }}
+                    >
                       <Tag variant="deck">{artist.name}</Tag>
                     </TagWrapper>
                   ))}
