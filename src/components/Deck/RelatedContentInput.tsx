@@ -169,7 +169,6 @@ const fetchPreview = async (url: string) => {
 
 const OuterColumn = styled.div`
   display: flex;
-  width: 770px;
   flex-direction: column;
   gap: 16px;
 `;
