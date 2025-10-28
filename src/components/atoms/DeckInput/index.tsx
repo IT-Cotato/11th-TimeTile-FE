@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { ChangeEvent, useState } from "react";
-import { KeyOfTypo, theme } from "@/styles/theme";
+import { theme } from "@/styles/theme";
 import { Text } from "../Text";
 
 interface InputProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -26,8 +26,9 @@ export const DeckInput = ({
   ...props
 }: InputProps) => {
   const [isTouched, setIsTouched] = useState(false);
-  const isOverLimit = value.length > maxLength;
   const isEmpty = value.trim() === "";
+
+  const isOverLimit = variant === "noCount" ? false : value.length > maxLength;
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     onChange?.(e);
@@ -110,13 +111,8 @@ const Input = styled.textarea<{
   align-self: stretch;
   border-radius: 10px;
   border: 1px solid
-    ${({ $isError, $variant }) =>
-      $isError
-        ? theme.palette.warning
-        : $variant === "noCount"
-        ? theme.palette.primary_400
-        : theme.palette.primary_400};
-  background: ${theme.palette.gray_0};
+    ${({ $isError }) =>
+      $isError ? theme.palette.warning : theme.palette.primary_400};
   background: ${theme.palette.gray_0};
 
   &:focus {
@@ -127,14 +123,12 @@ const Input = styled.textarea<{
 
   font-family: "Pretendard-Regular";
   font-size: 16px;
-  font-style: normal;
   font-weight: 400;
   line-height: 150%;
-
   resize: none;
   overflow: auto;
-  overflow-wrap: break-word;
   white-space: pre-wrap;
+
   &::-webkit-scrollbar {
     width: 0px;
     background: transparent;
