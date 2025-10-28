@@ -10,6 +10,7 @@ interface InputProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   value?: string;
   onChange?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   showError?: boolean;
+  errorMessage?: string;
   variant?: "default" | "noCount";
 }
 
@@ -21,6 +22,7 @@ export const DeckInput = ({
   onChange,
   showError = false,
   variant = "default",
+  errorMessage,
   ...props
 }: InputProps) => {
   const [isTouched, setIsTouched] = useState(false);
@@ -32,14 +34,14 @@ export const DeckInput = ({
     if (!isTouched) setIsTouched(true);
   };
 
-  let errorMessage: string | null = null;
-  if (isEmpty && showError) {
-    errorMessage = "타일 이름을 입력해주세요.";
+  let errorMsgToShow: string | null = null;
+  if (showError && isEmpty) {
+    errorMsgToShow = errorMessage || "값을 입력해주세요.";
   } else if (isOverLimit) {
-    errorMessage = `${maxLength}자 이내로 입력해주세요.`;
+    errorMsgToShow = `${maxLength}자 이내로 입력해주세요.`;
   }
 
-  const isError = (showError && (isEmpty || isOverLimit)) || isOverLimit;
+  const isError = showError && (isEmpty || isOverLimit);
 
   return (
     <InputContainer>
@@ -56,9 +58,9 @@ export const DeckInput = ({
       {variant === "default" && (
         <InfoRow>
           <div>
-            {errorMessage && (
+            {errorMsgToShow && (
               <Text typo="Caption_4" color="warning">
-                {errorMessage}
+                {errorMsgToShow}
               </Text>
             )}
           </div>
@@ -74,6 +76,15 @@ export const DeckInput = ({
             </Text>
           </CharCount>
         </InfoRow>
+      )}
+      {variant === "noCount" && errorMsgToShow && (
+        <Text
+          typo="Caption_4"
+          color="warning"
+          style={{ marginTop: 4, marginLeft: 4 }}
+        >
+          {errorMsgToShow}
+        </Text>
       )}
     </InputContainer>
   );
@@ -99,23 +110,19 @@ const Input = styled.textarea<{
   align-self: stretch;
   border-radius: 10px;
   border: 1px solid
-    ${({ $variant, $isError }) =>
-      $variant === "noCount"
-        ? theme.palette.primary_400
-        : $isError
+    ${({ $isError, $variant }) =>
+      $isError
         ? theme.palette.warning
+        : $variant === "noCount"
+        ? theme.palette.primary_400
         : theme.palette.primary_400};
   background: ${theme.palette.gray_0};
   background: ${theme.palette.gray_0};
 
   &:focus {
     outline: none;
-    border-color: ${({ $variant, $isError }) =>
-      $variant === "noCount"
-        ? theme.palette.primary_500
-        : $isError
-        ? theme.palette.warning
-        : theme.palette.primary_500};
+    border-color: ${({ $isError }) =>
+      $isError ? theme.palette.warning : theme.palette.primary_500};
   }
 
   font-family: "Pretendard-Regular";

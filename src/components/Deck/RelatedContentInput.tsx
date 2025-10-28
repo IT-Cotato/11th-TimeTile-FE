@@ -34,7 +34,7 @@ export const RelatedContentInput = ({ onChange }: RelatedContentInputProps) => {
     if (!el) return;
     const { scrollLeft, scrollWidth, clientWidth } = el;
     setCanLeft(scrollLeft > 0);
-    setCanRight(scrollLeft + clientWidth < scrollWidth - 1); // -1: float 보정
+    setCanRight(scrollLeft + clientWidth < scrollWidth - 1);
   };
 
   useEffect(() => {
@@ -70,7 +70,6 @@ export const RelatedContentInput = ({ onChange }: RelatedContentInputProps) => {
       setMaterials(newList);
       onChange(newList);
       setInputValue("");
-      // 다음 프레임에 스크롤 상태 업데이트
       requestAnimationFrame(updateScrollState);
     } finally {
       setLoading(false);
@@ -84,7 +83,7 @@ export const RelatedContentInput = ({ onChange }: RelatedContentInputProps) => {
     requestAnimationFrame(updateScrollState);
   };
 
-  const scrollStep = 180; // 썸네일 폭(168) + 갭(12) 근사값
+  const scrollStep = 180;
   const scrollLeftOnce = () =>
     listRef.current?.scrollBy({ left: -scrollStep, behavior: "smooth" });
   const scrollRightOnce = () =>
