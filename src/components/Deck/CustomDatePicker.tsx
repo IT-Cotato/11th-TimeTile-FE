@@ -9,6 +9,7 @@ import { Text } from "../atoms/Text";
 import { ChevronDown } from "@/assets/icons/ChevronDown";
 import { RightIcon } from "@/assets/icons/RightIcon";
 import { LeftArrowIcon } from "@/assets/icons/LeftArrowIcon";
+import { CustomDateInput } from "./CustomDateInput";
 
 interface CustomDatePickerProps {
   value: string | null;
@@ -19,7 +20,7 @@ interface CustomDatePickerProps {
 export const CustomDatePicker = ({
   value,
   onChange,
-  placeholder = "날짜를 선택하세요",
+  placeholder = "YYYY-MM-DD",
 }: CustomDatePickerProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(
     value ? new Date(value) : null
@@ -116,6 +117,7 @@ export const CustomDatePicker = ({
         }
         showMonthYearPicker={viewMode === "month"}
         showYearPicker={viewMode === "year"}
+        customInput={<CustomDateInput placeholder={placeholder} />}
       />
     </PickerContainer>
   );
