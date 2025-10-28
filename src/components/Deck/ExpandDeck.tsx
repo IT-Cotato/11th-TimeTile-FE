@@ -70,6 +70,16 @@ export const ExpandDeck = ({
     setSelectedEvent(null);
   };
 
+  useEffect(() => {
+    console.log(
+      "📦 ExpandDeck events.relatedMaterials:",
+      events.map((e) => ({
+        name: e.name,
+        relatedMaterials: e.relatedMaterials,
+      }))
+    );
+  }, [events]);
+
   return (
     <ExpandContainer>
       <EventList>
