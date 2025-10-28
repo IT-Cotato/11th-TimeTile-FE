@@ -8,6 +8,7 @@ import { DeckInput } from "../atoms/DeckInput";
 import { useState } from "react";
 import { GroupCategory } from "../atoms/GroupCategory";
 import { CustomDatePicker } from "./CustomDatePicker";
+import { RightBlue } from "@/assets/icons/RightBlue";
 
 interface ModalProps {
   modalMode: "add" | "edit";
@@ -51,16 +52,19 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
               <Text typo="H5" children="날짜" />
               <Required>*</Required>
             </InputInfo>
-            <CustomDatePicker
-              value={startedAt}
-              onChange={(date) => setStartedAt(date)}
-              placeholder="시작일을 선택하세요"
-            />
-            <CustomDatePicker
-              value={endedAt}
-              onChange={(date) => setEndedAt(date)}
-              placeholder="종료일을 선택하세요"
-            />
+            <DateWrapper>
+              <CustomDatePicker
+                value={startedAt}
+                onChange={(date) => setStartedAt(date)}
+                placeholder="시작일 선택"
+              />
+              <RightBlue />
+              <CustomDatePicker
+                value={endedAt}
+                onChange={(date) => setEndedAt(date)}
+                placeholder="종료일 선택"
+              />
+            </DateWrapper>
           </TileName>
           <TileName>
             <InputInfo>
@@ -184,6 +188,12 @@ const InputInfo = styled.div`
   height: 40px;
   align-items: center;
   gap: 4px;
+`;
+
+const DateWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;
 
 const Required = styled.div`
