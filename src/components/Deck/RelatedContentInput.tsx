@@ -248,7 +248,7 @@ const LoadingSpinner = styled.div`
 
 const RowRight = styled.div`
   display: flex;
-  width: 100%;
+  width: 300px;
   justify-content: flex-start;
 `;
 
@@ -261,7 +261,7 @@ const StripWrapper = styled.div`
 const Strip = styled.div`
   display: flex;
   gap: 12px;
-  width: 634px;
+  width: 600px;
   overflow-x: auto;
   padding-bottom: 4px;
   scroll-behavior: smooth;
