@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { Text } from "../atoms/Text";
 import { CloseIcon } from "@/assets/icons/CloseIcon";
 import { DeckInput } from "../atoms/DeckInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GroupCategory } from "../atoms/GroupCategory";
 import { CustomDatePicker } from "./CustomDatePicker";
 import { RightBlue } from "@/assets/icons/RightBlue";
@@ -21,54 +21,52 @@ interface ModalProps {
 }
 
 export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
-  const isEdit = modalMode === "edit";
   const pathname = usePathname();
   const artistId = pathname.split("/").pop() || "";
 
-  const [title, setTitle] = useState<string>("");
-  const [startedAt, setStartedAt] = useState<string>("");
-  const [endedAt, setEndedAt] = useState<string>("");
-  const [info, setInfo] = useState<string>("");
-  const [source, setSource] = useState<string>("");
-  const [relatedDeck, setRelatedDeck] = useState<string>("");
-  const [relatedTile, setRelatedTile] = useState<string>("");
+  const todayISO = new Date().toISOString();
+
+  const [title, setTitle] = useState("");
+  const [info, setInfo] = useState("");
+  const [source, setSource] = useState("");
+  const [startedAt, setStartedAt] = useState(todayISO);
+  const [endedAt, setEndedAt] = useState(todayISO);
+  const [relatedDeck, setRelatedDeck] = useState("");
+  const [relatedTile, setRelatedTile] = useState("");
   const [activityTypes, setActivityTypes] = useState<string[]>([]);
   const [materials, setMaterials] = useState<MaterialPreview[]>([]);
+
+  const [showTitleError, setShowTitleError] = useState(false);
+  const [showInfoError, setShowInfoError] = useState(false);
+  const [showSourceError, setShowSourceError] = useState(false);
+  const [showDateError, setShowDateError] = useState(false);
+  const [showActivityError, setShowActivityError] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     const body = {
-  //       name: title,
-  //       description: info,
-  //       source,
-  //       relatedEvents: relatedDeck ? [relatedDeck] : [],
-  //       relatedArtists: [],
-  //       relatedMaterials: materials.map((m) => m.url),
-  //       activityTypes,
-  //       startedAt,
-  //       endedAt,
-  //       artistId,
-  //     };
-
-  //     await deckApi.postEvent(body);
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setShowSuccessModal(true);
-  //   }
-  // };
+  useEffect(() => {
+    const today = new Date();
+    const iso = today.toISOString();
+    setStartedAt(iso);
+    setEndedAt(iso);
+  }, []);
 
   const handleSubmit = async () => {
+    setShowTitleError(true);
+    setShowInfoError(true);
+    setShowSourceError(true);
+    setShowDateError(true);
+    setShowActivityError(true);
+
     if (
-      !title ||
-      !info ||
-      !source ||
+      !title.trim() ||
+      title.length > 50 ||
+      !info.trim() ||
+      info.length > 200 ||
+      !source.trim() ||
       !startedAt ||
       !endedAt ||
       activityTypes.length === 0
     ) {
-      alert("필수 항목을 모두 입력해주세요.");
       return;
     }
 
@@ -77,8 +75,8 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
         name: title,
         description: info,
         source,
-        relatedEvents: relatedDeck ? [relatedDeck] : [],
-        relatedArtists: [],
+        relatedEvents: relatedTile ? [relatedTile] : [],
+        relatedArtists: relatedDeck ? [relatedDeck] : [],
         relatedMaterials: materials.map((m) => m.url),
         activityTypes,
         startedAt,
@@ -103,7 +101,9 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
     <Container>
       <Wrapper>
         <TopWrapper>
-          <Text typo="H3" color="gray_800" children="스크랩 추가" />
+          <Text typo="H3" color="gray_800">
+            스크랩 추가
+          </Text>
           <div onClick={onClose} style={{ cursor: "pointer" }}>
             <CloseIcon />
           </div>
@@ -111,36 +111,45 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
         <ContentWrapper>
           <TileName>
             <InputInfo>
-              <Text typo="H5" children="타일 이름" />
+              <Text typo="H5">타일 이름</Text>
               <Required>*</Required>
             </InputInfo>
             <DeckInput
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              maxLength={50}
+              placeholder="타일 이름을 입력해주세요."
+              showError={showTitleError}
+              errorMessage="타일 이름을 입력해주세요."
             />
           </TileName>
           <TileName>
             <InputInfo>
-              <Text typo="H5" children="날짜" />
+              <Text typo="H5">날짜</Text>
               <Required>*</Required>
             </InputInfo>
-            <DateWrapper>
+            <DateWrapper $isError={showDateError && (!startedAt || !endedAt)}>
               <CustomDatePicker
                 value={startedAt}
-                onChange={(date) => setStartedAt(date)}
+                onChange={setStartedAt}
                 placeholder="시작일 선택"
               />
               <RightBlue />
               <CustomDatePicker
                 value={endedAt}
-                onChange={(date) => setEndedAt(date)}
+                onChange={setEndedAt}
                 placeholder="종료일 선택"
               />
             </DateWrapper>
           </TileName>
+          {showDateError && (!startedAt || !endedAt) && (
+            <ErrorText typo="Caption_4" color="warning">
+              날짜를 선택해주세요.
+            </ErrorText>
+          )}
           <TileName>
             <InputInfo>
-              <Text typo="H5" children="설명" />
+              <Text typo="H5">설명</Text>
               <Required>*</Required>
             </InputInfo>
             <DeckInput
@@ -149,11 +158,13 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
               value={info}
               onChange={(e) => setInfo(e.target.value)}
               placeholder="타일에 대한 간략한 설명을 입력해주세요."
+              showError={showInfoError}
+              errorMessage="설명을 입력해주세요."
             />
           </TileName>
           <TileName>
             <InputInfo>
-              <Text typo="H5" children="출처" />
+              <Text typo="H5">출처</Text>
               <Required>*</Required>
             </InputInfo>
             <DeckInput
@@ -161,15 +172,17 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
               value={source}
               onChange={(e) => setSource(e.target.value)}
               placeholder="정보의 출처를 입력해주세요."
+              showError={showSourceError}
+              errorMessage="출처를 입력해주세요."
             />
           </TileName>
           <TileName>
             <InputInfo>
-              <Text typo="H5" children="관련 데크" />
+              <Text typo="H5">관련 데크</Text>
             </InputInfo>
             <DeckInput
-              height={72}
               variant="noCount"
+              height={72}
               value={relatedDeck}
               onChange={(e) => setRelatedDeck(e.target.value)}
               placeholder="관련 데크의 이름을 정확히 입력해주세요."
@@ -177,11 +190,11 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
           </TileName>
           <TileName>
             <InputInfo>
-              <Text typo="H5" children="관련 타일" />
+              <Text typo="H5">관련 타일</Text>
             </InputInfo>
             <DeckInput
-              height={72}
               variant="noCount"
+              height={72}
               value={relatedTile}
               onChange={(e) => setRelatedTile(e.target.value)}
               placeholder="관련 타일의 이름을 정확히 입력해주세요."
@@ -189,18 +202,19 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
           </TileName>
           <TileName>
             <InputInfo>
-              <Text typo="H5" children="활동 종류" />
+              <Text typo="H5">활동 종류</Text>
               <Required>*</Required>
             </InputInfo>
             <GroupCategory
-              onChange={(selected) => setActivityTypes(selected)}
+              onChange={setActivityTypes}
+              showError={showActivityError}
             />
           </TileName>
           <TileName>
             <InputInfo>
-              <Text typo="H5" children="관련 컨텐츠" />
+              <Text typo="H5">관련 컨텐츠</Text>
             </InputInfo>
-            <RelatedContentInput onChange={(list) => setMaterials(list)} />
+            <RelatedContentInput onChange={setMaterials} />
           </TileName>
         </ContentWrapper>
         <ButtonWrapper>
@@ -248,13 +262,10 @@ const Container = styled.div`
   border-radius: 20px;
   border: 1px solid ${theme.palette.primary_400};
   background: ${theme.palette.primary_50};
-  box-shadow: 0 4px 16px 0 rgba(159, 198, 255, 0.25);
-
+  box-shadow: 0 4px 16px rgba(159, 198, 255, 0.25);
   &::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
+    width: 0;
   }
-  scrollbar-width: none;
 `;
 
 const Wrapper = styled.div`
@@ -268,43 +279,44 @@ const TopWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  align-self: stretch;
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 16px;
-  align-self: stretch;
 `;
 
 const InputInfo = styled.div`
   display: flex;
   width: 136px;
-  height: 40px;
   align-items: center;
   gap: 4px;
 `;
 
-const DateWrapper = styled.div`
+const DateWrapper = styled.div<{ $isError?: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
+  border: ${({ $isError }) =>
+    $isError ? `1px solid ${theme.palette.warning}` : "none"};
+  border-radius: 8px;
+  padding: ${({ $isError }) => ($isError ? "4px" : "0")};
 `;
 
 const Required = styled.div`
   color: ${theme.palette.primary_600};
   font-family: "Pretendard-Regular";
   font-size: 20px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 100%;
 `;
 
 const TileName = styled.div`
   display: flex;
   align-items: flex-start;
+`;
+
+const ErrorText = styled(Text)`
+  margin-left: 136px;
 `;
 
 const ButtonWrapper = styled.div`
@@ -334,7 +346,7 @@ const SuccessBox = styled.div`
   border-radius: 20px;
   border: 1px solid ${theme.palette.primary_400};
   background: ${theme.palette.primary_50};
-  box-shadow: 0 4px 16px 0 rgba(159, 198, 255, 0.25);
+  box-shadow: 0 4px 16px rgba(159, 198, 255, 0.25);
 `;
 
 const CloseBtn = styled.button`

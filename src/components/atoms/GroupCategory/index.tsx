@@ -6,6 +6,7 @@ import { Text } from "../Text";
 
 interface GroupCategoryProps {
   onChange?: (selected: string[]) => void;
+  showError?: boolean;
 }
 
 const FIRST_LINE: TagCategoryName[] = [
@@ -33,7 +34,7 @@ const THIRD_LINE: TagCategoryName[] = [
   "기타",
 ];
 
-export const GroupCategory = ({ onChange }: GroupCategoryProps) => {
+export const GroupCategory = ({ onChange, showError }: GroupCategoryProps) => {
   const [selectedCategories, setSelectedCategories] = useState<
     Set<TagCategoryName>
   >(new Set());
@@ -62,6 +63,8 @@ export const GroupCategory = ({ onChange }: GroupCategoryProps) => {
     />
   );
 
+  const shouldShowError = showError && selectedCategories.size === 0;
+
   return (
     <Container>
       <LineContainer>
@@ -69,7 +72,7 @@ export const GroupCategory = ({ onChange }: GroupCategoryProps) => {
         <Line>{SECOND_LINE.map(renderTag)}</Line>
         <Line>{THIRD_LINE.map(renderTag)}</Line>
       </LineContainer>
-      {selectedCategories.size === 0 && (
+      {shouldShowError && (
         <Text typo="Caption_4" color="warning">
           활동 종류를 선택해주세요.
         </Text>
