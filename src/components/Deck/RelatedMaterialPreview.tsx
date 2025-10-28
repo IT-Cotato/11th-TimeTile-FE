@@ -18,6 +18,8 @@ interface RelatedMaterialPreviewProps {
   materials: string[];
 }
 
+const previewCache: Record<string, MaterialPreview> = {};
+
 export const RelatedMaterialPreview = ({
   materials,
 }: RelatedMaterialPreviewProps) => {
@@ -30,41 +32,60 @@ export const RelatedMaterialPreview = ({
 
   useEffect(() => {
     const fetchPreviews = async () => {
-      if (!materials || materials.length === 0) {
+      if (!materials?.length) {
         setPreviews([]);
         setLoading(false);
         return;
       }
 
-      try {
-        const results = await Promise.all(
-          materials.map(async (url, idx) => {
-            try {
-              const res = await fetch(
-                `/api/preview?url=${encodeURIComponent(url)}`
-              );
-              if (!res.ok) throw new Error("Failed meta");
-              const data = await res.json();
-              return {
-                id: String(idx),
-                title: data.title || new URL(url).hostname,
-                thumbnailUrl: data.image || "/Symbol-Logo.png",
-                url,
-              };
-            } catch {
-              return {
-                id: String(idx),
-                title: new URL(url).hostname,
-                thumbnailUrl: "/Symbol-Logo.png",
-                url,
-              };
+      const results: MaterialPreview[] = [];
+
+      for (let i = 0; i < materials.length; i++) {
+        const url = materials[i];
+
+        if (previewCache[url]) {
+          results.push(previewCache[url]);
+          continue;
+        }
+
+        try {
+          const res = await fetch(
+            `/api/preview?url=${encodeURIComponent(url)}`,
+            {
+              cache: "no-store",
             }
-          })
-        );
-        setPreviews(results);
-      } finally {
-        setLoading(false);
+          );
+          const data = await res.json();
+
+          if (url.includes("youtube.com/watch?v=")) {
+            const videoId = new URL(url).searchParams.get("v");
+            data.image = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+          }
+
+          const preview: MaterialPreview = {
+            id: String(i),
+            title: data.title || new URL(url).hostname,
+            thumbnailUrl:
+              data.image && data.image !== "" ? data.image : "/Symbol-Logo.png",
+            url,
+          };
+
+          previewCache[url] = preview;
+          results.push(preview);
+        } catch {
+          const fallback: MaterialPreview = {
+            id: String(i),
+            title: new URL(url).hostname,
+            thumbnailUrl: "/Symbol-Logo.png",
+            url,
+          };
+          previewCache[url] = fallback;
+          results.push(fallback);
+        }
       }
+
+      setPreviews(results);
+      setLoading(false);
     };
 
     fetchPreviews();
