@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { TagCategory } from "../TagCategory";
 import { TagCategoryName } from "@/model/common/tagcategory";
 import { Text } from "../Text";
+
+interface GroupCategoryProps {
+  onChange?: (selected: string[]) => void;
+}
 
 const FIRST_LINE: TagCategoryName[] = [
   "콘서트/팬미팅",
@@ -29,7 +33,7 @@ const THIRD_LINE: TagCategoryName[] = [
   "기타",
 ];
 
-export const GroupCategory = () => {
+export const GroupCategory = ({ onChange }: GroupCategoryProps) => {
   const [selectedCategories, setSelectedCategories] = useState<
     Set<TagCategoryName>
   >(new Set());
@@ -42,6 +46,12 @@ export const GroupCategory = () => {
       return newSet;
     });
   };
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(Array.from(selectedCategories));
+    }
+  }, [selectedCategories]);
 
   const renderTag = (category: TagCategoryName) => (
     <TagCategory

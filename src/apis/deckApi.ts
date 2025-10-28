@@ -64,4 +64,20 @@ export const deckApi = {
     const res = await axiosApi.get(`/events/search`, { params: { query } });
     return res.data.data.events;
   },
+
+  postEvent: async (body: {
+    name: string;
+    description: string;
+    source: string;
+    relatedEvents?: string[];
+    relatedArtists?: string[];
+    relatedMaterials?: string[];
+    activityTypes: string[];
+    startedAt: string;
+    endedAt: string;
+    artistId: string;
+  }) => {
+    const res = await axiosApi.post("/events", body);
+    return res.data;
+  },
 };
