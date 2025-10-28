@@ -19,15 +19,18 @@ export interface MaterialPreview {
 interface RelatedContentInputProps {
   value?: MaterialPreview[];
   onChange: (materials: MaterialPreview[]) => void;
+  isEditMode?: boolean;
 }
 
 export const RelatedContentInput = ({
   value = [],
   onChange,
+  isEditMode = false,
 }: RelatedContentInputProps) => {
   const [inputValue, setInputValue] = useState("");
   const [materials, setMaterials] = useState<MaterialPreview[]>(value);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(isEditMode);
 
   const listRef = useRef<HTMLDivElement>(null);
   const [canLeft, setCanLeft] = useState(false);
@@ -40,6 +43,7 @@ export const RelatedContentInput = ({
 
     if (isDifferent) {
       setMaterials(value);
+      if (isEditMode) setInitialLoading(false);
     }
   }, [value]);
 
@@ -117,53 +121,59 @@ export const RelatedContentInput = ({
           {loading ? <LoadingSpinner /> : <AddLinkIcon />}
         </AddBtn>
       </InputRow>
-      {showControls && (
-        <RowRight>
-          <StripWrapper>
-            <Strip ref={listRef}>
-              {materials.map((m) => (
-                <Thumb key={m.id}>
-                  <img src={m.thumbnailUrl} alt={m.title} />
-                  <LinkButton
-                    onClick={() =>
-                      window.open(m.url, "_blank", "noopener noreferrer")
-                    }
-                  >
-                    <LinkIcon />
-                  </LinkButton>
-                  <InfoBar>
-                    <Title>{m.title}</Title>
-                  </InfoBar>
-                  <OverlayShade className="overlay">
-                    <DeleteBtn onClick={() => handleRemove(m.id)}>
-                      <DeleteLinkIcon />
-                      <span>삭제</span>
-                    </DeleteBtn>
-                  </OverlayShade>
-                </Thumb>
-              ))}
-            </Strip>
-            <RightGradient />
-            <ArrowStack>
-              <IconButton
-                type="button"
-                aria-label="scroll left"
-                onClick={scrollLeftOnce}
-                disabled={!canLeft}
-              >
-                <LeftArrowIcon size={20} disabled={!canLeft} />
-              </IconButton>
-              <IconButton
-                type="button"
-                aria-label="scroll right"
-                onClick={scrollRightOnce}
-                disabled={!canRight}
-              >
-                <RightIcon size={20} disabled={!canRight} />
-              </IconButton>
-            </ArrowStack>
-          </StripWrapper>
-        </RowRight>
+      {isEditMode && initialLoading ? (
+        <LoadingArea>
+          <LoadingSpinner />
+        </LoadingArea>
+      ) : (
+        showControls && (
+          <RowRight>
+            <StripWrapper>
+              <Strip ref={listRef}>
+                {materials.map((m) => (
+                  <Thumb key={m.id}>
+                    <img src={m.thumbnailUrl} alt={m.title} />
+                    <LinkButton
+                      onClick={() =>
+                        window.open(m.url, "_blank", "noopener noreferrer")
+                      }
+                    >
+                      <LinkIcon />
+                    </LinkButton>
+                    <InfoBar>
+                      <Title>{m.title}</Title>
+                    </InfoBar>
+                    <OverlayShade className="overlay">
+                      <DeleteBtn onClick={() => handleRemove(m.id)}>
+                        <DeleteLinkIcon />
+                        <span>삭제</span>
+                      </DeleteBtn>
+                    </OverlayShade>
+                  </Thumb>
+                ))}
+              </Strip>
+              <RightGradient />
+              <ArrowStack>
+                <IconButton
+                  type="button"
+                  aria-label="scroll left"
+                  onClick={scrollLeftOnce}
+                  disabled={!canLeft}
+                >
+                  <LeftArrowIcon size={20} disabled={!canLeft} />
+                </IconButton>
+                <IconButton
+                  type="button"
+                  aria-label="scroll right"
+                  onClick={scrollRightOnce}
+                  disabled={!canRight}
+                >
+                  <RightIcon size={20} disabled={!canRight} />
+                </IconButton>
+              </ArrowStack>
+            </StripWrapper>
+          </RowRight>
+        )
       )}
     </OuterColumn>
   );
@@ -340,6 +350,14 @@ const LinkButton = styled.button`
   padding: 6px;
   cursor: pointer;
   background: transparent;
+`;
+
+const LoadingArea = styled.div`
+  width: 100%;
+  height: 142px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const RightGradient = styled.div`

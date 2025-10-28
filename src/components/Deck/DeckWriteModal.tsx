@@ -270,7 +270,11 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
             <InputInfo>
               <Text typo="H5">관련 컨텐츠</Text>
             </InputInfo>
-            <RelatedContentInput value={materials} onChange={setMaterials} />
+            <RelatedContentInput
+              value={materials}
+              onChange={setMaterials}
+              isEditMode={modalMode === "edit"}
+            />
           </TileName>
         </ContentWrapper>
         <ButtonWrapper>
@@ -295,7 +299,7 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
             </CloseBtn>
             <Text typo="Body_3">
               {modalMode === "edit"
-                ? "수정된 타일이 반영되었습니다."
+                ? "수정된 타일이 업로드 대기 페이지에 등록되었습니다."
                 : "작성하신 타일이 업로드 대기 페이지에 등록되었습니다."}
             </Text>
           </SuccessBox>
