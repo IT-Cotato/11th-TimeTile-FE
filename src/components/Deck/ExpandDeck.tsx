@@ -17,6 +17,7 @@ import { ReportTileButton } from "../atoms/ReportTileButton";
 import { EditIcon } from "@/assets/icons/EditIcon";
 import { DeckWriteModal } from "./DeckWriteModal";
 import { ParticipantsModal } from "./ParticipantsModal";
+import { RelatedMaterialPreview } from "./RelatedMaterialPreview";
 
 interface ExpandDeckProps {
   mode: "view" | "edit" | "waiting";
@@ -135,21 +136,7 @@ export const ExpandDeck = ({ mode, events, onClose }: ExpandDeckProps) => {
             <Text typo="Body_3">{event.description}</Text>
             {event.relatedMaterials.length > 0 && (
               <MaterialsWrapper>
-                <ScrollContainer>
-                  {event.relatedMaterials.map((url, i) => (
-                    <MaterialLink
-                      key={i}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.open(url, "_blank", "noopener noreferrer");
-                      }}
-                    >
-                      <LinkIconWrapper>
-                        <LinkIcon />
-                      </LinkIconWrapper>
-                    </MaterialLink>
-                  ))}
-                </ScrollContainer>
+                <RelatedMaterialPreview materials={event.relatedMaterials} />
               </MaterialsWrapper>
             )}
             <ContributeDiv
@@ -291,35 +278,6 @@ const MaterialsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
-`;
-
-const ScrollContainer = styled.div`
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-`;
-
-const MaterialLink = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  width: 160px;
-  height: 120px;
-  border-radius: 8px;
-  background: ${theme.palette.gray_200};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-`;
-
-const LinkIconWrapper = styled.div`
-  position: absolute;
-  top: 8px;
-  right: 8px;
 `;
 
 const ContributeDiv = styled.div`
