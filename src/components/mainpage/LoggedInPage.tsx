@@ -99,7 +99,7 @@ export default function LoggedInPage() {
             팔로우한 데크의 새로운 타임타일
           </Text>
         </TextWrapper>
-        <FlexBox>
+        <FlexBox style={{ width: "100%" }}>
           <ArrowButton onClick={handleArtistPrev} disabled={!artistHasPrevious}>
             <MoveLeftIcon />
           </ArrowButton>
@@ -148,7 +148,7 @@ export default function LoggedInPage() {
             팔로우한 유저의 새로운 마이타일
           </Text>
         </TextWrapper>
-        <FlexBox>
+        <FlexBox style={{ width: "100%" }}>
           <ArrowButton onClick={handleUserPrev} disabled={!userHasPrevious}>
             <MoveLeftIcon />
           </ArrowButton>

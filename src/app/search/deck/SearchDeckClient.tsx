@@ -8,14 +8,15 @@ import { theme } from "@/styles/theme";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useRouter } from "next/navigation";
 
 interface Artist {
   id: string;
   name: string;
   imageUrl: string;
 }
-
 export default function SearchDeckClient() {
+  const router = useRouter(); // ✅ 추가
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
 
@@ -64,11 +65,12 @@ export default function SearchDeckClient() {
           ) : (
             <ProfileRow>
               {artists.map((artist) => (
-                <DeckProfile
+                <DeckProfileWrapper
                   key={artist.id}
-                  name={artist.name}
-                  imageUrl={artist.imageUrl}
-                />
+                  onClick={() => router.push(`/timetile/${artist.id}`)} // ✅ 클릭 시 이동
+                >
+                  <DeckProfile name={artist.name} imageUrl={artist.imageUrl} />
+                </DeckProfileWrapper>
               ))}
             </ProfileRow>
           )}
@@ -133,4 +135,8 @@ const EmptyText = styled.div`
   gap: 16px;
   border-radius: 20px;
   background: ${theme.palette.primary_20};
+`;
+
+const DeckProfileWrapper = styled.div`
+  cursor: pointer;
 `;
