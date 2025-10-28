@@ -43,6 +43,8 @@ export const DeckTab = ({
         {isModalOpen && (
           <ModalOverlay>
             <DeckWriteModal
+              userRole={role ?? "WATCHER"}
+              //userRole="LINKER"
               modalMode="add"
               onClose={() => setIsModalOpen(false)}
             />

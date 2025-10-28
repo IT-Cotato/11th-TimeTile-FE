@@ -14,14 +14,21 @@ import { Buttons } from "../atoms/Buttons";
 import { usePathname } from "next/navigation";
 import { deckApi } from "@/apis/deckApi";
 import { Tooltip } from "../atoms/Tooltip";
+import { UserRole } from "@/model/common/user";
 
 interface ModalProps {
   modalMode: "add" | "edit";
   eventId?: string;
   onClose: () => void;
+  userRole: UserRole;
 }
 
-export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
+export const DeckWriteModal = ({
+  modalMode,
+  eventId,
+  onClose,
+  userRole,
+}: ModalProps) => {
   const pathname = usePathname();
   const artistId = pathname.split("/").pop() || "";
 
@@ -43,6 +50,8 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
   const [showDateError, setShowDateError] = useState(false);
   const [showActivityError, setShowActivityError] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const isLinkerEdit = modalMode === "edit" && userRole === "LINKER";
 
   const fetchMetaData = async (urls: string[]) => {
     const results = await Promise.all(
@@ -162,7 +171,7 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
       <Wrapper>
         <TopWrapper>
           <Text typo="H3" color="gray_800">
-            {modalMode === "edit" ? "타일 수정" : "스크랩 추가"}
+            스크랩 추가
           </Text>
           <div onClick={onClose} style={{ cursor: "pointer" }}>
             <CloseIcon />
@@ -285,6 +294,13 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
             onClick={handleSubmit}
           />
         </ButtonWrapper>
+        {isLinkerEdit && (
+          <EditBlockOverlay>
+            <AbsoluteText typo="Body_3">
+              Editor 등급부터 타일 정보를 편집할 수 있어요.
+            </AbsoluteText>
+          </EditBlockOverlay>
+        )}
       </Wrapper>
       {showSuccessModal && (
         <SuccessModal>
@@ -310,6 +326,7 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
 };
 
 const Container = styled.div`
+  position: relative;
   display: flex;
   width: 856px;
   height: 660px;
@@ -322,6 +339,7 @@ const Container = styled.div`
   border: 1px solid ${theme.palette.primary_400};
   background: ${theme.palette.primary_50};
   box-shadow: 0 4px 16px rgba(159, 198, 255, 0.25);
+
   &::-webkit-scrollbar {
     width: 0;
   }
@@ -332,6 +350,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   gap: 32px;
   align-self: stretch;
+  position: relative;
 `;
 
 const TopWrapper = styled.div`
@@ -344,6 +363,24 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
+`;
+
+const EditBlockOverlay = styled.div`
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 792px;
+  height: 710px;
+  background: rgba(247, 250, 255, 0.5);
+  backdrop-filter: blur(7px);
+  overflow: hidden;
+`;
+
+const AbsoluteText = styled(Text)`
+  position: absolute;
+  left: 250px;
+  top: 328px;
+  color: ${theme.palette.gray_1000};
 `;
 
 const InputInfo = styled.div`
@@ -372,6 +409,7 @@ const Required = styled.div`
 const TileName = styled.div`
   display: flex;
   align-items: flex-start;
+  margin-left: 22px;
 `;
 
 const ErrorText = styled(Text)`
@@ -390,7 +428,7 @@ const SuccessModal = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 300;
 `;
 
 const SuccessBox = styled.div`

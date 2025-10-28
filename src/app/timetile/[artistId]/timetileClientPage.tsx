@@ -160,8 +160,8 @@ export default function ArtistPage() {
           followerCount={artistData.followerCount}
           imageUrl={artistData.imageUrl}
           years={years}
-          // role={userProfile?.role}
-          role="EDITOR"
+          role={userProfile?.role}
+          //role="EDITOR"
           mode={mode}
           currentTab={activeTab}
           setMode={setMode}
@@ -176,14 +176,16 @@ export default function ArtistPage() {
           <div>
             <DeckTab
               activeTab={activeTab}
-              //role={userProfile?.role}
-              role="EDITOR"
+              role={userProfile?.role}
+              // role="LINKER"
               artistName={artistData.artistName}
               onTabChange={setActiveTab}
               mode={mode}
             />
             {activeTab === "timeTile" && (
               <TimetileDeck
+                role={userProfile?.role ?? "WATCHER"}
+                //role="LINKER"
                 year={selectedYear}
                 artistId={artistId}
                 mode={mode}
