@@ -144,13 +144,15 @@ export const ArtistProfileCard = ({
               )}
           </Info>
         </TopWrapper>
-        <YearWrapper>
-          <YearScroller
-            years={years}
-            yearSchedules={yearSchedules}
-            onYearSelect={onYearSelect}
-          />
-        </YearWrapper>
+        {years.length > 0 && (
+          <YearWrapper>
+            <YearScroller
+              years={years}
+              yearSchedules={yearSchedules}
+              onYearSelect={onYearSelect}
+            />
+          </YearWrapper>
+        )}
       </Container>
     </CardWrapper>
   );
