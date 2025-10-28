@@ -17,7 +17,7 @@ import { Tooltip } from "../atoms/Tooltip";
 
 interface ModalProps {
   modalMode: "add" | "edit";
-  eventId?: number;
+  eventId?: string;
   onClose: () => void;
 }
 
@@ -44,12 +44,66 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
   const [showActivityError, setShowActivityError] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+  const fetchMetaData = async (urls: string[]) => {
+    const results = await Promise.all(
+      urls.map(async (url, idx) => {
+        try {
+          const res = await fetch(
+            `/api/preview?url=${encodeURIComponent(url)}`
+          );
+          if (!res.ok) throw new Error(`Failed meta for ${url}`);
+          const data = await res.json();
+          return {
+            id: String(idx),
+            url,
+            title: data.title || "제목 없음",
+            thumbnailUrl: data.image || "",
+          };
+        } catch {
+          return {
+            id: String(idx),
+            url,
+            title: "제목 없음",
+            thumbnailUrl: "",
+          };
+        }
+      })
+    );
+    setMaterials(results);
+  };
+
   useEffect(() => {
-    const today = new Date();
-    const iso = today.toISOString();
-    setStartedAt(iso);
-    setEndedAt(iso);
-  }, []);
+    const fetchEventDetail = async () => {
+      if (!eventId) return;
+      try {
+        const data = await deckApi.getEventDetail(eventId);
+        setTitle(data.name);
+        setInfo(data.description);
+        setSource(data.source);
+        setStartedAt(data.startedAt);
+        setEndedAt(data.endedAt ?? data.startedAt);
+        setActivityTypes(data.activityTypes);
+        setRelatedDeck(data.relatedArtists?.[0]?.name ?? "");
+        setRelatedTile(data.relatedEvents?.[0]?.name ?? "");
+
+        if (data.relatedMaterials.length > 0) {
+          await fetchMetaData(data.relatedMaterials);
+        } else {
+          setMaterials([]);
+        }
+      } catch (err) {
+        console.error("상세 데이터 조회 실패:", err);
+      }
+    };
+
+    if (modalMode === "edit") {
+      fetchEventDetail();
+    } else {
+      const today = new Date().toISOString();
+      setStartedAt(today);
+      setEndedAt(today);
+    }
+  }, [modalMode, eventId]);
 
   const handleSubmit = async () => {
     setShowTitleError(true);
@@ -71,21 +125,26 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
       return;
     }
 
-    try {
-      const body = {
-        name: title,
-        description: info,
-        source,
-        relatedEvents: relatedTile ? [relatedTile] : [],
-        relatedArtists: relatedDeck ? [relatedDeck] : [],
-        relatedMaterials: materials.map((m) => m.url),
-        activityTypes,
-        startedAt,
-        endedAt,
-        artistId,
-      };
+    const body = {
+      name: title,
+      description: info,
+      source,
+      relatedEvents: relatedTile ? [relatedTile] : [],
+      relatedArtists: relatedDeck ? [relatedDeck] : [],
+      relatedMaterials: materials.map((m) => m.url),
+      activityTypes,
+      startedAt,
+      endedAt,
+      artistId,
+    };
 
-      const res = await deckApi.postEvent(body);
+    try {
+      let res;
+      if (modalMode === "edit" && eventId) {
+        res = await deckApi.putEvent(eventId, body);
+      } else {
+        res = await deckApi.postEvent(body);
+      }
 
       if (res.isSuccess) {
         setShowSuccessModal(true);
@@ -103,7 +162,7 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
       <Wrapper>
         <TopWrapper>
           <Text typo="H3" color="gray_800">
-            스크랩 추가
+            {modalMode === "edit" ? "타일 수정" : "스크랩 추가"}
           </Text>
           <div onClick={onClose} style={{ cursor: "pointer" }}>
             <CloseIcon />
@@ -130,17 +189,9 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
               <Required>*</Required>
             </InputInfo>
             <DateWrapper $isError={showDateError && (!startedAt || !endedAt)}>
-              <CustomDatePicker
-                value={startedAt}
-                onChange={setStartedAt}
-                placeholder="시작일 선택"
-              />
+              <CustomDatePicker value={startedAt} onChange={setStartedAt} />
               <RightBlue />
-              <CustomDatePicker
-                value={endedAt}
-                onChange={setEndedAt}
-                placeholder="종료일 선택"
-              />
+              <CustomDatePicker value={endedAt} onChange={setEndedAt} />
             </DateWrapper>
           </TileName>
           {showDateError && (!startedAt || !endedAt) && (
@@ -167,10 +218,9 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
             <InputInfo>
               <Text typo="H5">출처</Text>
               <Required>*</Required>
-              <Tooltip
-                variant="default"
-                children="입력해주신 출처는 업로드 대기 페이지에서만 확인 가능합니다."
-              />
+              <Tooltip variant="default">
+                입력한 출처는 업로드 대기 페이지에서만 확인 가능합니다.
+              </Tooltip>
             </InputInfo>
             <DeckInput
               variant="noCount"
@@ -184,12 +234,6 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
           <TileName>
             <InputInfo>
               <Text typo="H5">관련 데크</Text>
-              <Tooltip variant="default">
-                이 타일과 연결하고 싶은 다른 타일의 이름을 입력해주세요.
-                <br />
-                입력한 타일은 ‘관련 타일’로 등록되며, 클릭 시 해당 타일로 이동할
-                수 있어요.
-              </Tooltip>
             </InputInfo>
             <DeckInput
               variant="noCount"
@@ -202,11 +246,6 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
           <TileName>
             <InputInfo>
               <Text typo="H5">관련 타일</Text>
-              <Tooltip variant="default">
-                이 타일과 연관된 데크의 이름을 입력해주세요.
-                <br />
-                연결된 데크는 클릭시 바로 이동할 수 있어요.
-              </Tooltip>
             </InputInfo>
             <DeckInput
               variant="noCount"
@@ -222,6 +261,7 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
               <Required>*</Required>
             </InputInfo>
             <GroupCategory
+              value={activityTypes}
               onChange={setActivityTypes}
               showError={showActivityError}
             />
@@ -230,13 +270,13 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
             <InputInfo>
               <Text typo="H5">관련 컨텐츠</Text>
             </InputInfo>
-            <RelatedContentInput onChange={setMaterials} />
+            <RelatedContentInput value={materials} onChange={setMaterials} />
           </TileName>
         </ContentWrapper>
         <ButtonWrapper>
           <Buttons
             variant="addTile"
-            children="타일 추가"
+            children={modalMode === "edit" ? "타일 수정" : "타일 추가"}
             width={86}
             onClick={handleSubmit}
           />
@@ -254,10 +294,9 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
               <CloseIcon />
             </CloseBtn>
             <Text typo="Body_3">
-              작성하신 타일이 업로드 대기 페이지에 등록되었습니다.
-            </Text>
-            <Text typo="Body_3">
-              해당 타일은 내용의 적절성 검토를 거쳐 6시간 후, 데크에 반영됩니다.
+              {modalMode === "edit"
+                ? "수정된 타일이 반영되었습니다."
+                : "작성하신 타일이 업로드 대기 페이지에 등록되었습니다."}
             </Text>
           </SuccessBox>
         </SuccessModal>

@@ -5,6 +5,7 @@ import { TagCategoryName } from "@/model/common/tagcategory";
 import { Text } from "../Text";
 
 interface GroupCategoryProps {
+  value?: string[];
   onChange?: (selected: string[]) => void;
   showError?: boolean;
 }
@@ -34,10 +35,25 @@ const THIRD_LINE: TagCategoryName[] = [
   "기타",
 ];
 
-export const GroupCategory = ({ onChange, showError }: GroupCategoryProps) => {
+export const GroupCategory = ({
+  value = [],
+  onChange,
+  showError,
+}: GroupCategoryProps) => {
   const [selectedCategories, setSelectedCategories] = useState<
     Set<TagCategoryName>
-  >(new Set());
+  >(new Set(value as TagCategoryName[]));
+
+  useEffect(() => {
+    const newSet = new Set(value as TagCategoryName[]);
+    const isDifferent =
+      newSet.size !== selectedCategories.size ||
+      Array.from(newSet).some((v) => !selectedCategories.has(v));
+
+    if (isDifferent) {
+      setSelectedCategories(newSet);
+    }
+  }, [value]);
 
   const toggleCategory = (category: TagCategoryName) => {
     setSelectedCategories((prev) => {
@@ -49,10 +65,10 @@ export const GroupCategory = ({ onChange, showError }: GroupCategoryProps) => {
   };
 
   useEffect(() => {
-    if (onChange) {
-      onChange(Array.from(selectedCategories));
-    }
+    onChange?.(Array.from(selectedCategories));
   }, [selectedCategories]);
+
+  const shouldShowError = showError && selectedCategories.size === 0;
 
   const renderTag = (category: TagCategoryName) => (
     <TagCategory
@@ -62,8 +78,6 @@ export const GroupCategory = ({ onChange, showError }: GroupCategoryProps) => {
       onClick={() => toggleCategory(category)}
     />
   );
-
-  const shouldShowError = showError && selectedCategories.size === 0;
 
   return (
     <Container>
