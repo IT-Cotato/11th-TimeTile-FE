@@ -48,11 +48,12 @@ export const DeckResult = ({
         <InnerWrapper>
           <ProfileRow>
             {artists.slice(0, 7).map((artist) => (
-              <DeckProfile
+              <DeckProfileWrapper
                 key={artist.id}
-                name={artist.name}
-                imageUrl={artist.imageUrl}
-              />
+                onClick={() => router.push(`/timetile/${artist.id}`)}
+              >
+                <DeckProfile name={artist.name} imageUrl={artist.imageUrl} />
+              </DeckProfileWrapper>
             ))}
           </ProfileRow>
           {artists.length >= 7 && <MoreOverlay />}
@@ -102,4 +103,8 @@ const MoreOverlay = styled.div`
   height: 176px;
   background: linear-gradient(90deg, rgba(251, 253, 255, 0) 0%, #fbfdff 91.83%);
   pointer-events: none;
+`;
+
+const DeckProfileWrapper = styled.div`
+  cursor: pointer;
 `;
