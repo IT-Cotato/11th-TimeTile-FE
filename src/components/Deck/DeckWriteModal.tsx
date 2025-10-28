@@ -9,6 +9,7 @@ import { useState } from "react";
 import { GroupCategory } from "../atoms/GroupCategory";
 import { CustomDatePicker } from "./CustomDatePicker";
 import { RightBlue } from "@/assets/icons/RightBlue";
+import { SearchCustomInput } from "./SearchCustomInput";
 
 interface ModalProps {
   modalMode: "add" | "edit";
@@ -102,6 +103,13 @@ export const DeckWriteModal = ({ modalMode, eventId, onClose }: ModalProps) => {
               onChange={(e) => setRelatedDeck(e.target.value)}
               placeholder="관련 데크의 이름을 정확히 입력해주세요."
             />
+            {/* <SearchCustomInput
+              type="artist"
+              placeholder="관련 데크의 이름을 정확히 입력해주세요."
+              onSelect={(artist) => {
+                setRelatedDeck(artist.name);
+              }}
+            /> */}
           </TileName>
           <TileName>
             <InputInfo>

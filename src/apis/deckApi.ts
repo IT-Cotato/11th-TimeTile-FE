@@ -54,4 +54,14 @@ export const deckApi = {
     const res = await axiosApi.get(`/events/${groupId}/participants`);
     return res.data.data.contributors;
   },
+
+  searchArtists: async (query: string) => {
+    const res = await axiosApi.get(`/artists/search`, { params: { query } });
+    return res.data.data.artists;
+  },
+
+  searchEvents: async (query: string) => {
+    const res = await axiosApi.get(`/events/search`, { params: { query } });
+    return res.data.data.events;
+  },
 };

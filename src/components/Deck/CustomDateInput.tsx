@@ -50,6 +50,7 @@ const StyledInput = styled.input`
   line-height: 150%;
   font-style: normal;
   color: ${theme.palette.gray_600};
+  cursor: pointer;
   &::placeholder {
     color: ${theme.palette.gray_600};
   }
