@@ -9,6 +9,7 @@ import { EditButtonIcon } from "@/assets/icons/EditButtonIcon";
 import { AlertIcon } from "@/assets/icons/AlertIcon";
 import { EyeButtonIcon } from "@/assets/icons/EyeButtonIcon";
 import { ClockButtonIcon } from "@/assets/icons/ClockButtonIcon";
+import { useRouter } from "next/navigation";
 
 interface ArtistProfileCardProps {
   artistName: string;
@@ -50,6 +51,7 @@ export const ArtistProfileCard = ({
   onUnfollowClick,
   onYearSelect,
 }: ArtistProfileCardProps) => {
+  const router = useRouter();
   const iconColor = roleColorMap[role] ?? theme.palette.gray_300;
 
   const handleTooltipClick = () => {
@@ -59,6 +61,10 @@ export const ArtistProfileCard = ({
     } else if (mode === "edit") {
       setMode("view");
     }
+  };
+
+  const handleClockClick = () => {
+    router.push("/waiting");
   };
 
   return (
@@ -135,7 +141,14 @@ export const ArtistProfileCard = ({
                   {mode === "edit" && (
                     <Tooltip
                       variant="default"
-                      icon={<ClockButtonIcon color={iconColor} />}
+                      icon={
+                        <div
+                          onClick={handleClockClick}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <ClockButtonIcon color={iconColor} />
+                        </div>
+                      }
                     >
                       업로드 대기 중인 타일 보기
                     </Tooltip>
