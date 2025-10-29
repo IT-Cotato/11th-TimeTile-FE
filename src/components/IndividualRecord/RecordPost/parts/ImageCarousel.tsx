@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { LeftArrowIcon } from "@/assets/icons/LeftArrowIcon";
 import { RightArrowIcon1 } from "@/assets/icons/RightArrowIcon1";
@@ -18,12 +18,35 @@ export default function ImageCarousel({
   onScrollLeft,
   onScrollRight,
 }: ImageCarouselProps) {
+  const [isAtStart, setIsAtStart] = useState(true);
+  const [isAtEnd, setIsAtEnd] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef?.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      const atStart = scrollLeft <= 0;
+      const atEnd = scrollLeft + clientWidth >= scrollWidth - 1; // -1은 부동소수 오차 보정
+      setIsAtStart(atStart);
+      setIsAtEnd(atEnd);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    handleScroll(); // 초기 상태 확인
+
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [containerRef]);
+
   if (!images?.length) return null;
+
   return (
     <ImageContainer>
       <ImageWrapper>
-        <BlurOverlay position="left" />
-        <BlurOverlay position="right" />
+        {!isAtStart && <BlurOverlay position="left" />}
+        {!isAtEnd && <BlurOverlay position="right" />}
+
         <ImageGrid ref={containerRef}>
           {images.map((img, index) => (
             <PostImage
@@ -35,7 +58,6 @@ export default function ImageCarousel({
           ))}
         </ImageGrid>
       </ImageWrapper>
-
       <ArrowGroup>
         <ArrowButton onClick={onScrollLeft} aria-label="왼쪽">
           <LeftArrowIcon />
@@ -52,11 +74,13 @@ const ImageContainer = styled.div`
   flex-grow: 1;
   overflow: hidden;
 `;
+
 const ImageWrapper = styled.div`
   position: relative;
   flex-grow: 1;
   overflow: hidden;
 `;
+
 const ImageGrid = styled.div`
   display: flex;
   gap: 8px;
@@ -68,6 +92,7 @@ const ImageGrid = styled.div`
     display: none;
   }
 `;
+
 const PostImage = styled.img`
   width: 274px;
   height: 232px;
@@ -76,18 +101,25 @@ const PostImage = styled.img`
   flex-shrink: 0;
   cursor: pointer;
 `;
+
 const ArrowGroup = styled.div`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-100%);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-left: 8px;
+  gap: 16px;
+  z-index: 2;
 `;
+
 const ArrowButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
   padding: 6px;
 `;
+
 const BlurOverlay = styled.div<{ position: "left" | "right" }>`
   position: absolute;
   top: 0;
