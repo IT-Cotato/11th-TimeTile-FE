@@ -14,62 +14,6 @@ import { FolderEditModal } from "@/components/mypage/FolderEditModal";
 import { TrashIcon } from "@/assets/icons/TrashIcon";
 import { theme } from "@/styles/theme";
 
-const MOCK_RESPONSE = [
-  {
-    isSuccess: true,
-    code: "COMMON001",
-    message: "요청 성공",
-    data: {
-      posts: [
-        {
-          name: "Corporate Branding Manager",
-          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
-          artistName: "Bruno Mars",
-          postId: 21,
-          title: "Franecki - Franecki",
-          content:
-            "Auctor laboriosam speciosus tamdiu tergeo utor advenio blanditiis vesper.",
-          mainImageUrl:
-            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png",
-          createdAt: "2025-07-23T20:55:54.12418",
-          likeCount: 1,
-          commentCount: 0,
-          authorId: 3,
-          authorNickname: "닉네임2",
-          authorProfileImageUrl:
-            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png",
-          isScrapped: true,
-        },
-        {
-          name: "Corporate Branding Manager",
-          groupId: "3be20cc2-7f5b-44fa-9272-0b38725c3480",
-          artistName: "Bruno Mars",
-          postId: 18,
-          title: "Gislason, Ratke and Reinger",
-          content: "Antea video aeneus dolor bardus decet umbra.",
-          mainImageUrl:
-            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png",
-          createdAt: "2025-07-23T20:55:47.184279",
-          likeCount: 1,
-          commentCount: 0,
-          authorId: 3,
-          authorNickname: "닉네임2",
-          authorProfileImageUrl:
-            "https://timetile-bucket.s3.ap-northeast-2.amazonaws.com/logo/simple-logo.png",
-          isScrapped: true,
-        },
-      ],
-      page: 1,
-      size: 10,
-      totalPages: 1,
-      totalElements: 2,
-      hasNext: false,
-      hasPrevious: false,
-      isLast: true,
-    },
-  },
-];
-
 export default function ScrapFolderDetail() {
   const router = useRouter();
   const params = useParams();
@@ -117,7 +61,6 @@ export default function ScrapFolderDetail() {
     setLoading(true);
     try {
       const res = await usersApi.getScrapFolderPosts(folderId, page);
-      //const res = MOCK_RESPONSE[0];
       if (res.isSuccess) {
         setPosts(res.data.posts);
         setPage(res.data.page);

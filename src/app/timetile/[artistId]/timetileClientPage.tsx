@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArtistProfileCard } from "@/components/atoms/ArtistProfileCard";
 import styled from "styled-components";
 import { deckApi } from "@/apis/deckApi";
@@ -10,6 +10,8 @@ import { DeckTab } from "@/components/Deck/DeckTab";
 import { MyTileDeck } from "@/components/Deck/MyTileDeck";
 import { useAtom } from "jotai";
 import { userProfileAtom } from "@/store/UserProfileAtom";
+import { EmptyDeck } from "@/components/Deck/EmptyDeck";
+import { DeckWriteModal } from "@/components/Deck/DeckWriteModal";
 
 interface ArtistData {
   artistName: string;
@@ -46,7 +48,9 @@ const mockYearSchedules: Record<number, string[]> = {
 };
 
 export default function ArtistPage() {
+  const router = useRouter();
   const params = useParams();
+
   const artistId = Array.isArray(params?.artistId)
     ? params.artistId[0]
     : params?.artistId;
@@ -67,6 +71,26 @@ export default function ArtistPage() {
     "follow" | "following" | "unfollow"
   >("follow");
   const [mode, setMode] = useState<"view" | "edit" | "waiting">("view");
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const storedMode = localStorage.getItem("lastMode") as
+      | "view"
+      | "edit"
+      | "waiting"
+      | null;
+
+    if (storedMode) {
+      setMode(storedMode);
+      localStorage.removeItem("lastMode");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (artistId) {
+      localStorage.setItem("lastArtistId", artistId);
+    }
+  }, [artistId]);
 
   useEffect(() => {
     if (!artistId) return;
@@ -171,28 +195,51 @@ export default function ArtistPage() {
           onFollowClick={handleFollowClick}
           onUnfollowClick={handleUnfollowClick}
           onYearSelect={setSelectedYear}
+          onClockClick={() => {
+            if (!artistId) return;
+            localStorage.setItem("lastArtistId", artistId);
+            router.push("/waiting");
+          }}
         />
-        {selectedYear && artistId && (
-          <div>
-            <DeckTab
-              activeTab={activeTab}
-              //role={userProfile?.role}
-              role="EDITOR"
-              artistName={artistData.artistName}
-              onTabChange={setActiveTab}
-              mode={mode}
-            />
-            {activeTab === "timeTile" && (
-              <TimetileDeck
-                //role={userProfile?.role ?? "WATCHER"}
-                role="EDITOR"
-                year={selectedYear}
-                artistId={artistId}
-                mode={mode}
-              />
+
+        {artistId && (
+          <>
+            {years.length === 0 ? (
+              <>
+                <EmptyDeck onAddTileClick={() => setShowModal(true)} />
+                {showModal && (
+                  <ModalOverlay>
+                    <DeckWriteModal
+                      modalMode="add"
+                      onClose={() => setShowModal(false)}
+                      userRole="EDITOR"
+                    />
+                  </ModalOverlay>
+                )}
+              </>
+            ) : (
+              selectedYear && (
+                <div>
+                  <DeckTab
+                    activeTab={activeTab}
+                    role="EDITOR"
+                    artistName={artistData.artistName}
+                    onTabChange={setActiveTab}
+                    mode={mode}
+                  />
+                  {activeTab === "timeTile" && (
+                    <TimetileDeck
+                      role="EDITOR"
+                      year={selectedYear}
+                      artistId={artistId}
+                      mode={mode}
+                    />
+                  )}
+                  {activeTab === "myTile" && <MyTileDeck />}
+                </div>
+              )
             )}
-            {activeTab === "myTile" && <MyTileDeck />}
-          </div>
+          </>
         )}
       </Wrapper>
     </Container>
@@ -214,4 +261,17 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 24px;
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
 `;

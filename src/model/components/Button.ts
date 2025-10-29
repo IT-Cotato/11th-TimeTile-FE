@@ -1,12 +1,12 @@
-import { KeyOfTypo } from '@/styles/theme';
-import { ButtonHTMLAttributes } from 'react';
+import { KeyOfTypo } from "@/styles/theme";
+import { ButtonHTMLAttributes } from "react";
 
 export type ButtonsVariantType =
-  | 'addTile'
-  | 'editTile'
-  | 'edit'
-  | 'report'
-  | 'addRecord';
+  | "addTile"
+  | "editTile"
+  | "edit"
+  | "report"
+  | "addRecord";
 
 export type ButtonsShapeType = {
   [key in ButtonsVariantType]: {
@@ -21,8 +21,8 @@ export interface ButtonsPropsType<T extends ButtonsVariantType>
   extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant: ButtonsVariantType;
   typo?: KeyOfTypo;
-  description?: T extends 'edit' | 'report' ? string | undefined : undefined;
-  leftChildren?: T extends 'edit' | 'report'
+  description?: T extends "edit" | "report" ? string | undefined : undefined;
+  leftChildren?: T extends "edit" | "report"
     ? React.ReactNode | undefined
     : undefined;
   width?: number;
@@ -31,7 +31,7 @@ export interface ButtonsPropsType<T extends ButtonsVariantType>
   onClick?: () => void;
 }
 
-export type RoundButtonVariantType = 'edit' | 'viewmode' | 'waiting';
+export type RoundButtonVariantType = "edit" | "viewmode" | "waiting";
 
 export interface RoundButtonPropsType<RoundButtonVariantType>
   extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -40,13 +40,14 @@ export interface RoundButtonPropsType<RoundButtonVariantType>
   onClick?: () => void;
 }
 
-export type ReportTileButtonVariantType = 'default' | 'count';
+export type ReportTileButtonVariantType = "default" | "count";
 
 export interface ReportTileButtonPropsType<
-  T extends ReportTileButtonVariantType,
+  T extends ReportTileButtonVariantType
 > extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant: ReportTileButtonVariantType;
   width?: number;
-  rightChildren?: T extends 'count' ? number : undefined;
+  height?: number;
+  rightChildren?: T extends "count" ? number : undefined;
   onClick?: () => void;
 }

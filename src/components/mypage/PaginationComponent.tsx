@@ -9,12 +9,14 @@ interface PaginationComponentProps {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  marginTop?: number;
 }
 
 const PaginationComponent: React.FC<PaginationComponentProps> = ({
   page,
   totalPages,
   onPageChange,
+  marginTop = 100,
 }) => {
   const maxButtons = 5;
   const pageGroup = Math.floor((page - 1) / maxButtons);
@@ -46,7 +48,7 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
   };
 
   return (
-    <Container>
+    <Container $marginTop={marginTop}>
       <ArrowButton
         onClick={handlePrevGroup}
         disabled={pageGroup === 0}
@@ -79,11 +81,11 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({
 
 export default PaginationComponent;
 
-const Container = styled.div`
+const Container = styled.div<{ $marginTop: number }>`
   display: flex;
   justify-content: center;
   gap: 24px;
-  margin-top: 100px;
+  margin-top: ${({ $marginTop }) => `${$marginTop}px`};
 `;
 
 const ArrowButton = styled.button`

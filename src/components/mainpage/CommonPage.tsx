@@ -82,7 +82,10 @@ export const CommonPage = () => {
         <Text typo="H4" color="primary_700" children="인기데크" />
         <Wrapper $variant="deck">
           {artists.slice(0, 5).map((artist) => (
-            <Deck key={artist.id}>
+            <Deck
+              key={artist.id}
+              onClick={() => router.push(`/timetile/${artist.id}`)}
+            >
               <ArtistImage src={artist.imageUrl} alt={artist.name} />
               <DeckDiv>
                 <Text typo="Body_3" color="gray_1000">
@@ -202,6 +205,7 @@ const Deck = styled.div`
   align-items: center;
   gap: 8px;
   flex: 1 0 0;
+  cursor: pointer;
 `;
 
 const ArtistImage = styled.img`

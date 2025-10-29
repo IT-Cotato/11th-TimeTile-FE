@@ -25,6 +25,7 @@ interface ArtistProfileCardProps {
   onFollowClick?: () => void;
   onUnfollowClick?: () => void;
   onYearSelect?: (year: number | null) => void;
+  onClockClick?: () => void;
 }
 
 const roleColorMap: Record<UserRole | "ADMIN", string> = {
@@ -49,6 +50,7 @@ export const ArtistProfileCard = ({
   onFollowClick,
   onUnfollowClick,
   onYearSelect,
+  onClockClick,
 }: ArtistProfileCardProps) => {
   const iconColor = roleColorMap[role] ?? theme.palette.gray_300;
 
@@ -135,7 +137,14 @@ export const ArtistProfileCard = ({
                   {mode === "edit" && (
                     <Tooltip
                       variant="default"
-                      icon={<ClockButtonIcon color={iconColor} />}
+                      icon={
+                        <div
+                          onClick={onClockClick}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <ClockButtonIcon color={iconColor} />
+                        </div>
+                      }
                     >
                       업로드 대기 중인 타일 보기
                     </Tooltip>
@@ -144,13 +153,15 @@ export const ArtistProfileCard = ({
               )}
           </Info>
         </TopWrapper>
-        <YearWrapper>
-          <YearScroller
-            years={years}
-            yearSchedules={yearSchedules}
-            onYearSelect={onYearSelect}
-          />
-        </YearWrapper>
+        {years.length > 0 && (
+          <YearWrapper>
+            <YearScroller
+              years={years}
+              yearSchedules={yearSchedules}
+              onYearSelect={onYearSelect}
+            />
+          </YearWrapper>
+        )}
       </Container>
     </CardWrapper>
   );
