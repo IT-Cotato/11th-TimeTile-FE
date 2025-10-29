@@ -16,7 +16,8 @@ export const ReportTileButton = ({
   variant = "default",
   children,
   width,
-  rightChildren = 10,
+  height = 44,
+  rightChildren,
   onClick,
   ...props
 }: PropsType) => {
@@ -32,7 +33,9 @@ export const ReportTileButton = ({
       return (
         <FlexBox gap={8}>
           <Text typo="Caption_2" children="부적절해요" />
-          <StyledText>{rightChildren}</StyledText>
+          {rightChildren !== undefined && (
+            <StyledText>{rightChildren}</StyledText>
+          )}
         </FlexBox>
       );
     }
@@ -42,6 +45,7 @@ export const ReportTileButton = ({
       <StyledButton
         variant={variant}
         width={width}
+        height={height}
         onClick={onClick}
         {...props}
       >
@@ -54,15 +58,17 @@ export const ReportTileButton = ({
 const StyledButton = styled.button<{
   variant: ReportTileButtonVariantType;
   width?: number;
+  height?: number;
 }>`
   width: ${({ width }) => (width ? `${width}px` : 109)};
-  height: 44px;
+  height: ${({ height }) => (height ? `${height}px` : "44px")};
   padding: 8px 12px;
   background-color: ${theme.palette.warning_2};
   color: ${theme.palette.warning};
   border-radius: 10px;
   border: none;
   z-index: 999;
+  cursor: pointer;
 `;
 
 const StyledText = styled.div`
