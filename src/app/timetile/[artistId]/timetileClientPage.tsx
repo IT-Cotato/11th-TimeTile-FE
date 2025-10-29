@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ArtistProfileCard } from "@/components/atoms/ArtistProfileCard";
 import styled from "styled-components";
 import { deckApi } from "@/apis/deckApi";
@@ -48,7 +48,9 @@ const mockYearSchedules: Record<number, string[]> = {
 };
 
 export default function ArtistPage() {
+  const router = useRouter();
   const params = useParams();
+
   const artistId = Array.isArray(params?.artistId)
     ? params.artistId[0]
     : params?.artistId;
@@ -70,6 +72,25 @@ export default function ArtistPage() {
   >("follow");
   const [mode, setMode] = useState<"view" | "edit" | "waiting">("view");
   const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    const storedMode = localStorage.getItem("lastMode") as
+      | "view"
+      | "edit"
+      | "waiting"
+      | null;
+
+    if (storedMode) {
+      setMode(storedMode);
+      localStorage.removeItem("lastMode");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (artistId) {
+      localStorage.setItem("lastArtistId", artistId);
+    }
+  }, [artistId]);
 
   useEffect(() => {
     if (!artistId) return;
@@ -174,6 +195,11 @@ export default function ArtistPage() {
           onFollowClick={handleFollowClick}
           onUnfollowClick={handleUnfollowClick}
           onYearSelect={setSelectedYear}
+          onClockClick={() => {
+            if (!artistId) return;
+            localStorage.setItem("lastArtistId", artistId);
+            router.push("/waiting");
+          }}
         />
 
         {artistId && (
