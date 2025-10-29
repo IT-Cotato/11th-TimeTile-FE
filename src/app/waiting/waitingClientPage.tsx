@@ -2,6 +2,7 @@
 
 import { TileToggle } from "@/components/Waiting/TileToggle";
 import { WaitingInfo } from "@/components/Waiting/WaitingInfo";
+import { WaitingTileComponent } from "@/components/Waiting/WaitingTileComponent";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -12,6 +13,7 @@ export default function WaitingClientPage() {
       <Wrapper>
         <WaitingInfo />
         <TileToggle value={tileView} onChange={setTileView} />
+        <WaitingTileComponent />
       </Wrapper>
     </Container>
   );
