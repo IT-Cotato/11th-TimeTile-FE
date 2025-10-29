@@ -32,7 +32,6 @@ export const WaitingInfo = () => {
               업로드 대기 중인 타일
             </Text>
           </Left>
-
           <Right>
             <Tooltip
               variant="default"
