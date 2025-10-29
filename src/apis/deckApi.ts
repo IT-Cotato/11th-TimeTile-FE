@@ -103,4 +103,16 @@ export const deckApi = {
     const res = await axiosApi.get(`/events/${groupId}`);
     return res.data.data;
   },
+
+  getPendingEvents: async (page: number = 1) => {
+    const res = await axiosApi.get("/events/pending", {
+      params: { page },
+    });
+    return res.data.data.pendingEvents;
+  },
+
+  reportPendingEvent: async (eventId: number) => {
+    const res = await axiosApi.post(`/events/pending/${eventId}/report`);
+    return res.data;
+  },
 };
