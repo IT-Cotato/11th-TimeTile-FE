@@ -1,13 +1,17 @@
 "use client";
 
+import { TileToggle } from "@/components/Waiting/TileToggle";
 import { WaitingInfo } from "@/components/Waiting/WaitingInfo";
+import { useState } from "react";
 import styled from "styled-components";
 
 export default function WaitingClientPage() {
+  const [tileView, setTileView] = useState<"all" | "new" | "edited">("all");
   return (
     <Container>
       <Wrapper>
         <WaitingInfo />
+        <TileToggle value={tileView} onChange={setTileView} />
       </Wrapper>
     </Container>
   );
