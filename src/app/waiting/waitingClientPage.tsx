@@ -1,11 +1,14 @@
 "use client";
 
+import { WaitingInfo } from "@/components/Waiting/WaitingInfo";
 import styled from "styled-components";
 
 export default function WaitingClientPage() {
   return (
     <Container>
-      <Wrapper>waiting</Wrapper>
+      <Wrapper>
+        <WaitingInfo />
+      </Wrapper>
     </Container>
   );
 }
