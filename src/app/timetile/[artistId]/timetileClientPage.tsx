@@ -209,7 +209,15 @@ export default function ArtistPage() {
                       mode={mode}
                     />
                   )}
-                  {activeTab === "myTile" && <MyTileDeck />}
+                  {activeTab === "myTile" && (
+                    <MyTileDeck
+                      year={selectedYear}
+                      artistId={artistId}
+                      groupId={artistId}
+                      mode={mode}
+                      role="EDITOR"
+                    />
+                  )}
                 </div>
               )
             )}
