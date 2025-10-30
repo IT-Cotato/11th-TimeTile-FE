@@ -1,7 +1,5 @@
 import { authAxios } from "@/apis/axios";
 
-/** 응답 랩퍼 통일 언랩: {isSuccess, code, message, data} → data */
-// ⚙️ any → unknown 으로 변경 (ESLint no-explicit-any 해결)
 const unwrap = <T = unknown>(res: unknown): T => {
   // res가 AxiosResponse라고 가정하고 안전하게 처리
   const axiosRes = res as { data?: unknown };
@@ -28,7 +26,6 @@ export type PostDetailDTO = {
 };
 
 /** 배열 쿼리를 repeat 포맷으로 직렬화: ?extensions=jpg&extensions=png */
-// ⚙️ any → unknown 으로 변경 (ESLint no-explicit-any 해결)
 const toRepeatQuery = (params: Record<string, unknown>): string => {
   const pairs: string[] = [];
   Object.entries(params).forEach(([k, v]) => {
@@ -87,7 +84,7 @@ export const postApi = {
     return res.data;
   },
 
-  // ✅ 게시글 상세: 언랩 + 타입 지정
+  // 게시글 상세: 언랩 + 타입 지정
   getPostDetail: async (postId: string | number): Promise<PostDetailDTO> => {
     const res = await authAxios.get(`/posts/${postId}`);
     return unwrap<PostDetailDTO>(res);
@@ -134,7 +131,7 @@ export const postApi = {
   unlikePost: async (postId: number) =>
     (await authAxios.delete(`/posts/${postId}/like`)).data,
 
-  // ✅ 업로드 URL 요청 (직렬화/폴백/언랩 포함)
+  // 업로드 URL 요청 (직렬화/폴백/언랩 포함)
   getUploadUrls: async (extensions: string[]) => {
     const path = "/posts/files";
     try {
@@ -174,6 +171,12 @@ export const postApi = {
 
   // 이벤트
   getEvent: async (groupId: string) => {
+    const res = await authAxios.get(`/events/${groupId}`);
+    return res.data;
+  },
+
+  // 스케줄(그룹) 상세
+  getGroupDetail: async (groupId: string) => {
     const res = await authAxios.get(`/events/${groupId}`);
     return res.data;
   },

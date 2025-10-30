@@ -6,6 +6,7 @@ import { Tag } from "../atoms/Tag";
 import { TagCategory } from "../atoms/TagCategory";
 import { TagCategoryName } from "@/model/common/tagcategory";
 import { theme } from "@/styles/theme";
+import { CommentIcon } from "@/assets/icons/CommentIcon";
 import { EventData } from "@/model/components/Event";
 import { ChevronDown } from "@/assets/icons/ChevronDown";
 import RecordCardSmall from "../IndividualRecord/RecordCardSmall";
@@ -31,7 +32,7 @@ export const MyExpandDeck = ({
     <ExpandContainer>
       {events.map((event) => (
         <EventCard key={event.eventId}>
-          {/* 🔹 상단 헤더 */}
+          {/* 상단 헤더 */}
           <Header>
             <HeaderLeft>
               <Text typo="Body_1" color="gray_700">
@@ -42,16 +43,14 @@ export const MyExpandDeck = ({
               </Text>
               <AddTileButton
                 onClick={() =>
-                  router.push(
-                    `/individual-record?groupId=${event.groupId || ""}`
-                  )
+                  router.push(`/record-add?groupId=${event.groupId || ""}`)
                 }
               >
-                + 내 타일 추가
+                <CommentIcon />
               </AddTileButton>
             </HeaderLeft>
 
-            {/* 🔹 태그 목록 */}
+            {/* 태그 목록 */}
             {(event.activityTypes.length > 0 ||
               event.relatedArtists.length > 0 ||
               event.relatedEvents.length > 0) && (
@@ -84,7 +83,7 @@ export const MyExpandDeck = ({
             )}
           </Header>
 
-          {/* 🔹 카드 리스트 */}
+          {/* 카드 리스트 */}
           <CardList>
             {event.relatedMaterials?.length ? (
               event.relatedMaterials.map((m, idx) => (
@@ -108,7 +107,7 @@ export const MyExpandDeck = ({
             )}
           </CardList>
 
-          {/* 🔹 참여자 + 전체보기 */}
+          {/* 참여자 + 전체보기 */}
           <BottomBar>
             <Text typo="Caption_2" color="gray_600">
               +{event.contributorCount ?? 0}명 참여했어요
@@ -124,7 +123,7 @@ export const MyExpandDeck = ({
         </EventCard>
       ))}
 
-      {/* 🔹 타일 접기 */}
+      {/* 타일 접기 */}
       <CollapseWrapper onClick={onClose}>
         <Text typo="Caption_2">타일 접기</Text>
         <ChevronDown />
@@ -214,7 +213,7 @@ const BottomBar = styled.div`
 const ViewAllButton = styled.button`
   border: none;
   background: none;
-  color: ${theme.palette.gray_600};
+  color: ${theme.palette.primary_700};
   font-size: 12px;
   cursor: pointer;
 `;

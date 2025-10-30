@@ -63,14 +63,14 @@ export const MyTileDeck = ({
         for (const month of months) {
           const posts = postsByMonth[month] ?? [];
 
-          // ✅ groupId로 묶기
+          // groupId로 묶기
           const grouped: Record<string, PostItem[]> = {};
           posts.forEach((post) => {
             if (!grouped[post.groupId]) grouped[post.groupId] = [];
             grouped[post.groupId].push(post);
           });
 
-          // ✅ 각 group별로 event 정보 가져오기
+          // 각 group별로 event 정보 가져오기
           const events: EventData[] = await Promise.all(
             Object.entries(grouped).map(async ([groupId, groupPosts]) => {
               let eventTitle = "스케줄명 불러오는 중...";
@@ -83,7 +83,7 @@ export const MyTileDeck = ({
                   eventRes?.event?.name ||
                   "제목 없음";
               } catch (e) {
-                console.warn(`⚠️ event fetch 실패 (${groupId})`, e);
+                console.warn(`event fetch 실패 (${groupId})`, e);
               }
 
               const representative = groupPosts[0];
@@ -91,7 +91,7 @@ export const MyTileDeck = ({
               return {
                 eventId: representative.postId,
                 groupId,
-                name: eventTitle, // ✅ 이제 스케줄 제목
+                name: eventTitle, // 이제 스케줄 제목
                 source:
                   representative.mainImageUrl ||
                   "/images/default_thumbnail.png",
@@ -120,7 +120,7 @@ export const MyTileDeck = ({
         setMonthlyEvents(monthly);
         setHasMore(more);
       } catch (e) {
-        console.error("❌ MyTileDeck fetch error:", e);
+        console.error("MyTileDeck fetch error:", e);
       } finally {
         setLoading(false);
       }
@@ -150,7 +150,7 @@ export const MyTileDeck = ({
               <Text typo="H2">{month}월</Text>
             </MonthTitle>
             <Wrapper>
-              {/* 🔹 펼쳤을 때는 MyExpandDeck */}
+              {/* 펼쳤을 때는 MyExpandDeck */}
               {expanded ? (
                 <MyExpandDeck
                   role={role}
@@ -173,7 +173,7 @@ export const MyTileDeck = ({
   );
 };
 
-// 💅 스타일 (TimetileDeck 그대로 유지)
+// 스타일
 const Container = styled.div<{ $mode: "view" | "edit" | "waiting" }>`
   display: flex;
   flex-direction: column;
