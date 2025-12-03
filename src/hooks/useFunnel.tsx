@@ -1,4 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState, ReactNode } from "react";
+
+interface StepProps {
+  name: string;
+  children: ReactNode;
+}
 
 export function useFunnel(steps: string[], initialStep?: string) {
   const [currentStep, setCurrentStep] = useState(
@@ -15,28 +20,29 @@ export function useFunnel(steps: string[], initialStep?: string) {
 
   const toNext = () => {
     const idx = steps.indexOf(currentStep);
-    if (idx < steps.length - 1) setCurrentStep(steps[idx + 1]);
+    if (idx < steps.length - 1) {
+      setCurrentStep(steps[idx + 1]);
+    }
   };
 
   const toPrev = () => {
     const idx = steps.indexOf(currentStep);
-    if (idx > 0) setCurrentStep(steps[idx - 1]);
+    if (idx > 0) {
+      setCurrentStep(steps[idx - 1]);
+    }
   };
 
-  const Funnel = ({ children }: { children: React.ReactNode }) => {
-    return <>{children}</>;
-  };
-
-  const Step = ({
-    name,
-    children,
-  }: {
-    name: string;
-    children: React.ReactNode;
-  }) => {
+  const Step = ({ name, children }: StepProps) => {
+    if (!steps.includes(name)) return null;
     if (name !== currentStep) return null;
     return <>{children}</>;
   };
 
-  return { Funnel, Step, toNext, toPrev, currentStep, setCurrentStep };
+  const Funnel = ({ children }: { children: ReactNode }) => {
+    return <>{children}</>;
+  };
+
+  Funnel.Step = Step;
+
+  return { Funnel, toNext, toPrev, currentStep, setStep: setCurrentStep };
 }

@@ -6,7 +6,7 @@ import Profile from "@/components/register/Profile";
 import Terms from "@/components/register/Terms";
 import { useAtom } from "jotai";
 import { agreementIdsAtom, socialTokenAtom } from "@/store/auth";
-import { useEffect, useState } from "react";
+
 export default function Register() {
   const [socialToken] = useAtom(socialTokenAtom);
   const [agreementIds, setAgreementIds] = useAtom(agreementIdsAtom);
@@ -26,10 +26,7 @@ export default function Register() {
     }
   }
 
-  const { Funnel, Step, toNext, toPrev, currentStep } = useFunnel(
-    steps,
-    initialStep
-  );
+  const { Funnel, toNext, toPrev } = useFunnel(steps, initialStep);
 
   const handleTermsNext = (ids: number[]) => {
     setAgreementIds(ids);
@@ -38,21 +35,15 @@ export default function Register() {
 
   return (
     <Funnel>
-      {steps.includes("terms") && (
-        <Step name="terms">
-          <Terms onNext={handleTermsNext} />
-        </Step>
-      )}
-      {steps.includes("account") && (
-        <Step name="account">
-          <Account onNext={toNext} onPrev={toPrev} />
-        </Step>
-      )}
-      {steps.includes("profile") && (
-        <Step name="profile">
-          <Profile temporaryToken={socialToken} onPrev={toPrev} />
-        </Step>
-      )}
+      <Funnel.Step name="terms">
+        <Terms onNext={handleTermsNext} />
+      </Funnel.Step>
+      <Funnel.Step name="account">
+        <Account onNext={toNext} onPrev={toPrev} />
+      </Funnel.Step>
+      <Funnel.Step name="profile">
+        <Profile temporaryToken={socialToken} onPrev={toPrev} />
+      </Funnel.Step>
     </Funnel>
   );
 }
