@@ -79,6 +79,7 @@ const ImageWrapper = styled.div`
   position: relative;
   flex-grow: 1;
   overflow: hidden;
+  margin-bottom: 40px;
 `;
 
 const ImageGrid = styled.div`
