@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
-import { commentsApi } from '@/apis/commentApi';
+import React, { useEffect, useMemo, useState } from "react";
+import styled from "styled-components";
+import { commentsApi } from "@/apis/commentApi";
 
 /** 서버 응답 타입(필요 필드만) */
 type Reply = {
@@ -37,14 +37,14 @@ export default function CommentList({ postId }: { postId: number | string }) {
 
   // 입력 상태머신: idle(버튼 없음) → typing(버튼 보이되 비활성) → active(버튼 활성)
   const [focused, setFocused] = useState(false);
-  const [rootInput, setRootInput] = useState('');
+  const [rootInput, setRootInput] = useState("");
   const trimmed = rootInput.trim();
   const showSubmit = focused; // 피그마: 클릭하면 버튼 나타남
   const disabled = !trimmed;
 
   // 대댓글 (1레벨만)
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
-  const [replyInput, setReplyInput] = useState('');
+  const [replyInput, setReplyInput] = useState("");
   const replyDisabled = !replyInput.trim();
 
   const load = async () => {
@@ -65,12 +65,12 @@ export default function CommentList({ postId }: { postId: number | string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postId]);
 
-  const dateOnly = (iso?: string) => (iso ? (iso.split('T')[0] ?? iso) : '');
+  const dateOnly = (iso?: string) => (iso ? iso.split("T")[0] ?? iso : "");
 
   const submitRoot = async () => {
     if (!trimmed) return;
     await commentsApi.create(postId, { parentId: null, content: trimmed });
-    setRootInput('');
+    setRootInput("");
     setFocused(false); // 다시 idle
     await load();
   };
@@ -81,7 +81,7 @@ export default function CommentList({ postId }: { postId: number | string }) {
       parentId: replyingTo,
       content: replyInput.trim(),
     });
-    setReplyInput('');
+    setReplyInput("");
     setReplyingTo(null);
     await load();
   };
@@ -92,12 +92,12 @@ export default function CommentList({ postId }: { postId: number | string }) {
       else await commentsApi.like(postId, commentId);
       await load();
     } catch {
-      setList(prev =>
-        prev.map(c =>
+      setList((prev) =>
+        prev.map((c) =>
           c.commentId === commentId
             ? { ...c, likeCount: c.likeCount + (liked ? -1 : 1), liked: !liked }
-            : c,
-        ),
+            : c
+        )
       );
     }
   };
@@ -111,7 +111,7 @@ export default function CommentList({ postId }: { postId: number | string }) {
         <InputArea
           placeholder="댓글을 입력해보세요."
           value={rootInput}
-          onChange={e => setRootInput(e.target.value)}
+          onChange={(e) => setRootInput(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => {
             // 비어있으면 idle로 돌아가며 버튼 숨김
@@ -129,12 +129,12 @@ export default function CommentList({ postId }: { postId: number | string }) {
       {loading && <Loading>불러오는 중…</Loading>}
 
       <List>
-        {list.map(c => (
+        {list.map((c) => (
           <Item key={c.commentId}>
             <RowTop>
               <User>
                 <Avatar
-                  src={c.commenterProfileImageUrl || '/default-profile.png'}
+                  src={c.commenterProfileImageUrl || "/default-profile.png"}
                   alt=""
                 />
                 <strong>{c.commenterNickname}</strong>
@@ -152,10 +152,10 @@ export default function CommentList({ postId }: { postId: number | string }) {
               <ActionBtn
                 className="reply"
                 onClick={() => {
-                  setReplyingTo(prev =>
-                    prev === c.commentId ? null : c.commentId,
+                  setReplyingTo((prev) =>
+                    prev === c.commentId ? null : c.commentId
                   );
-                  setReplyInput('');
+                  setReplyInput("");
                 }}
               >
                 답글
@@ -168,7 +168,7 @@ export default function CommentList({ postId }: { postId: number | string }) {
                 <ReplyArea
                   placeholder="답글을 입력해보세요."
                   value={replyInput}
-                  onChange={e => setReplyInput(e.target.value)}
+                  onChange={(e) => setReplyInput(e.target.value)}
                 />
                 <ReplySubmit disabled={replyDisabled} onClick={submitReply}>
                   등록
@@ -179,13 +179,13 @@ export default function CommentList({ postId }: { postId: number | string }) {
             {/* 대댓글 목록 (우측으로) */}
             {c.replies?.length > 0 && (
               <Replies>
-                {c.replies.map(r => (
+                {c.replies.map((r) => (
                   <ReplyItem key={r.replyId}>
                     <ReplyHead>
                       <User>
                         <Avatar
                           src={
-                            r.replierProfileImageUrl || '/default-profile.png'
+                            r.replierProfileImageUrl || "/default-profile.png"
                           }
                           alt=""
                         />
@@ -211,13 +211,13 @@ const Wrap = styled.div`
 `;
 
 const InputBar = styled.div.withConfig({
-  shouldForwardProp: p => p !== '$focused',
+  shouldForwardProp: (p) => p !== "$focused",
 })<{ $focused: boolean }>`
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  border: 1.5px solid ${({ $focused }) => ($focused ? '#A6C6FA' : '#D2D4D6')};
+  border: 1.5px solid ${({ $focused }) => ($focused ? "#A6C6FA" : "#D2D4D6")};
   border-radius: 12px;
   background: #fff;
   transition: border-color 0.15s ease;
@@ -239,14 +239,14 @@ const InputArea = styled.textarea`
 `;
 
 const SubmitBtn = styled.button<{ disabled?: boolean }>`
-  background: ${({ disabled }) => (disabled ? '#BFD5F7' : '#5B86E5')};
+  background: ${({ disabled }) => (disabled ? "#BFD5F7" : "#5B86E5")};
   color: #fff;
   border: none;
   padding: 6px 10px;
   height: 28px;
   border-radius: 8px;
   font-weight: 700;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
 `;
 
 const CountBar = styled.div`
@@ -372,12 +372,12 @@ const ReplyArea = styled.textarea`
 `;
 
 const ReplySubmit = styled.button<{ disabled?: boolean }>`
-  background: ${({ disabled }) => (disabled ? '#BFD5F7' : '#5B86E5')};
+  background: ${({ disabled }) => (disabled ? "#BFD5F7" : "#5B86E5")};
   color: #fff;
   border: none;
   padding: 6px 10px;
   height: 28px;
   border-radius: 8px;
   font-weight: 700;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
 `;

@@ -24,9 +24,20 @@ interface FileItem {
   file: File;
 }
 
+type UploadInfoItem = {
+  url: string;
+  key: string;
+  contentType?: string;
+  headers?: Record<string, string>;
+};
+
+type UploadUrlResponse = {
+  uploadInfo: UploadInfoItem[];
+};
+
 const getErrorMessage = (err: unknown) => {
-  if ((err as any)?.isAxiosError) {
-    const ax = err as AxiosError<any>;
+  if (err && typeof err === "object" && "isAxiosError" in err) {
+    const ax = err as AxiosError<{ message?: string }>;
     const status = ax.response?.status;
     const msg = ax.response?.data?.message || ax.message || "요청 실패";
     return `[${status ?? "NETWORK"}] ${msg}`;
@@ -111,11 +122,13 @@ const IndividualRecordPage = () => {
 
       if (files.length > 0) {
         const extensions = files.map((f) => getExt(f.file));
-        const res = await postApi.getUploadUrls(extensions);
-        const uploadInfo = Array.isArray(res?.uploadInfo) ? res.uploadInfo : [];
+        const res = (await postApi.getUploadUrls(
+          extensions
+        )) as UploadUrlResponse;
+        const uploadInfo = res.uploadInfo ?? [];
 
         await Promise.all(
-          uploadInfo.map(async (p, i) => {
+          uploadInfo.map(async (p, i: number) => {
             const headers: HeadersInit = new Headers();
             if (p.contentType) headers.set("Content-Type", p.contentType);
             if (p.headers)
