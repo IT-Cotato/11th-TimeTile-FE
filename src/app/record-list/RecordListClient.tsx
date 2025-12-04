@@ -97,6 +97,7 @@ const IndividualRecordPage = () => {
 
         const { posts, totalPages } = res.data ?? res;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mapped = (posts || []).map((post: any) => ({
           postId: post.postId,
           profileImage: post.authorProfileImageUrl ?? "/default-profile.png",
@@ -111,6 +112,7 @@ const IndividualRecordPage = () => {
 
         setRecords(mapped);
         setTotalPages(totalPages ?? 1);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         console.error("[getAllPosts error]", err.response || err);
         alert("게시글 목록을 불러오지 못했습니다.");
