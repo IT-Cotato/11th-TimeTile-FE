@@ -139,7 +139,12 @@ export const RelatedMaterialPreview = ({
       <StripWrapper>
         <Strip ref={listRef}>
           {previews.map((m) => (
-            <Thumb key={m.id}>
+            <Thumb
+              key={m.id}
+              onClick={() => {
+                window.open(m.url, "_blank", "noopener noreferrer");
+              }}
+            >
               <img src={m.thumbnailUrl} alt={m.title} />
               <LinkButton
                 onClick={(e) => {
@@ -211,6 +216,7 @@ const Thumb = styled.div`
   border-radius: 10px;
   overflow: hidden;
   background: #eee;
+  cursor: pointer;
   img {
     width: 100%;
     height: 100%;
