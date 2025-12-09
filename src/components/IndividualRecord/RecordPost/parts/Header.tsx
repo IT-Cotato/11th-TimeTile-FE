@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import styled from "styled-components";
 import { Text } from "@/components/atoms/Text";
@@ -10,7 +12,7 @@ export type HeaderProps = {
   username: string;
   role?: UserRole;
   roleImageUrl?: string;
-  visibility: string; // "PUBLIC" | "PRIVATE" 등
+  visibility: string;
   onOpenMenu: () => void;
 };
 
@@ -57,36 +59,43 @@ const HeaderWrap = styled.div`
   justify-content: space-between;
   align-items: flex-start;
 `;
+
 const Left = styled.div`
   display: flex;
   gap: 10px;
   align-items: center;
 `;
+
 const Right = styled.div`
-  position: relative;
+  position: relative; /* ⭐ 메뉴 기준점! */
   margin-left: auto;
 `;
+
 const Avatar = styled.img`
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
 `;
+
 const InfoCol = styled.div`
   display: inline-flex;
   gap: 8px;
 `;
+
 const NameRow = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
 `;
+
 const RoleImg = styled.img`
   width: 18px;
   height: 18px;
   border-radius: 4px;
   object-fit: cover;
 `;
+
 const MetaRow = styled.div`
   display: flex;
   align-items: center;
@@ -94,6 +103,7 @@ const MetaRow = styled.div`
   gap: 8px;
   margin-top: 5px;
 `;
+
 const MoreBtn = styled.button`
   all: unset;
   cursor: pointer;

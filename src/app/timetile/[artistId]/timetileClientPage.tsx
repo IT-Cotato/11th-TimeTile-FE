@@ -39,7 +39,7 @@ export default function ArtistPage() {
   >("follow");
   const [mode, setMode] = useState<"view" | "edit" | "waiting">("view");
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedMode = localStorage.getItem("lastMode") as
@@ -54,9 +54,7 @@ export default function ArtistPage() {
   }, []);
 
   useEffect(() => {
-    if (artistId) {
-      localStorage.setItem("lastArtistId", artistId);
-    }
+    if (artistId) localStorage.setItem("lastArtistId", artistId);
   }, [artistId]);
 
   useEffect(() => {
@@ -99,9 +97,7 @@ export default function ArtistPage() {
           )
         );
 
-        if (sortedYears.length > 0) {
-          setSelectedYear(sortedYears[0]);
-        }
+        if (sortedYears.length > 0) setSelectedYear(sortedYears[0]);
       } catch (error) {
         console.error(error);
       } finally {
@@ -159,6 +155,7 @@ export default function ArtistPage() {
           selectedYear={selectedYear}
           onYearSelect={setSelectedYear}
           isFollowing={followVariant}
+          followLoading={false}
           onFollowClick={handleFollowClick}
           onUnfollowClick={handleUnfollowClick}
           onClockClick={() => {
@@ -167,6 +164,7 @@ export default function ArtistPage() {
             router.push("/waiting");
           }}
         />
+
         {years.length === 0 ? (
           <>
             <EmptyDeck onAddTileClick={() => setShowModal(true)} />
@@ -198,7 +196,15 @@ export default function ArtistPage() {
                   mode={mode}
                 />
               )}
-              {activeTab === "myTile" && <MyTileDeck />}
+              {activeTab === "myTile" && (
+                <MyTileDeck
+                  year={selectedYear}
+                  artistId={artistId!}
+                  groupId={artistId!}
+                  mode={mode}
+                  role="EDITOR"
+                />
+              )}
             </div>
           )
         )}
@@ -220,7 +226,7 @@ const Wrapper = styled.div`
   display: flex;
   width: 950px;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 24px;
 `;
 

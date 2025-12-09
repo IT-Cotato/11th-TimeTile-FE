@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 interface Props {
   value: string;
@@ -42,7 +42,7 @@ const Wrapper = styled.div<{ $focused: boolean }>`
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  border: 1.5px solid ${({ $focused }) => ($focused ? '#A6C6FA' : '#D2D4D6')};
+  border: 1.5px solid ${({ $focused }) => ($focused ? "#A6C6FA" : "#D2D4D6")};
   border-radius: 12px;
   background-color: #fff;
   gap: 12px;
@@ -67,13 +67,13 @@ const Input = styled.textarea`
 `;
 
 const Button = styled.button`
-  background-color: ${({ disabled }) => (disabled ? '#BFD5F7' : '#3A5CAA')};
+  background-color: ${({ disabled }) => (disabled ? "#BFD5F7" : "#3A5CAA")};
   color: #fff;
   font-size: 14px;
   font-weight: 600;
   border-radius: 8px;
   padding: 6px 12px;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
   border: none;
   height: 32px;
   min-width: 50px;
