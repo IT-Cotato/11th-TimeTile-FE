@@ -1,9 +1,12 @@
+"use client";
+
 import styled from "styled-components";
 import { Text } from "@/components/atoms/Text";
 import { TagCategory } from "@/components/atoms/TagCategory";
 import { TagCategoryName } from "@/model/common/tagcategory";
 import { theme } from "@/styles/theme";
 import { FlexBox } from "../layouts/FlexBox";
+import { useRouter } from "next/navigation";
 
 export interface Artist {
   id: string;
@@ -20,33 +23,26 @@ export interface BottomData {
 }
 
 interface TimeTileProps {
-  topArtists: Artist[];
+  artistId?: string;
   bottomData: BottomData;
 }
 
-export const TimeTileComponent = ({
-  topArtists,
-  bottomData,
-}: TimeTileProps) => {
+export const TimeTileComponent = ({ artistId, bottomData }: TimeTileProps) => {
+  const router = useRouter();
+
   const formatDate = (dateString: string) => {
     const [year, month, day] = dateString.split("-");
     return `${year.slice(2)}/${month}/${day}`;
   };
 
+  const handleClick = () => {
+    if (!artistId) return;
+    router.push(`/timetile/${artistId}`);
+  };
+
   return (
+    // <Container onClick={handleClick}>
     <Container>
-      <TopWrapper>
-        {topArtists.map((artist) => (
-          <ArtistInfo key={artist.id}>
-            <FlexBox gap={8}>
-              <ArtistImage src={artist.profileImageUrl} alt={artist.name} />
-              <ArtistName>
-                <Text typo="Body_2" color="gray_1000" children={artist.name} />
-              </ArtistName>
-            </FlexBox>
-          </ArtistInfo>
-        ))}
-      </TopWrapper>
       <BottomWrapper>
         <FlexBox gap={8} direction="column" align="flex-start">
           <Date>
@@ -98,12 +94,6 @@ const Container = styled.div`
   background: ${theme.palette.primary_20};
 `;
 
-const TopWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
 const BottomWrapper = styled.div`
   display: flex;
   padding: 16px;
@@ -113,29 +103,6 @@ const BottomWrapper = styled.div`
   align-self: stretch;
   border-radius: 10px;
   background: ${theme.palette.primary_100};
-`;
-
-const ArtistInfo = styled.div`
-  display: flex;
-  padding: 8px;
-  justify-content: space-between;
-  align-items: flex-start;
-  align-self: stretch;
-`;
-
-const ArtistImage = styled.img`
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-`;
-
-const ArtistName = styled.div`
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const Title = styled.div`
