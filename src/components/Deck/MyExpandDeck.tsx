@@ -12,6 +12,7 @@ import RecordCardSmall from "../IndividualRecord/RecordCardSmall";
 import { UserRole } from "@/model/common/user";
 import { useRouter } from "next/navigation";
 import { DeckEventData } from "@/model/components/DeckEvent";
+import { RightBlueIcon } from "@/assets/icons/RightBlueIcon";
 
 interface MyExpandDeckProps {
   events: DeckEventData[];
@@ -87,16 +88,18 @@ export const MyExpandDeck = ({ events, onClose, role }: MyExpandDeckProps) => {
             ))}
           </CardList>
           <BottomBar>
-            <Text typo="Caption_2" color="gray_600">
+            <Text typo="Caption_2" color="gray_1000">
               +{event.contributorCount}명 참여했어요
             </Text>
-
+            <Text typo="Caption_2" color="gray_1000">
+              ·
+            </Text>
             <ViewAllButton
               onClick={() =>
                 router.push(`/record-list?groupId=${event.groupId}`)
               }
             >
-              전체 보기 &gt;
+              <RightBlueIcon />
             </ViewAllButton>
           </BottomBar>
         </EventCard>
@@ -182,7 +185,7 @@ const BottomBar = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 `;
 
 const ViewAllButton = styled.button`
