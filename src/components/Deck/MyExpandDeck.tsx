@@ -85,26 +85,13 @@ export const MyExpandDeck = ({
 
           {/* 카드 리스트 */}
           <CardList>
-            {event.relatedMaterials?.length ? (
-              event.relatedMaterials.map((m, idx) => (
-                <RecordCardSmall
-                  key={idx}
-                  imageSrc={m.imageUrl || "/images/default_thumbnail.png"}
-                  title={m.title || event.name}
-                  description={m.description || event.description}
-                  likes={m.likes ?? 0}
-                  comments={m.comments ?? 0}
-                />
-              ))
-            ) : (
-              <RecordCardSmall
-                imageSrc={event.source || "/images/default_thumbnail.png"}
-                title={event.name}
-                description={event.description}
-                likes={event.contributorCount ?? 0}
-                comments={0}
-              />
-            )}
+            <RecordCardSmall
+              imageSrc={event.source || "/images/default_thumbnail.png"}
+              title={event.name}
+              description={event.description}
+              likes={event.contributorCount ?? 0}
+              comments={0}
+            />
           </CardList>
 
           {/* 참여자 + 전체보기 */}
@@ -145,7 +132,7 @@ const EventCard = styled.div`
   gap: 16px;
   padding: 20px;
   border-radius: 12px;
-  background: ${theme.palette.primary_20};
+  background: ${theme.palette.gray_0};
   border: 1px solid ${theme.palette.primary_200};
   box-shadow: 0 4px 12px rgba(159, 198, 255, 0.25);
 `;
