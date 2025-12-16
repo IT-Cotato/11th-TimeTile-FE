@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { deckApi } from "@/apis/deckApi";
-import { DefaultDeck } from "./DefaultDeck";
 import { ExpandDeck } from "./ExpandDeck";
 import { Text } from "../atoms/Text";
 import { EventData } from "@/model/components/Event";
