@@ -6,7 +6,6 @@ import { YearScroller } from "@/components/Deck/YearScroller";
 import { UserRole } from "@/model/common/user";
 import { Tooltip } from "../Tooltip";
 import { EditButtonIcon } from "@/assets/icons/EditButtonIcon";
-import { AlertIcon } from "@/assets/icons/AlertIcon";
 import { EyeButtonIcon } from "@/assets/icons/EyeButtonIcon";
 import { ClockButtonIcon } from "@/assets/icons/ClockButtonIcon";
 
@@ -22,9 +21,10 @@ interface ArtistProfileCardProps {
   isFollowing?: "follow" | "following" | "unfollow";
   followLoading?: boolean;
   setMode?: (mode: "view" | "edit" | "waiting") => void;
+  selectedYear?: number | null;
+  onYearSelect?: (year: number | null) => void;
   onFollowClick?: () => void;
   onUnfollowClick?: () => void;
-  onYearSelect?: (year: number | null) => void;
   onClockClick?: () => void;
 }
 
@@ -47,9 +47,10 @@ export const ArtistProfileCard = ({
   followLoading = false,
   currentTab,
   setMode,
+  selectedYear,
+  onYearSelect,
   onFollowClick,
   onUnfollowClick,
-  onYearSelect,
   onClockClick,
 }: ArtistProfileCardProps) => {
   const iconColor = roleColorMap[role] ?? theme.palette.gray_300;
@@ -84,7 +85,6 @@ export const ArtistProfileCard = ({
                   }}
                 >
                   {mode === "edit" ? (
-                    // <AlertIcon />
                     <></>
                   ) : (
                     <FollowButton
@@ -103,6 +103,7 @@ export const ArtistProfileCard = ({
                 <Text typo="Caption_1">{followerCount.toLocaleString()}명</Text>
               </Part>
             </TopRow>
+
             {currentTab === "timeTile" &&
               (isFollowing === "following" || isFollowing === "unfollow") && (
                 <div
@@ -158,6 +159,7 @@ export const ArtistProfileCard = ({
             <YearScroller
               years={years}
               yearSchedules={yearSchedules}
+              selectedYear={selectedYear}
               onYearSelect={onYearSelect}
             />
           </YearWrapper>
