@@ -171,7 +171,6 @@ const MonthTitle = styled.div`
   display: flex;
   width: 52px;
   height: 49px;
-  padding: 8px 6px;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
