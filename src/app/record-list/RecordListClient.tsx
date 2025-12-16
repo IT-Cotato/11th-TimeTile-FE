@@ -148,7 +148,7 @@ const IndividualRecordPage = () => {
         {pageNumbers.map((page) => (
           <PageNumber
             key={page}
-            active={page === currentPage}
+            $active={page === currentPage}
             onClick={() => setCurrentPage(page)}
           >
             {page}
@@ -383,14 +383,14 @@ const PageButton = styled.button`
   }
 `;
 
-const PageNumber = styled.button<{ active: boolean }>`
+const PageNumber = styled.button<{ $active: boolean }>`
   width: 24px;
   height: 24px;
   border: none;
   border-radius: 50%;
-  background: ${({ active }) => (active ? "#C3DBFF" : "transparent")};
-  color: ${({ active }) => (active ? "#0D2364" : "#666")};
-  font-weight: ${({ active }) => (active ? "bold" : "normal")};
+  background: ${({ $active }) => ($active ? "#C3DBFF" : "transparent")};
+  color: ${({ $active }) => ($active ? "#0D2364" : "#666")};
+  font-weight: ${({ $active }) => ($active ? "bold" : "normal")};
   cursor: pointer;
   font-size: 14px;
 `;

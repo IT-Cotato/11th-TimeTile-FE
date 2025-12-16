@@ -200,7 +200,6 @@ export default function ArtistPage() {
                 <MyTileDeck
                   year={selectedYear}
                   artistId={artistId!}
-                  groupId={artistId!}
                   mode={mode}
                   role="EDITOR"
                 />

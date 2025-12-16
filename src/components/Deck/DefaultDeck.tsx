@@ -5,14 +5,10 @@ import { theme } from "@/styles/theme";
 import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "../layouts/FlexBox";
 import { ChevronDown } from "@/assets/icons/ChevronDown";
-
-interface EventData {
-  eventId: number;
-  name: string;
-}
+import { DeckEventData } from "@/model/components/DeckEvent";
 
 interface DefaultDeckProps {
-  events: EventData[];
+  events: DeckEventData[];
   showMoreButton: boolean;
   onMoreClick: () => void;
 }
@@ -58,12 +54,13 @@ const DeckContainer = styled.div`
   border-radius: 16px;
   border: 1px solid ${theme.palette.primary_200};
   background: ${theme.palette.gray_0};
-  box-shadow: 0 4px 12px 0 rgba(159, 198, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(159, 198, 255, 0.25);
 `;
 
 const TopWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
 `;
 
 const Wrapper = styled.div`
@@ -86,5 +83,6 @@ const EventList = styled.div`
 const MoreButton = styled.div`
   display: flex;
   align-items: center;
+  gap: 4px;
   cursor: pointer;
 `;

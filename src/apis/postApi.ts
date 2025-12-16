@@ -1,4 +1,5 @@
 import { authAxios } from "@/apis/axios";
+import { HotYearResponse } from "@/model/dto/hotYear";
 
 const unwrap = <T = unknown>(res: unknown): T => {
   // res가 AxiosResponse라고 가정하고 안전하게 처리
@@ -58,12 +59,14 @@ export const postApi = {
     return res.data;
   },
 
-  // 연도별 대표 기록 조회
-  getHotPostsByYear: async (artistId: string, year: number) => {
-    const res = await authAxios.get(`/posts/${artistId}/hot`, {
+  getHotPostsByYear: async (
+    artistId: string,
+    year: number
+  ): Promise<HotYearResponse> => {
+    const res = await authAxios.get<HotYearResponse>(`/posts/${artistId}/hot`, {
       params: { year },
     });
-    return res.data.data ?? res.data;
+    return res.data;
   },
 
   // 월별 추가 조회
@@ -136,7 +139,7 @@ export const postApi = {
     const path = "/posts/files";
     try {
       // 최종 요청 대상/파라미터 확인
-       
+
       console.log(
         "[files] baseURL=",
         (authAxios as { defaults?: { baseURL?: string } })?.defaults?.baseURL,
@@ -151,8 +154,7 @@ export const postApi = {
       });
       return unwrap(res);
     } catch (e1) {
-       
-      console.warn('[getUploadUrls] GET repeat 실패 → [] 포맷 재시도', e1);
+      console.warn("[getUploadUrls] GET repeat 실패 → [] 포맷 재시도", e1);
       try {
         const res2 = await authAxios.get(path, {
           params: { "extensions[]": extensions },
@@ -160,14 +162,12 @@ export const postApi = {
         });
         return unwrap(res2);
       } catch (e2) {
-         
-        console.warn('[getUploadUrls] GET [] 실패 → POST 바디 재시도', e2);
+        console.warn("[getUploadUrls] GET [] 실패 → POST 바디 재시도", e2);
         try {
           const res3 = await authAxios.post(path, { extensions });
           return unwrap(res3);
         } catch (e3) {
-           
-          console.error('[getUploadUrls] 최종 실패', e3);
+          console.error("[getUploadUrls] 최종 실패", e3);
           throw e3;
         }
       }

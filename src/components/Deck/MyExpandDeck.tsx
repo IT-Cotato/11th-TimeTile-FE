@@ -7,50 +7,42 @@ import { TagCategory } from "../atoms/TagCategory";
 import { TagCategoryName } from "@/model/common/tagcategory";
 import { theme } from "@/styles/theme";
 import { CommentIcon } from "@/assets/icons/CommentIcon";
-import { EventData } from "@/model/components/Event";
 import { ChevronDown } from "@/assets/icons/ChevronDown";
 import RecordCardSmall from "../IndividualRecord/RecordCardSmall";
 import { UserRole } from "@/model/common/user";
 import { useRouter } from "next/navigation";
+import { DeckEventData } from "@/model/components/DeckEvent";
 
 interface MyExpandDeckProps {
-  mode: "view" | "edit" | "waiting";
-  events: EventData[];
+  events: DeckEventData[];
   onClose: () => void;
   role: UserRole;
 }
 
-export const MyExpandDeck = ({
-  mode,
-  events,
-  onClose,
-  role,
-}: MyExpandDeckProps) => {
+export const MyExpandDeck = ({ events, onClose, role }: MyExpandDeckProps) => {
   const router = useRouter();
 
   return (
     <ExpandContainer>
       {events.map((event) => (
         <EventCard key={event.eventId}>
-          {/* 상단 헤더 */}
           <Header>
             <HeaderLeft>
               <Text typo="Body_1" color="gray_700">
                 {new Date(event.startedAt).getDate()}일
               </Text>
+
               <Text typo="H4" color="gray_1000">
                 {event.name}
               </Text>
               <AddTileButton
                 onClick={() =>
-                  router.push(`/record-add?groupId=${event.groupId || ""}`)
+                  router.push(`/record-add?groupId=${event.groupId}`)
                 }
               >
                 <CommentIcon />
               </AddTileButton>
             </HeaderLeft>
-
-            {/* 태그 목록 */}
             {(event.activityTypes.length > 0 ||
               event.relatedArtists.length > 0 ||
               event.relatedEvents.length > 0) && (
@@ -82,26 +74,26 @@ export const MyExpandDeck = ({
               </TagsScrollWrapper>
             )}
           </Header>
-
-          {/* 카드 리스트 */}
           <CardList>
-            <RecordCardSmall
-              imageSrc={event.source || "/images/default_thumbnail.png"}
-              title={event.name}
-              description={event.description}
-              likes={event.contributorCount ?? 0}
-              comments={0}
-            />
+            {event.relatedMaterials.map((m) => (
+              <RecordCardSmall
+                key={m.postId}
+                imageSrc={m.imageUrl || "/images/default_thumbnail.png"}
+                title={m.title || event.name}
+                description={m.description || event.description}
+                likes={m.likes}
+                comments={m.comments}
+              />
+            ))}
           </CardList>
-
-          {/* 참여자 + 전체보기 */}
           <BottomBar>
             <Text typo="Caption_2" color="gray_600">
-              +{event.contributorCount ?? 0}명 참여했어요
+              +{event.contributorCount}명 참여했어요
             </Text>
+
             <ViewAllButton
               onClick={() =>
-                router.push(`/record-list?groupId=${event.groupId || ""}`)
+                router.push(`/record-list?groupId=${event.groupId}`)
               }
             >
               전체 보기 &gt;
@@ -109,8 +101,6 @@ export const MyExpandDeck = ({
           </BottomBar>
         </EventCard>
       ))}
-
-      {/* 타일 접기 */}
       <CollapseWrapper onClick={onClose}>
         <Text typo="Caption_2">타일 접기</Text>
         <ChevronDown />
@@ -119,7 +109,6 @@ export const MyExpandDeck = ({
   );
 };
 
-/* 💅 스타일 */
 const ExpandContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -155,8 +144,6 @@ const AddTileButton = styled.button`
   border: none;
   background: none;
   color: ${theme.palette.primary_600};
-  font-size: 13px;
-  font-weight: 500;
   cursor: pointer;
 `;
 
@@ -168,9 +155,9 @@ const TagsScrollWrapper = styled.div`
 const TagsScrollContainer = styled.div`
   display: flex;
   gap: 8px;
-  flex-wrap: nowrap;
   overflow-x: auto;
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -185,6 +172,7 @@ const CardList = styled.div`
   gap: 12px;
   overflow-x: auto;
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
