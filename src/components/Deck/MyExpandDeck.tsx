@@ -94,6 +94,7 @@ export const MyExpandDeck = ({
                   description={m.description || event.description}
                   likes={m.likes ?? 0}
                   comments={m.comments ?? 0}
+                  onClick={() => router.push(`/record-post/${m.postId}`)}
                 />
               ))
             ) : (

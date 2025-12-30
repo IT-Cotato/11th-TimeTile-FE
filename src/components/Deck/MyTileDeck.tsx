@@ -99,6 +99,7 @@ export const MyTileDeck = ({
                 startedAt: representative.createdAt,
                 endedAt: representative.createdAt,
                 relatedMaterials: groupPosts.map((p) => ({
+                  postId: p.postId,
                   imageUrl: p.mainImageUrl,
                   title: p.title,
                   description: p.content,

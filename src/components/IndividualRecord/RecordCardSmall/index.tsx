@@ -1,8 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Text } from '../../atoms/Text';
-import { HeartIcon } from '@/assets/icons/HeartIcon';
-import { ChatIcon } from '@/assets/icons/ChatIcon';
+import React from "react";
+import styled from "styled-components";
+import { Text } from "../../atoms/Text";
+import { HeartIcon } from "@/assets/icons/HeartIcon";
+import { ChatIcon } from "@/assets/icons/ChatIcon";
 
 interface RecordCardSmallProps {
   imageSrc: string;
@@ -10,6 +10,7 @@ interface RecordCardSmallProps {
   description: string;
   likes: number;
   comments: number;
+  onClick?: () => void;
 }
 
 const RecordCardSmall = ({
@@ -18,9 +19,10 @@ const RecordCardSmall = ({
   description,
   likes,
   comments,
+  onClick,
 }: RecordCardSmallProps) => {
   return (
-    <Wrapper>
+    <Wrapper onClick={onClick}>
       <Image src={imageSrc} alt="record preview" />
       <Title typo="Body_1">{title}</Title>
       <Description typo="Caption_2">{description}</Description>
@@ -53,6 +55,12 @@ const Wrapper = styled.div`
   border-radius: 20px;
   border: 1px solid #c3dbff;
   background: #fbfdff;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(159, 198, 255, 0.35);
+    transition: 0.2s ease;
+  }
 `;
 
 const Image = styled.img`
