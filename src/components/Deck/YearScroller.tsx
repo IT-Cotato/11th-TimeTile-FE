@@ -68,9 +68,11 @@ export const YearScroller = ({
               {hoveredYear === year && yearSchedules[year] && (
                 <Tooltip>
                   {yearSchedules[year].map((schedule, idx) => (
-                    <Text key={idx} typo="Caption_4" color="gray_900">
-                      {schedule}
-                    </Text>
+                    <div key={`${year}-${idx}`} style={{ width: "188px" }}>
+                      <Text typo="Caption_4" color="gray_900">
+                        {schedule}
+                      </Text>
+                    </div>
                   ))}
                 </Tooltip>
               )}
@@ -134,7 +136,7 @@ const Tooltip = styled.div`
   padding: 12px;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: 20px;
   background-color: ${theme.palette.gray_0};
   border: 1px solid ${theme.palette.gray_200};
   border-radius: 8px;
