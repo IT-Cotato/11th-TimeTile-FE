@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { theme } from "@/styles/theme";
 import { deckApi } from "@/apis/deckApi";
-import { DefaultDeck } from "./DefaultDeck";
 import { ExpandDeck } from "./ExpandDeck";
 import { Text } from "../atoms/Text";
 import { EventData } from "@/model/components/Event";
 import { UserRole } from "@/model/common/user";
+import { DefaultTimeTileDeck } from "./DefaultTimeTileDeck";
 
 interface TimetileDeckProps {
   year: number;
@@ -91,7 +91,7 @@ export const TimetileDeck = ({
                   onClose={() => toggleExpand(month)}
                 />
               ) : (
-                <DefaultDeck
+                <DefaultTimeTileDeck
                   events={events}
                   showMoreButton={true}
                   onMoreClick={() => toggleExpand(month)}

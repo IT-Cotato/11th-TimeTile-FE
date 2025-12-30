@@ -114,10 +114,6 @@ export default function LoggedInPage() {
               </LoginComponent>
             ) : (
               artistEvents.map((event) => {
-                const topArtist = followingArtists?.find(
-                  (artist) => artist.id === event.groupId
-                );
-
                 const bottomData: BottomData = {
                   title: event.name,
                   description: event.description,
@@ -129,7 +125,7 @@ export default function LoggedInPage() {
                 return (
                   <TimeTileComponent
                     key={event.eventId}
-                    topArtists={topArtist ? [topArtist] : []}
+                    artistId={event?.groupId}
                     bottomData={bottomData}
                   />
                 );

@@ -7,50 +7,43 @@ import { TagCategory } from "../atoms/TagCategory";
 import { TagCategoryName } from "@/model/common/tagcategory";
 import { theme } from "@/styles/theme";
 import { CommentIcon } from "@/assets/icons/CommentIcon";
-import { EventData } from "@/model/components/Event";
 import { ChevronDown } from "@/assets/icons/ChevronDown";
 import RecordCardSmall from "../IndividualRecord/RecordCardSmall";
 import { UserRole } from "@/model/common/user";
 import { useRouter } from "next/navigation";
+import { DeckEventData } from "@/model/components/DeckEvent";
+import { RightBlueIcon } from "@/assets/icons/RightBlueIcon";
 
 interface MyExpandDeckProps {
-  mode: "view" | "edit" | "waiting";
-  events: EventData[];
+  events: DeckEventData[];
   onClose: () => void;
   role: UserRole;
 }
 
-export const MyExpandDeck = ({
-  mode,
-  events,
-  onClose,
-  role,
-}: MyExpandDeckProps) => {
+export const MyExpandDeck = ({ events, onClose, role }: MyExpandDeckProps) => {
   const router = useRouter();
 
   return (
     <ExpandContainer>
       {events.map((event) => (
         <EventCard key={event.eventId}>
-          {/* 상단 헤더 */}
           <Header>
             <HeaderLeft>
               <Text typo="Body_1" color="gray_700">
                 {new Date(event.startedAt).getDate()}일
               </Text>
+
               <Text typo="H4" color="gray_1000">
                 {event.name}
               </Text>
               <AddTileButton
                 onClick={() =>
-                  router.push(`/record-add?groupId=${event.groupId || ""}`)
+                  router.push(`/record-add?groupId=${event.groupId}`)
                 }
               >
                 <CommentIcon />
               </AddTileButton>
             </HeaderLeft>
-
-            {/* 태그 목록 */}
             {(event.activityTypes.length > 0 ||
               event.relatedArtists.length > 0 ||
               event.relatedEvents.length > 0) && (
@@ -82,8 +75,6 @@ export const MyExpandDeck = ({
               </TagsScrollWrapper>
             )}
           </Header>
-
-          {/* 카드 리스트 */}
           <CardList>
             {event.relatedMaterials?.length ? (
               event.relatedMaterials.map((m, idx) => (
@@ -99,32 +90,32 @@ export const MyExpandDeck = ({
               ))
             ) : (
               <RecordCardSmall
-                imageSrc={event.source || "/images/default_thumbnail.png"}
-                title={event.name}
-                description={event.description}
-                likes={event.contributorCount ?? 0}
-                comments={0}
+                key={m.postId}
+                imageSrc={m.imageUrl || "/images/default_thumbnail.png"}
+                title={m.title || event.name}
+                description={m.description || event.description}
+                likes={m.likes}
+                comments={m.comments}
               />
-            )}
+            ))}
           </CardList>
-
-          {/* 참여자 + 전체보기 */}
           <BottomBar>
-            <Text typo="Caption_2" color="gray_600">
-              +{event.contributorCount ?? 0}명 참여했어요
+            <Text typo="Caption_2" color="gray_1000">
+              +{event.contributorCount}명 참여했어요
+            </Text>
+            <Text typo="Caption_2" color="gray_1000">
+              ·
             </Text>
             <ViewAllButton
               onClick={() =>
-                router.push(`/record-list?groupId=${event.groupId || ""}`)
+                router.push(`/record-list?groupId=${event.groupId}`)
               }
             >
-              전체 보기 &gt;
+              <RightBlueIcon />
             </ViewAllButton>
           </BottomBar>
         </EventCard>
       ))}
-
-      {/* 타일 접기 */}
       <CollapseWrapper onClick={onClose}>
         <Text typo="Caption_2">타일 접기</Text>
         <ChevronDown />
@@ -133,7 +124,6 @@ export const MyExpandDeck = ({
   );
 };
 
-/* 💅 스타일 */
 const ExpandContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -146,7 +136,7 @@ const EventCard = styled.div`
   gap: 16px;
   padding: 20px;
   border-radius: 12px;
-  background: ${theme.palette.primary_20};
+  background: ${theme.palette.gray_0};
   border: 1px solid ${theme.palette.primary_200};
   box-shadow: 0 4px 12px rgba(159, 198, 255, 0.25);
 `;
@@ -169,8 +159,6 @@ const AddTileButton = styled.button`
   border: none;
   background: none;
   color: ${theme.palette.primary_600};
-  font-size: 13px;
-  font-weight: 500;
   cursor: pointer;
 `;
 
@@ -182,9 +170,9 @@ const TagsScrollWrapper = styled.div`
 const TagsScrollContainer = styled.div`
   display: flex;
   gap: 8px;
-  flex-wrap: nowrap;
   overflow-x: auto;
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -199,6 +187,7 @@ const CardList = styled.div`
   gap: 12px;
   overflow-x: auto;
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -208,7 +197,7 @@ const BottomBar = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 `;
 
 const ViewAllButton = styled.button`

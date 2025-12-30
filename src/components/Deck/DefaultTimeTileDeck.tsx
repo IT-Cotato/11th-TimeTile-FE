@@ -5,15 +5,15 @@ import { theme } from "@/styles/theme";
 import { Text } from "@/components/atoms/Text";
 import { FlexBox } from "../layouts/FlexBox";
 import { ChevronDown } from "@/assets/icons/ChevronDown";
-import { DeckEventData } from "@/model/components/DeckEvent";
+import { EventData } from "@/model/components/Event";
 
 interface DefaultDeckProps {
-  events: DeckEventData[];
+  events: EventData[];
   showMoreButton: boolean;
   onMoreClick: () => void;
 }
 
-export const DefaultDeck = ({
+export const DefaultTimeTileDeck = ({
   events,
   showMoreButton,
   onMoreClick,

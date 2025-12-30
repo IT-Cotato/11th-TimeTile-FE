@@ -8,16 +8,17 @@ import { theme } from "@/styles/theme";
 interface YearScrollerProps {
   years: number[];
   yearSchedules: Record<number, string[]>;
+  selectedYear?: number | null;
   onYearSelect?: (year: number | null) => void;
 }
 
 export const YearScroller = ({
   years,
   yearSchedules,
+  selectedYear,
   onYearSelect,
 }: YearScrollerProps) => {
   const [hoveredYear, setHoveredYear] = useState<number | null>(null);
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const visibleCount = 7;
@@ -29,7 +30,6 @@ export const YearScroller = ({
 
   const handleYearClick = (year: number) => {
     const newSelected = selectedYear === year ? null : year;
-    setSelectedYear(newSelected);
     onYearSelect?.(newSelected);
   };
 
@@ -45,7 +45,6 @@ export const YearScroller = ({
             }
           />
         </IconWrapper>
-
         <YearsContainer>
           {years.slice(currentIndex, endIndex).map((year) => (
             <YearItem
@@ -78,7 +77,6 @@ export const YearScroller = ({
             </YearItem>
           ))}
         </YearsContainer>
-
         <IconWrapper onClick={handleNext} disabled={endIndex >= years.length}>
           <MoveRightIcon
             color={

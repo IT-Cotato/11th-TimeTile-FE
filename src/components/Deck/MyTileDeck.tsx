@@ -7,89 +7,59 @@ import { postApi } from "@/apis/postApi";
 import { DefaultDeck } from "./DefaultDeck";
 import { MyExpandDeck } from "./MyExpandDeck";
 import { Text } from "../atoms/Text";
-import { EventData } from "@/model/components/Event";
+import { DeckEventData } from "@/model/components/DeckEvent";
 import { UserRole } from "@/model/common/user";
-
-interface PostItem {
-  postId: number;
-  groupId: string;
-  title: string | null;
-  content: string | null;
-  mainImageUrl: string | null;
-  createdAt: string;
-  likeCount: number | null;
-  commentCount: number | null;
-  authorId: number;
-  authorNickname: string;
-  authorProfileImageUrl: string | null;
-}
+import { PostDTO } from "@/model/dto/post";
+import { EventDTO } from "@/model/dto/event";
+import { HotYearResponse } from "@/model/dto/hotYear";
 
 interface MyTileDeckProps {
   year: number;
   artistId: string;
   mode: "view" | "edit" | "waiting";
   role: UserRole;
-  groupId: string;
 }
 
-export const MyTileDeck = ({
-  year,
-  artistId,
-  mode,
-  role,
-  groupId,
-}: MyTileDeckProps) => {
+export const MyTileDeck = ({ year, artistId, mode, role }: MyTileDeckProps) => {
   const [monthlyEvents, setMonthlyEvents] = useState<
-    Record<number, EventData[]>
+    Record<number, DeckEventData[]>
   >({});
   const [loading, setLoading] = useState(true);
   const [expandedMonths, setExpandedMonths] = useState<Record<number, boolean>>(
     {}
   );
-  const [hasMore, setHasMore] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
 
-        const hotRes = await postApi.getHotPostsByYear(artistId, year);
-        const postsByMonth = hotRes?.data?.posts ?? hotRes?.posts ?? {};
-        const months = Object.keys(postsByMonth).map(Number);
+        const hotRes: HotYearResponse = await postApi.getHotPostsByYear(
+          artistId,
+          year
+        );
 
-        const monthly: Record<number, EventData[]> = {};
-        const more: Record<number, boolean> = {};
+        const postsByMonth = hotRes.data.posts;
 
-        for (const month of months) {
-          const posts = postsByMonth[month] ?? [];
+        const monthly: Record<number, DeckEventData[]> = {};
 
-          // groupId로 묶기
-          const grouped: Record<string, PostItem[]> = {};
-          posts.forEach((post) => {
-            if (!grouped[post.groupId]) grouped[post.groupId] = [];
-            grouped[post.groupId].push(post);
-          });
+        for (const [month, posts] of Object.entries(postsByMonth)) {
+          const grouped = posts.reduce<Record<string, PostDTO[]>>(
+            (acc, post) => {
+              acc[post.groupId] ??= [];
+              acc[post.groupId].push(post);
+              return acc;
+            },
+            {}
+          );
 
-          // 각 group별로 event 정보 가져오기
-          const events: EventData[] = await Promise.all(
+          const events: DeckEventData[] = await Promise.all(
             Object.entries(grouped).map(async ([groupId, groupPosts]) => {
-              let eventTitle = "스케줄명 불러오는 중...";
-              try {
-                const eventRes = await postApi.getEvent(groupId);
-                // 서버 구조에 따라 eventRes.data 또는 eventRes.event 로 확인 필요
-                eventTitle =
-                  eventRes?.data?.event?.name ||
-                  eventRes?.data?.name ||
-                  eventRes?.event?.name ||
-                  "제목 없음";
-              } catch (e) {
-                console.warn(`event fetch 실패 (${groupId})`, e);
-              }
-
-              const representative = groupPosts[0];
+              const eventRes = await postApi.getEvent(groupId);
+              const event: EventDTO = eventRes.data;
 
               return {
-                eventId: representative.postId,
+                eventId: groupId,
                 groupId,
                 name: eventTitle, // 이제 스케줄 제목
                 source:
@@ -107,19 +77,14 @@ export const MyTileDeck = ({
                   comments: p.commentCount ?? 0,
                 })),
                 contributorCount: groupPosts.length,
-                activityTypes: [],
-                relatedArtists: [],
-                relatedEvents: [],
               };
             })
           );
 
-          monthly[month] = events;
-          more[month] = events.length > 1;
+          monthly[Number(month)] = events;
         }
 
         setMonthlyEvents(monthly);
-        setHasMore(more);
       } catch (e) {
         console.error("MyTileDeck fetch error:", e);
       } finally {
@@ -128,7 +93,7 @@ export const MyTileDeck = ({
     };
 
     fetchPosts();
-  }, [artistId, year, groupId]);
+  }, [artistId, year]);
 
   const toggleExpand = (month: number) => {
     setExpandedMonths((prev) => ({
@@ -137,7 +102,9 @@ export const MyTileDeck = ({
     }));
   };
 
-  if (loading) return <Container $mode={mode}>로딩 중...</Container>;
+  if (loading) {
+    return <Container $mode={mode}>로딩 중...</Container>;
+  }
 
   return (
     <Container $mode={mode}>
@@ -151,18 +118,16 @@ export const MyTileDeck = ({
               <Text typo="H2">{month}월</Text>
             </MonthTitle>
             <Wrapper>
-              {/* 펼쳤을 때는 MyExpandDeck */}
               {expanded ? (
                 <MyExpandDeck
                   role={role}
-                  mode={mode}
                   events={events}
                   onClose={() => toggleExpand(month)}
                 />
               ) : (
                 <DefaultDeck
                   events={events}
-                  showMoreButton={true}
+                  showMoreButton
                   onMoreClick={() => toggleExpand(month)}
                 />
               )}
@@ -174,7 +139,6 @@ export const MyTileDeck = ({
   );
 };
 
-// 스타일
 const Container = styled.div<{ $mode: "view" | "edit" | "waiting" }>`
   display: flex;
   flex-direction: column;
@@ -206,7 +170,6 @@ const MonthTitle = styled.div`
   display: flex;
   width: 52px;
   height: 49px;
-  padding: 8px 6px;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ArtistProfileCard } from "@/components/atoms/ArtistProfileCard";
 import styled from "styled-components";
 import { deckApi } from "@/apis/deckApi";
@@ -19,38 +19,9 @@ interface ArtistData {
   followerCount: number;
 }
 
-//목데이터 몇개 넣어둠!
-const mockYears = [2030, 2029, 2028, 2027, 2026, 2025, 2024, 2023, 2022, 2021];
-
-const mockYearSchedules: Record<number, string[]> = {
-  2030: ["Senior Product Strategist", "Chief Innovation Officer"],
-  2029: ["Global Marketing Analyst", "Lead UX Designer", "Solutions Architect"],
-  2028: ["Data Science Manager", "Front-End Lead", "Back-End Engineer"],
-  2027: [
-    "Operations Coordinator",
-    "Integration Specialist",
-    "Quality Assurance Analyst",
-  ],
-  2026: [
-    "Principal Optimization Coordinator",
-    "Lead Interactions Analyst",
-    "Business Development Manager",
-  ],
-  2025: [
-    "Legacy Brand Analyst",
-    "Central Integration Developer",
-    "Central Applications Orchestrator",
-  ],
-  2024: ["Junior Developer", "UI Designer", "Customer Success Associate"],
-  2023: ["Marketing Intern", "Sales Support Specialist", "HR Coordinator"],
-  2022: ["Project Manager", "Technical Writer", "Database Administrator"],
-  2021: ["Software Engineer", "System Analyst", "Creative Designer"],
-};
-
 export default function ArtistPage() {
   const router = useRouter();
   const params = useParams();
-
   const artistId = Array.isArray(params?.artistId)
     ? params.artistId[0]
     : params?.artistId;
@@ -60,18 +31,15 @@ export default function ArtistPage() {
   const [yearSchedules, setYearSchedules] = useState<Record<number, string[]>>(
     {}
   );
-  const [isFollowing, setIsFollowing] = useState<boolean>(false);
-  const [followLoading, setFollowLoading] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"timeTile" | "myTile">("timeTile");
-
-  const [userProfile, setUserProfile] = useAtom(userProfileAtom);
+  const [userProfile] = useAtom(userProfileAtom);
   const [followVariant, setFollowVariant] = useState<
     "follow" | "following" | "unfollow"
   >("follow");
   const [mode, setMode] = useState<"view" | "edit" | "waiting">("view");
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedMode = localStorage.getItem("lastMode") as
@@ -79,7 +47,6 @@ export default function ArtistPage() {
       | "edit"
       | "waiting"
       | null;
-
     if (storedMode) {
       setMode(storedMode);
       localStorage.removeItem("lastMode");
@@ -87,9 +54,7 @@ export default function ArtistPage() {
   }, []);
 
   useEffect(() => {
-    if (artistId) {
-      localStorage.setItem("lastArtistId", artistId);
-    }
+    if (artistId) localStorage.setItem("lastArtistId", artistId);
   }, [artistId]);
 
   useEffect(() => {
@@ -107,7 +72,6 @@ export default function ArtistPage() {
 
   useEffect(() => {
     if (!artistId) return;
-
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -118,13 +82,12 @@ export default function ArtistPage() {
           followerCount: artistInfo.followCount,
         });
 
-        // setYears(mockYears);
-        // setYearSchedules(mockYearSchedules);
         const activeYears = await deckApi.getArtistActiveYears(artistId);
         const sortedYears = Object.keys(activeYears)
           .map((y) => parseInt(y))
-          .sort((a, b) => a - b);
+          .sort((a, b) => b - a);
         setYears(sortedYears);
+
         setYearSchedules(
           Object.fromEntries(
             Object.entries(activeYears).map(([year, schedules]) => [
@@ -133,19 +96,19 @@ export default function ArtistPage() {
             ])
           )
         );
+
+        if (sortedYears.length > 0) setSelectedYear(sortedYears[0]);
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [artistId]);
 
   const handleFollowClick = async () => {
     if (!artistId) return;
-
     if (followVariant === "follow") {
       try {
         await deckApi.followArtist(artistId);
@@ -184,17 +147,17 @@ export default function ArtistPage() {
           followerCount={artistData.followerCount}
           imageUrl={artistData.imageUrl}
           years={years}
-          //role={userProfile?.role}
+          yearSchedules={yearSchedules}
           role="EDITOR"
           mode={mode}
           currentTab={activeTab}
           setMode={setMode}
-          yearSchedules={yearSchedules}
+          selectedYear={selectedYear}
+          onYearSelect={setSelectedYear}
           isFollowing={followVariant}
-          followLoading={followLoading}
+          followLoading={false}
           onFollowClick={handleFollowClick}
           onUnfollowClick={handleUnfollowClick}
-          onYearSelect={setSelectedYear}
           onClockClick={() => {
             if (!artistId) return;
             localStorage.setItem("lastArtistId", artistId);
@@ -202,52 +165,47 @@ export default function ArtistPage() {
           }}
         />
 
-        {artistId && (
+        {years.length === 0 ? (
           <>
-            {years.length === 0 ? (
-              <>
-                <EmptyDeck onAddTileClick={() => setShowModal(true)} />
-                {showModal && (
-                  <ModalOverlay>
-                    <DeckWriteModal
-                      modalMode="add"
-                      onClose={() => setShowModal(false)}
-                      userRole="EDITOR"
-                    />
-                  </ModalOverlay>
-                )}
-              </>
-            ) : (
-              selectedYear && (
-                <div>
-                  <DeckTab
-                    activeTab={activeTab}
-                    role="EDITOR"
-                    artistName={artistData.artistName}
-                    onTabChange={setActiveTab}
-                    mode={mode}
-                  />
-                  {activeTab === "timeTile" && (
-                    <TimetileDeck
-                      role="EDITOR"
-                      year={selectedYear}
-                      artistId={artistId}
-                      mode={mode}
-                    />
-                  )}
-                  {activeTab === "myTile" && (
-                    <MyTileDeck
-                      year={selectedYear}
-                      artistId={artistId}
-                      groupId={artistId}
-                      mode={mode}
-                      role="EDITOR"
-                    />
-                  )}
-                </div>
-              )
+            <EmptyDeck onAddTileClick={() => setShowModal(true)} />
+            {showModal && (
+              <ModalOverlay>
+                <DeckWriteModal
+                  modalMode="add"
+                  onClose={() => setShowModal(false)}
+                  userRole="EDITOR"
+                />
+              </ModalOverlay>
             )}
           </>
+        ) : (
+          selectedYear && (
+            <div>
+              <DeckTab
+                activeTab={activeTab}
+                role="EDITOR"
+                artistName={artistData.artistName}
+                onTabChange={setActiveTab}
+                mode={mode}
+              />
+              {activeTab === "timeTile" && (
+                <TimetileDeck
+                  role="EDITOR"
+                  year={selectedYear}
+                  artistId={artistId!}
+                  mode={mode}
+                />
+              )}
+              {activeTab === "myTile" && (
+                <MyTileDeck
+                  year={selectedYear}
+                  artistId={artistId!}
+                  mode={mode}
+                  role="EDITOR"
+                />
+              )}
+            </div>
+          )
         )}
       </Wrapper>
     </Container>

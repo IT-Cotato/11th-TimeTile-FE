@@ -2,7 +2,6 @@
 
 import styled from "styled-components";
 import { Text } from "../atoms/Text";
-import { LinkIcon } from "@/assets/icons/LinkIcon";
 import { Tag } from "../atoms/Tag";
 import { TagCategory } from "../atoms/TagCategory";
 import { TagCategoryName } from "@/model/common/tagcategory";
@@ -142,7 +141,7 @@ export const ExpandDeck = ({
                   {event.relatedArtists.map((artist) => (
                     <TagWrapper
                       key={artist.id}
-                      onClick={() => router.push(`/timetile/${artist.id}`)} // ✅ 이동
+                      onClick={() => router.push(`/timetile/${artist.id}`)}
                       style={{ cursor: "pointer" }}
                     >
                       <Tag variant="deck">{artist.name}</Tag>
@@ -252,7 +251,7 @@ const EventCard = styled.div`
   gap: 12px;
   padding: 20px;
   border-radius: 12px;
-  background: ${theme.palette.primary_20};
+  background: ${theme.palette.gray_0};
   border: 1px solid ${theme.palette.primary_200};
   margin-right: 4px;
   box-shadow: 0 4px 12px 0 rgba(159, 198, 255, 0.25);

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { Text } from "../../atoms/Text";
 import { HeartIcon } from "@/assets/icons/HeartIcon";
 import { ChatIcon } from "@/assets/icons/ChatIcon";
+import { theme } from "@/styles/theme";
 
 interface RecordCardSmallProps {
   imageSrc: string;
@@ -54,7 +55,7 @@ const Wrapper = styled.div`
   padding: 24px;
   border-radius: 20px;
   border: 1px solid #c3dbff;
-  background: #fbfdff;
+  background: ${theme.palette.gray_0};
   cursor: pointer;
 
   &:hover {
