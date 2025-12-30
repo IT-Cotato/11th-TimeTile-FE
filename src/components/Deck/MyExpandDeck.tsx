@@ -76,19 +76,7 @@ export const MyExpandDeck = ({ events, onClose, role }: MyExpandDeckProps) => {
             )}
           </Header>
           <CardList>
-            {event.relatedMaterials?.length ? (
-              event.relatedMaterials.map((m, idx) => (
-                <RecordCardSmall
-                  key={idx}
-                  imageSrc={m.imageUrl || "/images/default_thumbnail.png"}
-                  title={m.title || event.name}
-                  description={m.description || event.description}
-                  likes={m.likes ?? 0}
-                  comments={m.comments ?? 0}
-                  onClick={() => router.push(`/record-post/${m.postId}`)}
-                />
-              ))
-            ) : (
+            {event.relatedMaterials.map((m) => (
               <RecordCardSmall
                 key={m.postId}
                 imageSrc={m.imageUrl || "/images/default_thumbnail.png"}
