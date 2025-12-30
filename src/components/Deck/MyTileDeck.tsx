@@ -61,21 +61,20 @@ export const MyTileDeck = ({ year, artistId, mode, role }: MyTileDeckProps) => {
               return {
                 eventId: groupId,
                 groupId,
-                name: event.name,
-                description: event.description,
-                source: event.source,
-                startedAt: event.startedAt,
-                endedAt: event.endedAt,
-                activityTypes: event.activityTypes,
-                relatedArtists: event.relatedArtists,
-                relatedEvents: event.relatedEvents,
-                relatedMaterials: groupPosts.map((post) => ({
-                  postId: post.postId,
-                  imageUrl: post.mainImageUrl,
-                  title: post.title,
-                  description: post.content,
-                  likes: post.likeCount,
-                  comments: post.commentCount,
+                name: eventTitle, // 이제 스케줄 제목
+                source:
+                  representative.mainImageUrl ||
+                  "/images/default_thumbnail.png",
+                description: representative.content || "내용이 없습니다.",
+                startedAt: representative.createdAt,
+                endedAt: representative.createdAt,
+                relatedMaterials: groupPosts.map((p) => ({
+                  postId: p.postId,
+                  imageUrl: p.mainImageUrl,
+                  title: p.title,
+                  description: p.content,
+                  likes: p.likeCount ?? 0,
+                  comments: p.commentCount ?? 0,
                 })),
                 contributorCount: groupPosts.length,
               };

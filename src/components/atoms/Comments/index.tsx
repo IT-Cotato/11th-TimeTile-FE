@@ -40,6 +40,7 @@ export interface Comment {
 
 export interface CommentsSectionProps {
   postId: number | string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   commentsData?: any[];
   currentUserName: string;
   autoFetch?: boolean;
