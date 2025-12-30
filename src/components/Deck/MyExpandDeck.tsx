@@ -84,7 +84,7 @@ export const MyExpandDeck = ({ events, onClose, role }: MyExpandDeckProps) => {
                 description={m.description || event.description}
                 likes={m.likes}
                 comments={m.comments}
-                onClick={() => router.push(`/record-post/${post.postId}`)}
+                onClick={() => router.push(`/record-post/${m.postId}`)}
               />
             ))}
           </CardList>
