@@ -11,6 +11,7 @@ interface RecordCardSmallProps {
   description: string;
   likes: number;
   comments: number;
+  onClick?: () => void;
 }
 
 const RecordCardSmall = ({
@@ -19,9 +20,10 @@ const RecordCardSmall = ({
   description,
   likes,
   comments,
+  onClick,
 }: RecordCardSmallProps) => {
   return (
-    <Wrapper>
+    <Wrapper onClick={onClick}>
       <Image src={imageSrc} alt="record preview" />
       <Title typo="Body_1">{title}</Title>
       <Description typo="Caption_2">{description}</Description>
